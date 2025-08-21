@@ -1,0 +1,332 @@
+import React, { useState, useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { 
+  Clock, 
+  ArrowRight, 
+  Package, 
+  Search,
+  Filter,
+  TrendingUp,
+  TrendingDown,
+  Wrench,
+  AlertTriangle,
+  CheckCircle,
+  MapPin,
+  Calendar,
+  User,
+  RefreshCw
+} from 'lucide-react';
+import { useEquipmentHistory } from '@/hooks/equipment/useEquipmentHistory';
+import { EquipmentHistoryDialog } from '@/components/equipment/EquipmentHistoryDialog';
+import { useInventory } from '@/contexts/InventoryContext';
+import { format } from 'date-fns';
+import { DATABASE_MODE } from '@/config/database.config';
+
+const EquipmentHistoryViewer: React.FC = () => {
+  const { history, isLoading, error, refreshHistory } = useEquipmentHistory();
+  const { data: inventoryData } = useInventory();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedAction, setSelectedAction] = useState<string>('all');
+  const [selectedEquipment, setSelectedEquipment] = useState<any>(null);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+
+  // Filter history based on search and action
+  const filteredHistory = useMemo(() => {
+    let filtered = history;
+
+    if (searchTerm) {
+      filtered = filtered.filter(entry => 
+        entry.equipmentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        entry.jobName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        entry.notes?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (selectedAction !== 'all') {
+      filtered = filtered.filter(entry => entry.action === selectedAction);
+    }
+
+    return filtered;
+  }, [history, searchTerm, selectedAction]);
+
+  const getActionIcon = (action: string) => {
+    switch (action) {
+      case 'created':
+        return <Package className="h-4 w-4" />;
+      case 'deployed':
+        return <TrendingUp className="h-4 w-4 text-blue-500" />;
+      case 'returned':
+        return <TrendingDown className="h-4 w-4 text-green-500" />;
+      case 'maintenance':
+        return <Wrench className="h-4 w-4 text-orange-500" />;
+      case 'red-tagged':
+        return <AlertTriangle className="h-4 w-4 text-red-500" />;
+      case 'status-change':
+        return <CheckCircle className="h-4 w-4 text-purple-500" />;
+      case 'location-change':
+        return <MapPin className="h-4 w-4 text-indigo-500" />;
+      default:
+        return <Clock className="h-4 w-4" />;
+    }
+  };
+
+  const getActionColor = (action: string) => {
+    switch (action) {
+      case 'deployed':
+        return 'bg-blue-100 text-blue-800';
+      case 'returned':
+        return 'bg-green-100 text-green-800';
+      case 'maintenance':
+        return 'bg-orange-100 text-orange-800';
+      case 'red-tagged':
+        return 'bg-red-100 text-red-800';
+      case 'status-change':
+        return 'bg-purple-100 text-purple-800';
+      case 'location-change':
+        return 'bg-indigo-100 text-indigo-800';
+      case 'created':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const handleViewEquipmentHistory = (equipmentId: string) => {
+    const equipment = inventoryData.individualEquipment.find(e => e.id === equipmentId);
+    if (equipment) {
+      setSelectedEquipment(equipment);
+      setHistoryDialogOpen(true);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center text-red-500">
+            <AlertTriangle className="h-8 w-8 mx-auto mb-2" />
+            <p>Error loading history: {error}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5" />
+                Equipment History
+              </CardTitle>
+              <Button onClick={refreshHistory} variant="outline" size="sm">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {/* Filters */}
+            <div className="flex gap-4 mb-6">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    type="text"
+                    placeholder="Search equipment ID, job name, or notes..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <Select value={selectedAction} onValueChange={setSelectedAction}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="All Actions" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Actions</SelectItem>
+                  <SelectItem value="created">Created</SelectItem>
+                  <SelectItem value="deployed">Deployed</SelectItem>
+                  <SelectItem value="returned">Returned</SelectItem>
+                  <SelectItem value="maintenance">Maintenance</SelectItem>
+                  <SelectItem value="red-tagged">Red Tagged</SelectItem>
+                  <SelectItem value="status-change">Status Change</SelectItem>
+                  <SelectItem value="location-change">Location Change</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* History Table */}
+            {filteredHistory.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Package className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                <p>No history found</p>
+              </div>
+            ) : (
+              <ScrollArea className="h-[600px]">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date & Time</TableHead>
+                      <TableHead>Equipment</TableHead>
+                      <TableHead>Action</TableHead>
+                      <TableHead>Details</TableHead>
+                      <TableHead>Job</TableHead>
+                      <TableHead>User</TableHead>
+                      <TableHead>Notes</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredHistory.map((record) => (
+                      <TableRow key={record.id}>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-1 text-sm">
+                            <Calendar className="h-3 w-3 text-gray-400" />
+                            {format(new Date(record.timestamp), 'MMM d, yyyy')}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {format(new Date(record.timestamp), 'h:mm a')}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-mono text-sm">{record.equipmentId}</div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {getActionIcon(record.action)}
+                            <Badge className={getActionColor(record.action)}>
+                              {record.action.replace('-', ' ')}
+                            </Badge>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm">
+                            {record.fromStatus && record.toStatus && (
+                              <div className="flex items-center gap-1">
+                                <Badge variant="outline" className="text-xs">
+                                  {record.fromStatus}
+                                </Badge>
+                                <ArrowRight className="h-3 w-3" />
+                                <Badge variant="outline" className="text-xs">
+                                  {record.toStatus}
+                                </Badge>
+                              </div>
+                            )}
+                            {record.fromLocation && record.toLocation && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <MapPin className="h-3 w-3" />
+                                <span className="text-xs">{record.fromLocation}</span>
+                                <ArrowRight className="h-3 w-3" />
+                                <span className="text-xs">{record.toLocation}</span>
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {record.jobName ? (
+                            <Badge variant="secondary">{record.jobName}</Badge>
+                          ) : (
+                            '-'
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {record.userName ? (
+                            <div className="flex items-center gap-1 text-sm">
+                              <User className="h-3 w-3" />
+                              {record.userName}
+                            </div>
+                          ) : (
+                            '-'
+                          )}
+                        </TableCell>
+                        <TableCell className="max-w-xs">
+                          <div className="text-sm text-gray-600 truncate">
+                            {record.notes || '-'}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleViewEquipmentHistory(record.equipmentId)}
+                          >
+                            View All
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Summary Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold">{history.length}</div>
+              <p className="text-xs text-muted-foreground">Total Events</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold">
+                {history.filter(h => h.action === 'deployed').length}
+              </div>
+              <p className="text-xs text-muted-foreground">Deployments</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold">
+                {history.filter(h => h.action === 'returned').length}
+              </div>
+              <p className="text-xs text-muted-foreground">Returns</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold">
+                {history.filter(h => h.action === 'maintenance' || h.action === 'red-tagged').length}
+              </div>
+              <p className="text-xs text-muted-foreground">Maintenance Events</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Equipment History Dialog */}
+      <EquipmentHistoryDialog
+        equipment={selectedEquipment}
+        isOpen={historyDialogOpen}
+        onClose={() => {
+          setHistoryDialogOpen(false);
+          setSelectedEquipment(null);
+        }}
+      />
+    </>
+  );
+};
+
+export default EquipmentHistoryViewer;
