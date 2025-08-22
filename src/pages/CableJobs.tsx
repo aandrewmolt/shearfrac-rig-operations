@@ -8,8 +8,7 @@ import AppHeader from '@/components/AppHeader';
 import { useJobs } from '@/hooks/useJobs';
 import JobsList from '@/components/jobs/JobsList';
 import JobCreationDialog from '@/components/jobs/JobCreationDialog';
-// Keep JobDiagram lazy loaded as it's the heaviest component
-const JobDiagram = React.lazy(() => import('@/components/JobDiagram'));
+import JobDiagram from '@/components/JobDiagram';
 import { useSearchParams } from 'react-router-dom';
 import { useJobStorageIntegration } from '@/hooks/useJobStorageIntegration';
 import { JobStatusControl } from '@/components/jobs/JobStatusControl';
@@ -195,13 +194,7 @@ const CableJobs = () => {
                 Save Job
               </Button>
             </div>
-            <React.Suspense fallback={
-              <div className="flex items-center justify-center h-96">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-              </div>
-            }>
-              <JobDiagram job={selectedJob} />
-            </React.Suspense>
+            <JobDiagram job={selectedJob} />
           </div>
         </div>
       </div>
