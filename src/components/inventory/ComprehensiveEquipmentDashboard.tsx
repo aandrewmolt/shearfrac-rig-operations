@@ -1,23 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useInventory } from '@/contexts/InventoryContext';
 import { useJobs } from '@/hooks/useJobs';
-import { Package, MapPin, AlertTriangle, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Package, MapPin, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
 
 const ComprehensiveEquipmentDashboard: React.FC = () => {
   const { data } = useInventory();
   const { jobs } = useJobs();
   const navigate = useNavigate();
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   // Group equipment by job and type
   const equipmentByJob: Record<string, {
@@ -118,121 +112,70 @@ const ComprehensiveEquipmentDashboard: React.FC = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Location/Job</TableHead>
-                <TableHead>Equipment</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead className="w-[200px]">Location/Job</TableHead>
+                <TableHead className="w-[150px]">Equipment Type</TableHead>
+                <TableHead className="w-[80px]">Quantity</TableHead>
+                <TableHead>Equipment IDs</TableHead>
+                <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Object.entries(equipmentByJob).map(([locationId, data]) => {
+              {Object.entries(equipmentByJob).flatMap(([locationId, data]) => {
                 const equipmentCount = data.equipment.length;
                 
-                if (equipmentCount === 0) return null;
+                if (equipmentCount === 0) return [];
 
                 const isJob = jobs.some(j => j.id === locationId);
                 
-                return (
-                  <TableRow key={locationId}>
+                // Group equipment by type
+                const groupedEquipment = data.equipment.reduce((acc, item) => {
+                  const type = getEquipmentType(item.typeId);
+                  const typeName = type?.name || item.typeId;
+                  if (!acc[typeName]) acc[typeName] = [];
+                  acc[typeName].push(item);
+                  return acc;
+                }, {} as Record<string, any[]>);
+                
+                // Create a row for each equipment type at this location
+                return Object.entries(groupedEquipment).map(([typeName, items], index) => (
+                  <TableRow key={`${locationId}-${typeName}`}>
+                    {index === 0 && (
+                      <TableCell rowSpan={Object.keys(groupedEquipment).length} className="align-top">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4" />
+                          <span className="font-medium">{data.jobName}</span>
+                          {isJob && <Badge variant="outline" className="ml-2">Job</Badge>}
+                        </div>
+                      </TableCell>
+                    )}
+                    <TableCell>{typeName}</TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4" />
-                        <span className="font-medium">{data.jobName}</span>
-                        {isJob && <Badge variant="outline">Job</Badge>}
-                      </div>
+                      <Badge variant="secondary">{items.length}</Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="space-y-2">
-                        {/* Group by type */}
-                        {Object.entries(
-                          data.equipment.reduce((acc, item) => {
-                            const type = getEquipmentType(item.typeId);
-                            const typeName = type?.name || item.typeId;
-                            if (!acc[typeName]) acc[typeName] = [];
-                            acc[typeName].push(item);
-                            return acc;
-                          }, {} as Record<string, any[]>)
-                        ).map(([typeName, items]) => (
-                          <div key={typeName} className="border-l-2 border-gray-200 pl-2">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Badge variant="secondary" className="text-xs">
-                                {items.length}
-                              </Badge>
-                              <span className="font-medium text-sm">{typeName}</span>
-                            </div>
-                            {items.length <= 8 ? (
-                              <div className="grid grid-cols-4 gap-1 max-w-md">
-                                {items.map(i => (
-                                  <span key={i.id} className="text-xs text-muted-foreground bg-gray-50 px-1 py-0.5 rounded">
-                                    {i.equipmentId}
-                                  </span>
-                                ))}
-                              </div>
-                            ) : (
-                              <Collapsible open={expandedRows.has(`${locationId}-${typeName}`)}>
-                                <div className="grid grid-cols-4 gap-1 max-w-md">
-                                  {items.slice(0, 8).map(i => (
-                                    <span key={i.id} className="text-xs text-muted-foreground bg-gray-50 px-1 py-0.5 rounded">
-                                      {i.equipmentId}
-                                    </span>
-                                  ))}
-                                </div>
-                                <CollapsibleContent>
-                                  <div className="grid grid-cols-4 gap-1 max-w-md mt-1">
-                                    {items.slice(8).map(i => (
-                                      <span key={i.id} className="text-xs text-muted-foreground bg-gray-50 px-1 py-0.5 rounded">
-                                        {i.equipmentId}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </CollapsibleContent>
-                                <CollapsibleTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="mt-1 h-6 text-xs"
-                                    onClick={() => {
-                                      const key = `${locationId}-${typeName}`;
-                                      const newExpanded = new Set(expandedRows);
-                                      if (newExpanded.has(key)) {
-                                        newExpanded.delete(key);
-                                      } else {
-                                        newExpanded.add(key);
-                                      }
-                                      setExpandedRows(newExpanded);
-                                    }}
-                                  >
-                                    {expandedRows.has(`${locationId}-${typeName}`) ? (
-                                      <>
-                                        <ChevronUp className="h-3 w-3 mr-1" />
-                                        Show less
-                                      </>
-                                    ) : (
-                                      <>
-                                        <ChevronDown className="h-3 w-3 mr-1" />
-                                        Show {items.length - 8} more
-                                      </>
-                                    )}
-                                  </Button>
-                                </CollapsibleTrigger>
-                              </Collapsible>
-                            )}
-                          </div>
+                      <div className="flex flex-wrap gap-1">
+                        {items.map(i => (
+                          <span key={i.id} className="text-xs bg-gray-100 px-2 py-1 rounded">
+                            {i.equipmentId}
+                          </span>
                         ))}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      {isJob && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => navigate(`/jobs?edit=${locationId}`)}
-                        >
-                          View Job
-                        </Button>
-                      )}
-                    </TableCell>
+                    {index === 0 && (
+                      <TableCell rowSpan={Object.keys(groupedEquipment).length} className="align-top">
+                        {isJob && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => navigate(`/jobs?edit=${locationId}`)}
+                          >
+                            View Job
+                          </Button>
+                        )}
+                      </TableCell>
+                    )}
                   </TableRow>
-                );
+                ));
               })}
             </TableBody>
           </Table>
