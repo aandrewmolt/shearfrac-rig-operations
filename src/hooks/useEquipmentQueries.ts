@@ -19,7 +19,8 @@ export const useEquipmentQueries = () => {
         name: type.name,
         category: type.category || 'other',
         description: type.description || '',
-        defaultIdPrefix: type.default_id_prefix || type.defaultIdPrefix || ''
+        defaultIdPrefix: type.default_id_prefix || type.defaultIdPrefix || '',
+        requiresIndividualTracking: true // All equipment now uses individual tracking
       } as EquipmentType));
       } catch (error) {
         console.error('Error fetching equipment types:', error);

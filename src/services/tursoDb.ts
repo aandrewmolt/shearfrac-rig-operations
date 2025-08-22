@@ -46,7 +46,7 @@ class TursoDatabase {
     const result = await turso.execute('SELECT * FROM equipment_types ORDER BY name');
     return result.rows.map(row => ({
       ...row,
-      requires_individual_tracking: Boolean(row.requires_individual_tracking)
+      requires_individual_tracking: true // All equipment now uses individual tracking
     }));
   }
 
@@ -61,7 +61,7 @@ class TursoDatabase {
         type.name,
         type.category,
         type.description || null,
-        type.requires_individual_tracking || type.requiresIndividualTracking || false,
+        true, // All equipment now uses individual tracking
         type.default_id_prefix || type.defaultIdPrefix || null
       ]
     });
@@ -79,7 +79,7 @@ class TursoDatabase {
         updates.name,
         updates.category,
         updates.description || null,
-        updates.requires_individual_tracking || updates.requiresIndividualTracking || false,
+        true, // All equipment now uses individual tracking
         updates.default_id_prefix || updates.defaultIdPrefix || null,
         id
       ]

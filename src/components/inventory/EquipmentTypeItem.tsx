@@ -112,7 +112,7 @@ const EquipmentTypeItem: React.FC<EquipmentTypeItemProps> = ({
           )}
           
           <div className="text-xs text-gray-500">
-            Individual Tracking: {type.requiresIndividualTracking ? 'Yes' : 'No'}
+            Individual Tracking: Yes
           </div>
         </div>
       </CardContent>
