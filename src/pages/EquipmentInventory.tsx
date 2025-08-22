@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AppHeader from '@/components/AppHeader';
-import { ComprehensiveEquipmentDashboard } from '@/components/inventory/ComprehensiveEquipmentDashboard';
+import ComprehensiveEquipmentDashboard from '@/components/inventory/ComprehensiveEquipmentDashboard';
 import EquipmentTypeManager from '@/components/inventory/EquipmentTypeManager';
 import StorageLocationManager from '@/components/inventory/StorageLocationManager';
 import EquipmentListView from '@/components/inventory/EquipmentListView';
@@ -13,7 +13,6 @@ import DataSetupVerifier from '@/components/inventory/DataSetupVerifier';
 import CommunicationEquipmentManager from '@/components/inventory/CommunicationEquipmentManager';
 import DebugEquipmentInfo from '@/components/inventory/DebugEquipmentInfo';
 import EquipmentStatusDebug from '@/components/inventory/EquipmentStatusDebug';
-import ComprehensiveEquipmentDashboard from '@/components/inventory/ComprehensiveEquipmentDashboard';
 import { useDefaultDataSetup } from '@/hooks/useDefaultDataSetup';
 import { useInventory } from '@/contexts/InventoryContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
