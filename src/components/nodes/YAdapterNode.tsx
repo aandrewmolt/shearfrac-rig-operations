@@ -4,11 +4,14 @@ import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { Square, RotateCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NodeDeleteButton from './NodeDeleteButton';
+import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
 const YAdapterNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
-  const { getEdges, getNodes, deleteElements } = useReactFlow();
+  const { getEdges, getNodes, deleteElements, setNodes } = useReactFlow();
   const [topPortNumber, setTopPortNumber] = useState<string>('1');
   const [bottomPortNumber, setBottomPortNumber] = useState<string>('2');
+  
+  const isAssigned = data.assigned && data.equipmentId;
 
   // Determine the correct port numbers based on the connected pressure port
   useEffect(() => {
@@ -71,6 +74,25 @@ const YAdapterNode = ({ id, data, selected }: { id: string; data: any; selected?
     deleteElements({ nodes: [{ id }] });
   };
 
+  const handleRemoveEquipment = () => {
+    setNodes((nodes) => 
+      nodes.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              equipmentId: null,
+              equipmentName: null,
+              assigned: false
+            }
+          };
+        }
+        return node;
+      })
+    );
+  };
+
   return (
     <div className="bg-yellow-500 text-gray-900 rounded-lg p-3 border-2 border-yellow-400 min-w-[100px] text-center relative">
       <Handle
@@ -88,10 +110,23 @@ const YAdapterNode = ({ id, data, selected }: { id: string; data: any; selected?
       <div className="flex flex-col items-center gap-1">
         <Square className="h-5 w-5 rotate-45" />
         <h3 className="font-bold text-sm">{data.label}</h3>
+        {isAssigned && data.equipmentId && (
+          <p className="text-xs text-yellow-700 font-medium">{data.equipmentId}</p>
+        )}
       </div>
 
       {/* Delete button */}
       {selected && <NodeDeleteButton onDelete={handleDelete} />}
+      
+      {/* Red tag menu for assigned equipment */}
+      {isAssigned && data.equipmentId && (
+        <SimpleRedTagMenu 
+          equipmentId={data.equipmentId} 
+          nodeId={id}
+          nodeType="Y-Adapter"
+          onRemoveEquipment={handleRemoveEquipment}
+        />
+      )}
       
       {/* Swap button */}
       <Button

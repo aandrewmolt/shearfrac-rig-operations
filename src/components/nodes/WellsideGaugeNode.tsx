@@ -3,14 +3,35 @@ import React from 'react';
 import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { Gauge } from 'lucide-react';
 import NodeDeleteButton from './NodeDeleteButton';
+import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
 const WellsideGaugeNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
-  const { deleteElements } = useReactFlow();
+  const { deleteElements, setNodes } = useReactFlow();
   const backgroundColor = data.color || '#f59e0b';
   const borderColor = data.color === '#f59e0b' ? '#d97706' : data.color;
+  const isAssigned = data.assigned && data.equipmentId;
   
   const handleDelete = () => {
     deleteElements({ nodes: [{ id }] });
+  };
+  
+  const handleRemoveEquipment = () => {
+    setNodes((nodes) => 
+      nodes.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              equipmentId: null,
+              equipmentName: null,
+              assigned: false
+            }
+          };
+        }
+        return node;
+      })
+    );
   };
   
   return (
@@ -22,6 +43,17 @@ const WellsideGaugeNode = ({ id, data, selected }: { id: string; data: any; sele
       }}
     >
       {selected && <NodeDeleteButton onDelete={handleDelete} />}
+      
+      {/* Red tag menu for assigned equipment */}
+      {isAssigned && data.equipmentId && (
+        <SimpleRedTagMenu 
+          equipmentId={data.equipmentId} 
+          nodeId={id}
+          nodeType="Wellside Gauge"
+          onRemoveEquipment={handleRemoveEquipment}
+        />
+      )}
+      
       <Handle
         type="target"
         position={Position.Left}
@@ -38,6 +70,9 @@ const WellsideGaugeNode = ({ id, data, selected }: { id: string; data: any; sele
         <Gauge className="h-5 w-5" />
         <div>
           <h3 className="font-bold text-sm">{data.label || 'Wellside Gauge'}</h3>
+          {isAssigned && data.equipmentId && (
+            <p className="text-xs text-green-100 font-medium">{data.equipmentId}</p>
+          )}
           <p className="text-xs opacity-80">1502 Pressure Gauge</p>
         </div>
       </div>

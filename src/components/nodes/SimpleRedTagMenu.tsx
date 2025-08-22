@@ -172,7 +172,7 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
 
   return (
     <div 
-      className="absolute top-0 right-0 z-50"
+      className="absolute top-1 right-1 z-50"
       onClick={(e) => e.stopPropagation()}
     >
       <Popover open={open} onOpenChange={setOpen}>
@@ -180,9 +180,9 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
           <Button
             size="sm"
             variant="ghost"
-            className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
+            className="h-7 w-7 p-0 bg-black/60 hover:bg-black/80 rounded"
           >
-            <MoreVertical className="h-3 w-3 text-white" />
+            <MoreVertical className="h-4 w-4 text-white" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-56 p-1" align="end">
