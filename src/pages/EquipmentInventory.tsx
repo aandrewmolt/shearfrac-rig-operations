@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AppHeader from '@/components/AppHeader';
-import { ComprehensiveInventoryDashboard } from '@/components/inventory/ComprehensiveInventoryDashboard';
+import { ComprehensiveEquipmentDashboard } from '@/components/inventory/ComprehensiveEquipmentDashboard';
 import EquipmentTypeManager from '@/components/inventory/EquipmentTypeManager';
 import StorageLocationManager from '@/components/inventory/StorageLocationManager';
 import EquipmentListView from '@/components/inventory/EquipmentListView';
@@ -25,7 +25,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 const EquipmentInventory = () => {
-  const [activeTab, setActiveTab] = useState('comprehensive');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const { isInitializing, needsInitialization } = useDefaultDataSetup();
   const { data, isLoading } = useInventory();
   const isMobile = useIsMobile();
@@ -35,7 +35,6 @@ const EquipmentInventory = () => {
   };
 
   const tabItems = [
-    { value: 'comprehensive', label: 'All Jobs', icon: LayoutDashboard },
     { value: 'dashboard', label: 'Overview', icon: Package },
     { value: 'equipment-types', label: 'Types', icon: Settings },
     { value: 'equipment-list', label: 'Inventory', icon: List },
@@ -149,12 +148,8 @@ const EquipmentInventory = () => {
             )}
 
             <div className="flex-1 overflow-y-auto -mx-3 sm:-mx-0 px-3 sm:px-0">
-              <TabsContent value="comprehensive" className="h-full">
-                <ComprehensiveInventoryDashboard />
-              </TabsContent>
-
               <TabsContent value="dashboard" className="h-full">
-                <ComprehensiveInventoryDashboard />
+                <ComprehensiveEquipmentDashboard />
               </TabsContent>
 
               <TabsContent value="equipment-types" className="h-full">

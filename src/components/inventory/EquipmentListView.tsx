@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Package, Plus, WifiOff, Wifi, RefreshCw } from 'lucide-react';
 import { useInventory } from '@/contexts/InventoryContext';
 import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
-// import { useOfflineFirst } from '@/hooks/offline/useOfflineFirst'; // Hook doesn't exist
 import { useJobs } from '@/hooks/useJobs';
 import { toast } from 'sonner';
 import { isEquipmentAtLocation } from '@/utils/equipmentLocation';
