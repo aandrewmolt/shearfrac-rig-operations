@@ -6,7 +6,7 @@ import StorageLocationManager from '@/components/inventory/StorageLocationManage
 import EquipmentListView from '@/components/inventory/EquipmentListView';
 import EquipmentTransferSystem from '@/components/inventory/EquipmentTransferSystem';
 import EquipmentHistoryViewer from '@/components/inventory/EquipmentHistoryViewer';
-import EquipmentReportsExporter from '@/components/inventory/EquipmentReportsExporter';
+import EnhancedEquipmentReports from '@/components/inventory/EnhancedEquipmentReports';
 import MaintenanceSchedulePanel from '@/components/inventory/MaintenanceSchedulePanel';
 import DataSetupVerifier from '@/components/inventory/DataSetupVerifier';
 import CommunicationEquipmentManager from '@/components/inventory/CommunicationEquipmentManager';
@@ -164,8 +164,8 @@ const EquipmentInventory = () => {
                 <EquipmentHistoryViewer />
               </TabsContent>
 
-              <TabsContent value="reports" className="h-full">
-                <EquipmentReportsExporter />
+              <TabsContent value="reports" className="h-full overflow-y-auto">
+                <EnhancedEquipmentReports />
               </TabsContent>
 
               <TabsContent value="system" className="h-full">
