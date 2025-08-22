@@ -22,8 +22,7 @@ export const useEquipmentNodeUpdater = () => {
             data: { 
               ...node.data, 
               label: equipment.equipmentId, 
-              equipmentId: equipment.equipmentId, 
-              assigned: true 
+              equipmentId: equipment.equipmentId
             }
           }
         : node
@@ -44,8 +43,7 @@ export const useEquipmentNodeUpdater = () => {
             data: { 
               ...node.data, 
               label: equipment.equipmentId, 
-              equipmentId: equipment.equipmentId, 
-              assigned: true 
+              equipmentId: equipment.equipmentId
             }
           }
         : node
@@ -69,8 +67,7 @@ export const useEquipmentNodeUpdater = () => {
               ...node.data, 
               label: equipment.equipmentId, 
               equipmentId: equipment.equipmentId, 
-              isTablet, 
-              assigned: true 
+              isTablet 
             }
           }
         : node

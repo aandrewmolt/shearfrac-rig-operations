@@ -8,7 +8,7 @@ import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 const CustomerComputerNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
   const { deleteElements, setNodes } = useReactFlow();
   const isTablet = data.isTablet || data.equipmentId?.startsWith('CT');
-  const isAssigned = data.assigned && data.equipmentId;
+  const isAssigned = !!data.equipmentId;
   
   // Debug logging
   console.log('CustomerComputerNode data:', { id, data, isAssigned });

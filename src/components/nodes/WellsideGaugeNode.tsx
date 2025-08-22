@@ -9,7 +9,7 @@ const WellsideGaugeNode = ({ id, data, selected }: { id: string; data: any; sele
   const { deleteElements, setNodes } = useReactFlow();
   const backgroundColor = data.color || '#f59e0b';
   const borderColor = data.color === '#f59e0b' ? '#d97706' : data.color;
-  const isAssigned = data.assigned && data.equipmentId;
+  const isAssigned = !!data.equipmentId;
   
   const handleDelete = () => {
     deleteElements({ nodes: [{ id }] });

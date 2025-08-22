@@ -7,7 +7,7 @@ import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
 const SatelliteNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
   const { deleteElements, setNodes } = useReactFlow();
-  const isAssigned = data.assigned && data.equipmentId;
+  const isAssigned = !!data.equipmentId;
 
   const handleDelete = () => {
     deleteElements({ nodes: [{ id }] });

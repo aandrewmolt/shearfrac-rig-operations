@@ -8,7 +8,7 @@ const WellNode = ({ id, data }: { id: string; data: any }) => {
   const { setNodes } = useReactFlow();
   const backgroundColor = data.color || '#3b82f6';
   const borderColor = data.color === '#3b82f6' ? '#2563eb' : data.color;
-  const isAssigned = data.assigned && data.equipmentId;
+  const isAssigned = !!data.equipmentId;
   
   // Handle white wells - make text black and add black border
   const isWhiteWell = backgroundColor === '#ffffff' || backgroundColor === '#FFFFFF' || backgroundColor.toLowerCase() === '#fff';

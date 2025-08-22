@@ -147,7 +147,7 @@ const MainBoxNode = ({ id, data, selected }: { id: string; data: any; selected?:
     { id: 'p4', label: 'P4', pressure: 'Pressure7,8' },
   ];
 
-  const isAssigned = data.assigned && data.equipmentId;
+  const isAssigned = !!data.equipmentId;
 
   console.log('Enhanced MainBoxNode render:', {
     id,

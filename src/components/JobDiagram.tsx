@@ -357,7 +357,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
         // Update node data with allocated equipment
         setNodes(nodes => nodes.map(n => 
           n.id === node.id 
-            ? { ...n, data: { ...n.data, allocatedEquipmentId: equipmentId, assigned: true } }
+            ? { ...n, data: { ...n.data, equipmentId: equipmentId } }
             : n
         ));
         immediateSave();
@@ -517,8 +517,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
                   data: {
                     ...node.data,
                     equipmentId: testId,
-                    equipmentName: `Test ${node.type} ${index}`,
-                    assigned: true
+                    equipmentName: `Test ${node.type} ${index}`
                   }
                 };
               })
