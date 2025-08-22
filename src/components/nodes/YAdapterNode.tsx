@@ -118,10 +118,22 @@ const YAdapterNode = ({ id, data, selected }: { id: string; data: any; selected?
         )}
       </div>
 
+      {/* Swap button */}
+      <Button
+        onClick={swapPortNumbers}
+        size="sm"
+        variant="ghost"
+        className="absolute -top-2 left-1/2 -translate-x-1/2 h-6 w-6 p-0 bg-white hover:bg-gray-100 border border-gray-300 rounded-full"
+        title="Swap port numbers"
+        style={{ zIndex: 1 }}
+      >
+        <RotateCw className="h-3 w-3" />
+      </Button>
+
       {/* Delete button */}
       {selected && <NodeDeleteButton onDelete={handleDelete} />}
       
-      {/* Red tag menu for assigned equipment */}
+      {/* Red tag menu for assigned equipment - render last with highest z-index */}
       {isAssigned && data.equipmentId && (
         <SimpleRedTagMenu 
           equipmentId={data.equipmentId} 
@@ -130,17 +142,6 @@ const YAdapterNode = ({ id, data, selected }: { id: string; data: any; selected?
           onRemoveEquipment={handleRemoveEquipment}
         />
       )}
-      
-      {/* Swap button */}
-      <Button
-        onClick={swapPortNumbers}
-        size="sm"
-        variant="ghost"
-        className="absolute -top-2 left-1/2 -translate-x-1/2 h-6 w-6 p-0 bg-white hover:bg-gray-100 border border-gray-300 rounded-full"
-        title="Swap port numbers"
-      >
-        <RotateCw className="h-3 w-3" />
-      </Button>
       
       {/* Output 1 - Top port */}
       <Handle

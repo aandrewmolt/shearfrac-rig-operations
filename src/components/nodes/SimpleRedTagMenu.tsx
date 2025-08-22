@@ -40,7 +40,18 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
     eq => eq.equipmentId === equipmentId
   );
   
-  if (!equipment) return null;
+  console.log('SimpleRedTagMenu debug:', {
+    equipmentId,
+    nodeId,
+    nodeType,
+    equipmentFound: !!equipment,
+    inventoryCount: inventoryData.individualEquipment.length
+  });
+  
+  if (!equipment) {
+    console.warn(`SimpleRedTagMenu: Equipment ${equipmentId} not found in inventory`);
+    return null;
+  }
   
   const isRedTagged = equipment.status === 'red-tagged';
   const isMaintenance = equipment.status === 'maintenance';
