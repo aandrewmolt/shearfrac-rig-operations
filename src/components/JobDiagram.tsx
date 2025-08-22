@@ -492,6 +492,20 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
           size="sm"
           className="bg-yellow-100 hover:bg-yellow-200 border-yellow-400"
           onClick={() => {
+            // Debug: Assign real equipment from inventory to all nodes for testing
+            const availableEquipment = inventoryData.individualEquipment.filter(
+              eq => eq.status === 'available'
+            );
+            
+            if (availableEquipment.length === 0) {
+              toast({
+                title: "No Available Equipment",
+                description: "No equipment available in inventory for testing",
+                variant: "destructive"
+              });
+              return;
+            }
+            
             setNodes((nodes) => 
               nodes.map((node, index) => {
                 // Skip if already has equipment
@@ -501,30 +515,25 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
                 const equipmentNodeTypes = ['mainBox', 'satellite', 'customerComputer', 'yAdapter', 'wellsideGauge', 'well'];
                 if (!node.type || !equipmentNodeTypes.includes(node.type)) return node;
                 
-                // Create test equipment ID based on node type
-                let testId = '';
-                switch(node.type) {
-                  case 'mainBox': testId = `SB-TEST-${index}`; break;
-                  case 'satellite': testId = `SAT-TEST-${index}`; break;
-                  case 'customerComputer': testId = `CC-TEST-${index}`; break;
-                  case 'yAdapter': testId = `YA-TEST-${index}`; break;
-                  case 'wellsideGauge': testId = `WG-TEST-${index}`; break;
-                  case 'well': testId = `WELL-TEST-${index}`; break;
-                }
+                // Use real equipment from inventory, cycling through available items
+                const equipmentIndex = index % availableEquipment.length;
+                const equipment = availableEquipment[equipmentIndex];
+                
+                console.log(`Assigning equipment ${equipment.equipmentId} to ${node.type} node ${node.id}`);
                 
                 return {
                   ...node,
                   data: {
                     ...node.data,
-                    equipmentId: testId,
-                    equipmentName: `Test ${node.type} ${index}`
+                    equipmentId: equipment.equipmentId,
+                    equipmentName: equipment.name || equipment.equipmentId
                   }
                 };
               })
             );
             toast({
-              title: "Test Equipment Assigned",
-              description: "Debug: Test equipment IDs assigned to all nodes"
+              title: "Real Equipment Assigned",
+              description: `Debug: Assigned ${availableEquipment.length} available equipment items to nodes`
             });
           }}
         >
