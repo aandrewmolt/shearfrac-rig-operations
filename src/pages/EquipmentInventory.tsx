@@ -7,6 +7,7 @@ import EquipmentListView from '@/components/inventory/EquipmentListView';
 import EquipmentTransferSystem from '@/components/inventory/EquipmentTransferSystem';
 import EquipmentHistoryViewer from '@/components/inventory/EquipmentHistoryViewer';
 import EnhancedEquipmentReports from '@/components/inventory/EnhancedEquipmentReports';
+import { EquipmentUsageTracker } from '@/components/equipment/EquipmentUsageTracker';
 import MaintenanceSchedulePanel from '@/components/inventory/MaintenanceSchedulePanel';
 import DataSetupVerifier from '@/components/inventory/DataSetupVerifier';
 import CommunicationEquipmentManager from '@/components/inventory/CommunicationEquipmentManager';
@@ -35,6 +36,7 @@ const EquipmentInventory = () => {
     { value: 'dashboard', label: 'Overview', icon: Package },
     { value: 'equipment-types', label: 'Types', icon: Settings },
     { value: 'equipment-list', label: 'Inventory', icon: List },
+    { value: 'usage', label: 'Usage Tracking', icon: History },
     { value: 'locations', label: 'Locations & Transfers', icon: MapPin },
     { value: 'history', label: 'History', icon: History },
     { value: 'reports', label: 'Reports', icon: FileText },
@@ -151,6 +153,10 @@ const EquipmentInventory = () => {
 
               <TabsContent value="equipment-list" className="h-full">
                 <EquipmentListView />
+              </TabsContent>
+
+              <TabsContent value="usage" className="h-full overflow-y-auto">
+                <EquipmentUsageTracker showFullDashboard={true} />
               </TabsContent>
 
               <TabsContent value="locations" className="h-full">
