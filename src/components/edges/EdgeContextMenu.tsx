@@ -22,7 +22,7 @@ const EdgeContextMenu: React.FC<EdgeContextMenuProps> = ({
 }) => {
   return (
     <div
-      className="absolute pointer-events-auto z-50"
+      className="absolute pointer-events-auto z-30"
       style={{
         transform: `translate(-50%, -50%) translate(${labelX + 80}px,${labelY}px)`,
       }}

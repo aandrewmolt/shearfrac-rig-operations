@@ -12,6 +12,9 @@ const YAdapterNode = ({ id, data, selected }: { id: string; data: any; selected?
   const [bottomPortNumber, setBottomPortNumber] = useState<string>('2');
   
   const isAssigned = !!data.equipmentId;
+  
+  // Debug logging
+  console.log('YAdapterNode render:', { id, equipmentId: data.equipmentId, isAssigned, data });
 
   // Determine the correct port numbers based on the connected pressure port
   useEffect(() => {

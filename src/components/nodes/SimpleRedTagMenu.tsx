@@ -172,7 +172,8 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
 
   return (
     <div 
-      className="absolute top-1 right-1 z-50"
+      className="absolute top-1 right-1"
+      style={{ zIndex: 9999 }}
       onClick={(e) => e.stopPropagation()}
     >
       <Popover open={open} onOpenChange={setOpen}>
