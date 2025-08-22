@@ -33,12 +33,18 @@ const DataSetupVerifier: React.FC = () => {
         'ShearStream Box',
         '100ft Cable',
         '200ft Cable',
-        '300ft Cable',
         '1502 Pressure Gauge',
-        'Y Adapter Cable'
+        'Y-Adapter'
       ].every(requiredType => 
         data.equipmentTypes.some(type => type.name === requiredType)
       );
+      
+      // Also check for at least one 300ft cable variant
+      const has300ftCable = data.equipmentTypes.some(type => 
+        type.name === '300ft Cable (Old)' || type.name === '300ft Cable (New)'
+      );
+      
+      const hasAllRequiredTypes = hasRequiredTypes && has300ftCable;
 
       // Check storage locations
       const hasStorageLocations = data.storageLocations.length > 0;
@@ -56,7 +62,7 @@ const DataSetupVerifier: React.FC = () => {
       const hasIndividualEquipment = data.individualEquipment.length >= 20; // Expected minimum
 
       setVerificationResults({
-        equipmentTypes: hasRequiredTypes,
+        equipmentTypes: hasAllRequiredTypes,
         storageLocations: hasStorageLocations,
         dataConsistency,
         individualEquipment: hasIndividualEquipment
