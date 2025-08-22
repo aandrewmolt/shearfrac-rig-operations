@@ -48,13 +48,17 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
     inventoryCount: inventoryData.individualEquipment.length
   });
   
-  if (!equipment) {
-    console.warn(`SimpleRedTagMenu: Equipment ${equipmentId} not found in inventory`);
-    return null;
-  }
+  // If equipment not found in inventory, still show menu for removal
+  // This handles cases where equipment IDs are assigned but not in database
+  const fallbackEquipment = equipment || {
+    id: `temp-${equipmentId}`,
+    equipmentId: equipmentId,
+    name: equipmentId,
+    status: 'unknown' as const
+  };
   
-  const isRedTagged = equipment.status === 'red-tagged';
-  const isMaintenance = equipment.status === 'maintenance';
+  const isRedTagged = fallbackEquipment.status === 'red-tagged';
+  const isMaintenance = fallbackEquipment.status === 'maintenance';
 
   const handleRemove = () => {
     setOpen(false);
@@ -68,7 +72,18 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
   ) => {
     setShowRemovalDialog(false);
     
-    if (!equipment) return;
+    // Only process database operations if equipment exists in inventory
+    if (!equipment) {
+      // Just call the removal callback to update the UI
+      if (onRemoveEquipment) {
+        onRemoveEquipment();
+      }
+      toast({
+        title: "Equipment Removed",
+        description: `${equipmentId} removed from ${nodeType}`,
+      });
+      return;
+    }
 
     try {
       // End usage session if job ID is available
@@ -126,6 +141,16 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
   };
 
   const handleRedTag = async () => {
+    if (!equipment) {
+      toast({
+        title: "Cannot Red Tag",
+        description: "Equipment not found in inventory",
+        variant: "destructive"
+      });
+      setOpen(false);
+      return;
+    }
+    
     try {
       // Update equipment status
       await tursoDb.updateIndividualEquipment(equipment.id, {
@@ -158,6 +183,16 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
   };
 
   const handleClearStatus = async () => {
+    if (!equipment) {
+      toast({
+        title: "Cannot Clear Status",
+        description: "Equipment not found in inventory",
+        variant: "destructive"
+      });
+      setOpen(false);
+      return;
+    }
+    
     try {
       await tursoDb.updateIndividualEquipment(equipment.id, {
         status: 'available',
@@ -198,17 +233,20 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-56 p-1" align="end">
-          {!isRedTagged && !isMaintenance && (
+          {/* Always show remove option */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start"
+            onClick={handleRemove}
+          >
+            <XCircle className="mr-2 h-4 w-4" />
+            Remove Equipment
+          </Button>
+          
+          {/* Only show other options if equipment exists in inventory */}
+          {equipment && !isRedTagged && !isMaintenance && (
             <>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start"
-                onClick={handleRemove}
-              >
-                <XCircle className="mr-2 h-4 w-4" />
-                Remove Equipment
-              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -223,6 +261,15 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
                 size="sm"
                 className="w-full justify-start"
                 onClick={async () => {
+                  if (!equipment) {
+                    toast({
+                      title: "Cannot Set Maintenance",
+                      description: "Equipment not found in inventory",
+                      variant: "destructive"
+                    });
+                    setOpen(false);
+                    return;
+                  }
                   await tursoDb.updateIndividualEquipment(equipment.id, {
                     status: 'maintenance',
                     notes: 'Maintenance required'
@@ -241,7 +288,7 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
             </>
           )}
           
-          {(isRedTagged || isMaintenance) && (
+          {equipment && (isRedTagged || isMaintenance) && (
             <Button
               variant="ghost"
               size="sm"
@@ -255,16 +302,14 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
         </PopoverContent>
       </Popover>
       
-      {equipment && (
-        <EquipmentRemovalDialog
-          open={showRemovalDialog}
-          onOpenChange={setShowRemovalDialog}
-          equipmentId={equipment.equipmentId}
-          equipmentName={equipment.name}
+      <EquipmentRemovalDialog
+        open={showRemovalDialog}
+        onOpenChange={setShowRemovalDialog}
+        equipmentId={fallbackEquipment.equipmentId}
+        equipmentName={fallbackEquipment.name || fallbackEquipment.equipmentId}
           nodeType={nodeType}
           onConfirm={handleRemovalConfirm}
-        />
-      )}
+      />
     </div>
   );
 };
