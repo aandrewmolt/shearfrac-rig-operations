@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Plus, ChevronDown, Table, Network, Users2, LayoutGrid, Filter, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AppHeader from '@/components/AppHeader';
@@ -43,11 +43,9 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useDebounce } from '@/hooks/use-debounce-hook';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
-
-// Lazy load heavy components
-const AdvancedFilterPanel = lazy(() => import('./AdvancedFilterPanel').then(m => ({ default: m.AdvancedFilterPanel })));
-const RelationshipMap = lazy(() => import('./RelationshipMap').then(m => ({ default: m.RelationshipMap })));
-const ContactsGroupedView = lazy(() => import('./ContactsGroupedView').then(m => ({ default: m.ContactsGroupedView })));
+import { AdvancedFilterPanel } from './AdvancedFilterPanel';
+import { RelationshipMap } from './RelationshipMap';
+import { ContactsGroupedView } from './ContactsGroupedView';
 
 // Memoized sub-components
 const ViewModeToggle = React.memo(({ 
@@ -564,11 +562,6 @@ export function ContactsPage() {
           />
 
           <ErrorBoundary level="section">
-            <Suspense fallback={
-              <div className="flex justify-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-              </div>
-            }>
               {viewMode === 'table' ? (
                 <ContactsTableEnhanced
                   contacts={filteredContacts}
@@ -591,7 +584,6 @@ export function ContactsPage() {
                   className="w-full min-h-[400px]"
                 />
               )}
-            </Suspense>
           </ErrorBoundary>
 
           <ContactFormEnhanced
@@ -653,15 +645,13 @@ export function ContactsPage() {
             </DialogContent>
           </Dialog>
 
-          <Suspense fallback={null}>
-            <AdvancedFilterPanel
-              contacts={contacts}
-              filters={advancedFilters}
-              onFiltersChange={setAdvancedFilters}
-              open={advancedFiltersOpen}
-              onOpenChange={setAdvancedFiltersOpen}
-            />
-          </Suspense>
+          <AdvancedFilterPanel
+            contacts={contacts}
+            filters={advancedFilters}
+            onFiltersChange={setAdvancedFilters}
+            open={advancedFiltersOpen}
+            onOpenChange={setAdvancedFiltersOpen}
+          />
         </div>
       </div>
     </ErrorBoundary>
