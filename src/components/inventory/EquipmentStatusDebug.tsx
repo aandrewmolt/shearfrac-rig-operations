@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Bug } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, Bug, Loader2, CheckCircle } from 'lucide-react';
 import { useInventory } from '@/contexts/InventoryContext';
+import { useAutoFixEquipmentStatus } from '@/hooks/equipment/useAutoFixEquipmentStatus';
 
 const EquipmentStatusDebug: React.FC = () => {
   const { data } = useInventory();
+  const { autoFixEquipmentStatus, isFixing, fixedCount } = useAutoFixEquipmentStatus();
 
   // Group equipment by status
   const statusCounts = data.individualEquipment.reduce((acc, eq) => {
@@ -91,8 +94,29 @@ const EquipmentStatusDebug: React.FC = () => {
             <p className="text-sm text-red-600 mb-2">
               Found {problematicEquipment.length + shouldBeAvailable.length} equipment items with incorrect status!
             </p>
-            <p className="text-xs text-gray-600">
-              To fix: Update all equipment without proper status to 'available' in the database.
+            <Button
+              onClick={autoFixEquipmentStatus}
+              disabled={isFixing}
+              variant="destructive"
+              size="sm"
+              className="w-full"
+            >
+              {isFixing ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Fixing Status...
+                </>
+              ) : fixedCount > 0 ? (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Fixed {fixedCount} Items
+                </>
+              ) : (
+                'Auto-Fix Equipment Status'
+              )}
+            </Button>
+            <p className="text-xs text-gray-600 mt-2">
+              This will update all equipment without proper status to 'available'.
             </p>
           </div>
         )}
