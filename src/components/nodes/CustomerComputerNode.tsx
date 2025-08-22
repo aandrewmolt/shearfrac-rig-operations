@@ -3,6 +3,7 @@ import React from 'react';
 import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { Monitor, Tablet } from 'lucide-react';
 import NodeDeleteButton from './NodeDeleteButton';
+import { NodeWithRedTag } from './NodeWithRedTag';
 
 const CustomerComputerNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
   const { deleteElements } = useReactFlow();
@@ -13,7 +14,7 @@ const CustomerComputerNode = ({ id, data, selected }: { id: string; data: any; s
     deleteElements({ nodes: [{ id }] });
   };
 
-  return (
+  const nodeContent = (
     <div className="bg-gray-700 text-white rounded-lg p-3 border-2 border-gray-500 min-w-[120px] text-center relative">
       {selected && <NodeDeleteButton onDelete={handleDelete} />}
       <Handle
@@ -44,6 +45,20 @@ const CustomerComputerNode = ({ id, data, selected }: { id: string; data: any; s
       </div>
     </div>
   );
+
+  // Wrap with red tag functionality if equipment is assigned
+  if (isAssigned && data.equipmentId) {
+    return (
+      <NodeWithRedTag
+        equipmentId={data.equipmentId}
+        nodeId={id}
+      >
+        {nodeContent}
+      </NodeWithRedTag>
+    );
+  }
+
+  return nodeContent;
 };
 
 export default CustomerComputerNode;
