@@ -207,6 +207,37 @@ class TursoDatabase {
     const existing = await this.getIndividualEquipmentById(id);
     if (!existing) throw new Error('Individual equipment not found');
     
+    // Track history if status or location changes
+    const newStatus = updates.status ?? existing.status;
+    const newLocation = updates.location_id ?? updates.locationId ?? existing.location_id;
+    const newJobId = updates.job_id ?? updates.jobId ?? existing.job_id;
+    
+    if (existing.status !== newStatus || existing.location_id !== newLocation || existing.job_id !== newJobId) {
+      let action = 'Updated';
+      if (existing.status !== newStatus) {
+        if (newStatus === 'deployed') action = 'Deployed';
+        else if (newStatus === 'available') action = 'Returned';
+        else if (newStatus === 'red-tagged') action = 'Red Tagged';
+        else if (newStatus === 'maintenance') action = 'Maintenance';
+      } else if (existing.job_id !== newJobId) {
+        action = newJobId ? 'Assigned to Job' : 'Removed from Job';
+      } else if (existing.location_id !== newLocation) {
+        action = 'Relocated';
+      }
+      
+      await this.addEquipmentHistory({
+        equipmentId: id,
+        action,
+        fromStatus: existing.status,
+        toStatus: newStatus,
+        fromLocation: existing.location_id,
+        toLocation: newLocation,
+        jobId: newJobId,
+        jobName: updates.jobName,
+        notes: updates.notes
+      });
+    }
+    
     await turso.execute({
       sql: `UPDATE individual_equipment 
             SET equipment_id = ?, name = ?, type_id = ?, location_id = ?, 
@@ -247,6 +278,66 @@ class TursoDatabase {
       args: [id]
     });
     return result.rows[0] || null;
+  }
+
+  // ==== EQUIPMENT HISTORY ====
+  async addEquipmentHistory(entry: {
+    equipmentId: string;
+    action: string;
+    fromStatus?: string;
+    toStatus?: string;
+    fromLocation?: string;
+    toLocation?: string;
+    jobId?: string;
+    jobName?: string;
+    userId?: string;
+    userName?: string;
+    notes?: string;
+  }): Promise<void> {
+    try {
+      const id = `history-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      
+      await turso.execute({
+        sql: `INSERT INTO equipment_history (
+          id, equipment_id, action, from_status, to_status, 
+          from_location, to_location, job_id, job_name, 
+          user_id, user_name, notes, timestamp
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+        args: [
+          id,
+          entry.equipmentId,
+          entry.action,
+          entry.fromStatus || null,
+          entry.toStatus || null,
+          entry.fromLocation || null,
+          entry.toLocation || null,
+          entry.jobId || null,
+          entry.jobName || null,
+          entry.userId || null,
+          entry.userName || null,
+          entry.notes || null
+        ]
+      });
+    } catch (error) {
+      console.error('Failed to add equipment history:', error);
+      throw error;
+    }
+  }
+
+  async getEquipmentHistory(equipmentId: string): Promise<any[]> {
+    try {
+      const result = await turso.execute({
+        sql: `SELECT * FROM equipment_history 
+              WHERE equipment_id = ? 
+              ORDER BY timestamp DESC`,
+        args: [equipmentId]
+      });
+      
+      return result.rows || [];
+    } catch (error) {
+      console.error('Failed to get equipment history:', error);
+      return [];
+    }
   }
 
   // ==== JOBS ====
