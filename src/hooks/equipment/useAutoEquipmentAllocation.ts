@@ -3,7 +3,7 @@ import { useInventory } from '@/contexts/InventoryContext';
 import { tursoDb } from '@/services/tursoDb';
 import { toast } from '@/hooks/use-toast';
 import { useEquipmentUsageTracking } from '@/hooks/equipment/useEquipmentUsageTracking';
-import { useReactFlow } from '@xyflow/react';
+import { Node } from '@xyflow/react';
 
 interface RemovalOptions {
   action: 'return' | 'redtag' | 'cancel';
@@ -11,10 +11,21 @@ interface RemovalOptions {
   severity?: 'low' | 'medium' | 'high' | 'critical';
 }
 
-export const useAutoEquipmentAllocation = (jobId: string, jobName: string) => {
+interface UseAutoEquipmentAllocationProps {
+  nodes: Node[];
+  setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+  jobId: string;
+  jobName: string;
+}
+
+export const useAutoEquipmentAllocation = ({
+  nodes,
+  setNodes,
+  jobId,
+  jobName
+}: UseAutoEquipmentAllocationProps) => {
   const { data: inventoryData, refreshData } = useInventory();
   const { startUsageSession, endUsageSession, createRedTagEvent } = useEquipmentUsageTracking();
-  const { getNodes, setNodes } = useReactFlow();
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Auto-allocate equipment when it's assigned to a node
@@ -197,15 +208,13 @@ export const useAutoEquipmentAllocation = (jobId: string, jobName: string) => {
 
   // Check if equipment needs allocation on node updates
   const checkAndAutoAllocate = useCallback(() => {
-    const nodes = getNodes();
-    
     nodes.forEach(async (node) => {
       // Check if node has equipment assigned but not allocated
       if (node.data?.equipmentId && node.data?.assigned && !node.data?.allocatedAt) {
         await autoAllocateEquipment(node.id, node.data.equipmentId, node.data.equipmentName || '');
       }
     });
-  }, [getNodes, autoAllocateEquipment]);
+  }, [nodes, autoAllocateEquipment]);
 
   // Monitor for equipment assignments
   useEffect(() => {
