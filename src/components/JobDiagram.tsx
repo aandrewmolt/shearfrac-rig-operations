@@ -30,6 +30,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Camera, Package, AlertTriangle, Menu, CameraIcon } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from '@/hooks/use-toast';
 import JobPhotoPanel from '@/components/diagram/JobPhotoPanel';
 import CompactJobEquipmentPanel from '@/components/diagram/CompactJobEquipmentPanel';
 import EquipmentAllocationPanel from '@/components/diagram/EquipmentAllocationPanel';
@@ -485,6 +486,52 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     <div className="w-full h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
       {/* Action Buttons */}
       <div className="absolute top-2 left-2 md:top-4 md:left-4 z-20 flex flex-wrap gap-2 max-w-[calc(100%-1rem)]">
+        {/* Debug: Test equipment assignment */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="bg-yellow-100 hover:bg-yellow-200 border-yellow-400"
+          onClick={() => {
+            setNodes((nodes) => 
+              nodes.map((node, index) => {
+                // Skip if already has equipment
+                if (node.data?.equipmentId) return node;
+                
+                // Only assign to equipment-capable nodes
+                const equipmentNodeTypes = ['mainBox', 'satellite', 'customerComputer', 'yAdapter', 'wellsideGauge', 'well'];
+                if (!node.type || !equipmentNodeTypes.includes(node.type)) return node;
+                
+                // Create test equipment ID based on node type
+                let testId = '';
+                switch(node.type) {
+                  case 'mainBox': testId = `SB-TEST-${index}`; break;
+                  case 'satellite': testId = `SAT-TEST-${index}`; break;
+                  case 'customerComputer': testId = `CC-TEST-${index}`; break;
+                  case 'yAdapter': testId = `YA-TEST-${index}`; break;
+                  case 'wellsideGauge': testId = `WG-TEST-${index}`; break;
+                  case 'well': testId = `WELL-TEST-${index}`; break;
+                }
+                
+                return {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    equipmentId: testId,
+                    equipmentName: `Test ${node.type} ${index}`,
+                    assigned: true
+                  }
+                };
+              })
+            );
+            toast({
+              title: "Test Equipment Assigned",
+              description: "Debug: Test equipment IDs assigned to all nodes"
+            });
+          }}
+        >
+          Debug Assign
+        </Button>
+        
         <Sheet open={isPhotosPanelOpen} onOpenChange={setIsPhotosPanelOpen}>
           <SheetTrigger asChild>
             <Button
