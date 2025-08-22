@@ -5,8 +5,6 @@ import EquipmentTypeManager from '@/components/inventory/EquipmentTypeManager';
 import StorageLocationManager from '@/components/inventory/StorageLocationManager';
 import EquipmentListView from '@/components/inventory/EquipmentListView';
 import EquipmentTransferSystem from '@/components/inventory/EquipmentTransferSystem';
-import RedTagManager from '@/components/inventory/RedTagManager';
-import AdvancedSearchPanel from '@/components/inventory/AdvancedSearchPanel';
 import EquipmentHistoryViewer from '@/components/inventory/EquipmentHistoryViewer';
 import EquipmentReportsExporter from '@/components/inventory/EquipmentReportsExporter';
 import MaintenanceSchedulePanel from '@/components/inventory/MaintenanceSchedulePanel';
@@ -37,10 +35,7 @@ const EquipmentInventory = () => {
     { value: 'dashboard', label: 'Overview', icon: Package },
     { value: 'equipment-types', label: 'Types', icon: Settings },
     { value: 'equipment-list', label: 'Inventory', icon: List },
-    { value: 'locations', label: 'Locations', icon: MapPin },
-    { value: 'search', label: 'Search', icon: Search },
-    { value: 'transfers', label: 'Transfers', icon: ArrowRightLeft },
-    { value: 'red-tag', label: 'Red Tagged', icon: AlertTriangle },
+    { value: 'locations', label: 'Locations & Transfers', icon: MapPin },
     { value: 'history', label: 'History', icon: History },
     { value: 'reports', label: 'Reports', icon: FileText },
     { value: 'system', label: 'System', icon: CheckSquare },
@@ -159,19 +154,10 @@ const EquipmentInventory = () => {
               </TabsContent>
 
               <TabsContent value="locations" className="h-full">
-                <StorageLocationManager />
-              </TabsContent>
-
-              <TabsContent value="search" className="h-full">
-                <AdvancedSearchPanel />
-              </TabsContent>
-
-              <TabsContent value="transfers" className="h-full">
-                <EquipmentTransferSystem />
-              </TabsContent>
-
-              <TabsContent value="red-tag" className="h-full">
-                <RedTagManager />
+                <div className="space-y-6">
+                  <StorageLocationManager />
+                  <EquipmentTransferSystem />
+                </div>
               </TabsContent>
 
               <TabsContent value="history" className="h-full">

@@ -5,10 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import AppHeader from '@/components/AppHeader';
-import JobsList from '@/components/jobs/JobsList';
-import JobCreationDialog from '@/components/jobs/JobCreationDialog';
 import { useJobs } from '@/hooks/useJobs';
-// import { useUnifiedInventory } from '@/hooks/useUnifiedInventory';
+// Lazy load heavy components
+const JobsList = React.lazy(() => import('@/components/jobs/JobsList'));
+const JobCreationDialog = React.lazy(() => import('@/components/jobs/JobCreationDialog'));
 const JobDiagram = React.lazy(() => import('@/components/JobDiagram'));
 import { useSearchParams } from 'react-router-dom';
 import { useJobStorageIntegration } from '@/hooks/useJobStorageIntegration';
@@ -444,6 +444,7 @@ const CableJobs = () => {
             </div>
           )}
 
+          <React.Suspense fallback={<div className="flex items-center justify-center h-96"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div></div>}>
           <JobsList
             jobs={filteredAndSortedJobs}
             isLoading={isLoading}
@@ -452,12 +453,15 @@ const CableJobs = () => {
             onCompleteJob={handleCompleteJob}
             onUpdateJobName={handleUpdateJobName}
           />
+          </React.Suspense>
 
+          <React.Suspense fallback={null}>
           <JobCreationDialog
             open={showCreateDialog}
             onOpenChange={setShowCreateDialog}
             onCreateJob={handleCreateJob}
           />
+          </React.Suspense>
         </div>
       </div>
     </div>

@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Package, Plus, WifiOff, Wifi, RefreshCw } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Package, Plus, WifiOff, Wifi, RefreshCw, Search, Filter, AlertTriangle } from 'lucide-react';
 import { useInventory } from '@/contexts/InventoryContext';
 import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
 import { useJobs } from '@/hooks/useJobs';
+import { useAdvancedEquipmentSearch } from '@/hooks/useAdvancedEquipmentSearch';
 import { toast } from 'sonner';
 import { isEquipmentAtLocation } from '@/utils/equipmentLocation';
 import EquipmentListFilters from './EquipmentListFilters';
@@ -14,6 +16,11 @@ import EquipmentTable from './EquipmentTable';
 import IndividualEquipmentTable from './IndividualEquipmentTable';
 import ConflictIndicator from './ConflictIndicator';
 import { SyncStatusIndicator } from '@/components/InventoryMapperSync/SyncStatusIndicator';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 const EquipmentListView = () => {
   const { data, updateSingleEquipmentItem, addEquipmentItem, deleteEquipmentItem, updateIndividualEquipment, refreshData } = useInventory();
@@ -27,6 +34,8 @@ const EquipmentListView = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterLocation, setFilterLocation] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [showRedTaggedOnly, setShowRedTaggedOnly] = useState(false);
+  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   // Removed viewMode - only showing individual equipment now
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
@@ -89,6 +98,9 @@ const EquipmentListView = () => {
   const filteredIndividualEquipment = (data.individualEquipment || []).filter(item => {
     if (!item || !item.typeId || !item.locationId) return false;
     
+    // Quick filter for red-tagged only
+    if (showRedTaggedOnly && item.status !== 'red-tagged') return false;
+    
     const typeName = getEquipmentTypeName(item.typeId).toLowerCase();
     const typeCategory = getEquipmentTypeCategory(item.typeId);
     const locationName = getLocationName(item.locationId).toLowerCase();
@@ -98,7 +110,7 @@ const EquipmentListView = () => {
                          (item.name && item.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
                          (item.notes && item.notes.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesStatus = filterStatus === 'all' || item.status === filterStatus;
+    const matchesStatus = showRedTaggedOnly || filterStatus === 'all' || item.status === filterStatus;
     
     // Handle location filter using centralized logic
     let matchesLocation = false;
@@ -194,7 +206,10 @@ const EquipmentListView = () => {
     setFilterStatus('all');
     setFilterLocation('all');
     setFilterCategory('all');
+    setShowRedTaggedOnly(false);
   };
+  
+  const redTaggedCount = data.individualEquipment.filter(eq => eq.status === 'red-tagged').length;
 
   return (
     <Card className="bg-white shadow-lg">
@@ -265,6 +280,29 @@ const EquipmentListView = () => {
           onClearFilters={clearFilters}
           getCategoryColor={getCategoryColor}
         />
+        
+        {/* Quick Action Buttons */}
+        <div className="flex gap-2 mt-3">
+          <Button
+            variant={showRedTaggedOnly ? "destructive" : "outline"}
+            size="sm"
+            onClick={() => setShowRedTaggedOnly(!showRedTaggedOnly)}
+            className="gap-2"
+          >
+            <AlertTriangle className="h-4 w-4" />
+            Red Tagged ({redTaggedCount})
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
+            className="gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            Advanced Search
+          </Button>
+        </div>
       </CardHeader>
       
       <CardContent>
