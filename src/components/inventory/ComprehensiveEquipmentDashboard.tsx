@@ -1,17 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useInventory } from '@/contexts/InventoryContext';
 import { useJobs } from '@/hooks/useJobs';
-import { Package, MapPin, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Package, MapPin, AlertTriangle, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 const ComprehensiveEquipmentDashboard: React.FC = () => {
   const { data } = useInventory();
   const { jobs } = useJobs();
   const navigate = useNavigate();
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   // Group equipment by job and type
   const equipmentByJob: Record<string, {
@@ -135,7 +141,7 @@ const ComprehensiveEquipmentDashboard: React.FC = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         {/* Group by type */}
                         {Object.entries(
                           data.equipment.reduce((acc, item) => {
@@ -146,11 +152,70 @@ const ComprehensiveEquipmentDashboard: React.FC = () => {
                             return acc;
                           }, {} as Record<string, any[]>)
                         ).map(([typeName, items]) => (
-                          <div key={typeName} className="text-sm">
-                            <span className="font-medium">{items.length}x</span> {typeName}
-                            <div className="text-xs text-muted-foreground">
-                              {items.map(i => i.equipmentId).join(', ')}
+                          <div key={typeName} className="border-l-2 border-gray-200 pl-2">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="secondary" className="text-xs">
+                                {items.length}
+                              </Badge>
+                              <span className="font-medium text-sm">{typeName}</span>
                             </div>
+                            {items.length <= 8 ? (
+                              <div className="grid grid-cols-4 gap-1 max-w-md">
+                                {items.map(i => (
+                                  <span key={i.id} className="text-xs text-muted-foreground bg-gray-50 px-1 py-0.5 rounded">
+                                    {i.equipmentId}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <Collapsible open={expandedRows.has(`${locationId}-${typeName}`)}>
+                                <div className="grid grid-cols-4 gap-1 max-w-md">
+                                  {items.slice(0, 8).map(i => (
+                                    <span key={i.id} className="text-xs text-muted-foreground bg-gray-50 px-1 py-0.5 rounded">
+                                      {i.equipmentId}
+                                    </span>
+                                  ))}
+                                </div>
+                                <CollapsibleContent>
+                                  <div className="grid grid-cols-4 gap-1 max-w-md mt-1">
+                                    {items.slice(8).map(i => (
+                                      <span key={i.id} className="text-xs text-muted-foreground bg-gray-50 px-1 py-0.5 rounded">
+                                        {i.equipmentId}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </CollapsibleContent>
+                                <CollapsibleTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="mt-1 h-6 text-xs"
+                                    onClick={() => {
+                                      const key = `${locationId}-${typeName}`;
+                                      const newExpanded = new Set(expandedRows);
+                                      if (newExpanded.has(key)) {
+                                        newExpanded.delete(key);
+                                      } else {
+                                        newExpanded.add(key);
+                                      }
+                                      setExpandedRows(newExpanded);
+                                    }}
+                                  >
+                                    {expandedRows.has(`${locationId}-${typeName}`) ? (
+                                      <>
+                                        <ChevronUp className="h-3 w-3 mr-1" />
+                                        Show less
+                                      </>
+                                    ) : (
+                                      <>
+                                        <ChevronDown className="h-3 w-3 mr-1" />
+                                        Show {items.length - 8} more
+                                      </>
+                                    )}
+                                  </Button>
+                                </CollapsibleTrigger>
+                              </Collapsible>
+                            )}
                           </div>
                         ))}
                       </div>
