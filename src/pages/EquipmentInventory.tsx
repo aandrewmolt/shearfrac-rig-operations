@@ -12,7 +12,6 @@ import EquipmentReportsExporter from '@/components/inventory/EquipmentReportsExp
 import MaintenanceSchedulePanel from '@/components/inventory/MaintenanceSchedulePanel';
 import DataSetupVerifier from '@/components/inventory/DataSetupVerifier';
 import CommunicationEquipmentManager from '@/components/inventory/CommunicationEquipmentManager';
-import IndividualEquipmentManagerWrapper from '@/components/inventory/IndividualEquipmentManagerWrapper';
 import DebugEquipmentInfo from '@/components/inventory/DebugEquipmentInfo';
 import EquipmentStatusDebug from '@/components/inventory/EquipmentStatusDebug';
 import ComprehensiveEquipmentDashboard from '@/components/inventory/ComprehensiveEquipmentDashboard';
@@ -38,7 +37,6 @@ const EquipmentInventory = () => {
     { value: 'dashboard', label: 'Overview', icon: Package },
     { value: 'equipment-types', label: 'Types', icon: Settings },
     { value: 'equipment-list', label: 'Inventory', icon: List },
-    { value: 'individual', label: 'Individual', icon: Users },
     { value: 'locations', label: 'Locations', icon: MapPin },
     { value: 'search', label: 'Search', icon: Search },
     { value: 'transfers', label: 'Transfers', icon: ArrowRightLeft },
@@ -158,10 +156,6 @@ const EquipmentInventory = () => {
 
               <TabsContent value="equipment-list" className="h-full">
                 <EquipmentListView />
-              </TabsContent>
-
-              <TabsContent value="individual" className="h-full">
-                <IndividualEquipmentManagerWrapper />
               </TabsContent>
 
               <TabsContent value="locations" className="h-full">
