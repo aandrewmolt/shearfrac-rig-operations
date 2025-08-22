@@ -5,6 +5,7 @@ import { Square } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useJobs } from '@/hooks/useJobs';
 import NodeDeleteButton from './NodeDeleteButton';
+import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
 const MainBoxNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
   const { getNodes, setNodes, deleteElements } = useReactFlow();
@@ -169,6 +170,12 @@ const MainBoxNode = ({ id, data, selected }: { id: string; data: any; selected?:
   return (
     <div className="bg-slate-900 text-white rounded-lg p-4 border-2 border-slate-600 min-w-[280px] shadow-lg relative">
       {selected && <NodeDeleteButton onDelete={handleDelete} />}
+      {isAssigned && data.equipmentId && (
+        <SimpleRedTagMenu 
+          equipmentId={data.equipmentId} 
+          nodeId={id}
+        />
+      )}
       <div className="flex items-center gap-2 mb-4">
         <Square className="h-5 w-5 text-blue-400" />
         <div>

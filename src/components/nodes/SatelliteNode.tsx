@@ -3,6 +3,7 @@ import React from 'react';
 import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { Satellite } from 'lucide-react';
 import NodeDeleteButton from './NodeDeleteButton';
+import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
 const SatelliteNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
   const { deleteElements } = useReactFlow();
@@ -15,6 +16,12 @@ const SatelliteNode = ({ id, data, selected }: { id: string; data: any; selected
   return (
     <div className="bg-green-600 text-white rounded-lg p-4 border-2 border-green-400 min-w-[120px] text-center relative">
       {selected && <NodeDeleteButton onDelete={handleDelete} />}
+      {isAssigned && data.equipmentId && (
+        <SimpleRedTagMenu 
+          equipmentId={data.equipmentId} 
+          nodeId={id}
+        />
+      )}
       <Handle
         type="source"
         position={Position.Right}

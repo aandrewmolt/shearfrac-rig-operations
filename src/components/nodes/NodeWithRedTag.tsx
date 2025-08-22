@@ -218,7 +218,18 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
 
   return (
     <>
-      <div className={wrapperClassName}>
+      <div 
+        className={wrapperClassName}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Open dropdown menu on right-click
+          const menuButton = e.currentTarget.querySelector('[data-menu-trigger]') as HTMLButtonElement;
+          if (menuButton) {
+            menuButton.click();
+          }
+        }}
+      >
         {/* Status indicator */}
         {(isRedTagged || isMaintenance) && (
           <div className="absolute -top-3 -right-3 z-20">
@@ -236,13 +247,17 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
 
         {/* Context Menu */}
         {equipment && (
-          <div className="absolute top-1 right-1 z-10">
+          <div className="absolute top-1 right-1 z-50">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
+                  data-menu-trigger
                   variant="ghost" 
                   size="sm" 
-                  className="h-6 w-6 p-0 bg-gray-800/50 hover:bg-gray-700"
+                  className="h-6 w-6 p-0 bg-gray-800/80 hover:bg-gray-700 border border-gray-600"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                 >
                   <MoreVertical className="h-4 w-4 text-white" />
                 </Button>
