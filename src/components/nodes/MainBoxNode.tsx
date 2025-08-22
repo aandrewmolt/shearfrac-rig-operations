@@ -167,6 +167,25 @@ const MainBoxNode = ({ id, data, selected }: { id: string; data: any; selected?:
     deleteElements({ nodes: [{ id }] });
   };
 
+  const handleRemoveEquipment = () => {
+    setNodes((nodes) => 
+      nodes.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              equipmentId: null,
+              equipmentName: null,
+              assigned: false
+            }
+          };
+        }
+        return node;
+      })
+    );
+  };
+
   return (
     <div className="bg-slate-900 text-white rounded-lg p-4 border-2 border-slate-600 min-w-[280px] shadow-lg relative">
       {selected && <NodeDeleteButton onDelete={handleDelete} />}
@@ -174,6 +193,7 @@ const MainBoxNode = ({ id, data, selected }: { id: string; data: any; selected?:
         <SimpleRedTagMenu 
           equipmentId={data.equipmentId} 
           nodeId={id}
+          onRemoveEquipment={handleRemoveEquipment}
         />
       )}
       <div className="flex items-center gap-2 mb-4">

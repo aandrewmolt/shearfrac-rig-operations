@@ -6,11 +6,30 @@ import NodeDeleteButton from './NodeDeleteButton';
 import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
 const SatelliteNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
-  const { deleteElements } = useReactFlow();
+  const { deleteElements, setNodes } = useReactFlow();
   const isAssigned = data.assigned && data.equipmentId;
 
   const handleDelete = () => {
     deleteElements({ nodes: [{ id }] });
+  };
+
+  const handleRemoveEquipment = () => {
+    setNodes((nodes) => 
+      nodes.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              equipmentId: null,
+              equipmentName: null,
+              assigned: false
+            }
+          };
+        }
+        return node;
+      })
+    );
   };
 
   return (
@@ -20,6 +39,7 @@ const SatelliteNode = ({ id, data, selected }: { id: string; data: any; selected
         <SimpleRedTagMenu 
           equipmentId={data.equipmentId} 
           nodeId={id}
+          onRemoveEquipment={handleRemoveEquipment}
         />
       )}
       <Handle

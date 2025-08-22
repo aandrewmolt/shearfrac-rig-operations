@@ -6,7 +6,7 @@ import NodeDeleteButton from './NodeDeleteButton';
 import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
 const CustomerComputerNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
-  const { deleteElements } = useReactFlow();
+  const { deleteElements, setNodes } = useReactFlow();
   const isTablet = data.isTablet || data.equipmentId?.startsWith('CT');
   const isAssigned = data.assigned && data.equipmentId;
   
@@ -17,6 +17,25 @@ const CustomerComputerNode = ({ id, data, selected }: { id: string; data: any; s
     deleteElements({ nodes: [{ id }] });
   };
 
+  const handleRemoveEquipment = () => {
+    setNodes((nodes) => 
+      nodes.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              equipmentId: null,
+              equipmentName: null,
+              assigned: false
+            }
+          };
+        }
+        return node;
+      })
+    );
+  };
+
   return (
     <div className="bg-gray-700 text-white rounded-lg p-3 border-2 border-gray-500 min-w-[120px] text-center relative">
       {selected && <NodeDeleteButton onDelete={handleDelete} />}
@@ -24,6 +43,7 @@ const CustomerComputerNode = ({ id, data, selected }: { id: string; data: any; s
         <SimpleRedTagMenu 
           equipmentId={data.equipmentId} 
           nodeId={id}
+          onRemoveEquipment={handleRemoveEquipment}
         />
       )}
       <Handle

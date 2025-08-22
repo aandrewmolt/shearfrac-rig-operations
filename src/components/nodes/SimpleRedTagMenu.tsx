@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   AlertTriangle, MoreVertical, Wrench, CheckCircle, XCircle, Package 
 } from 'lucide-react';
@@ -11,7 +11,6 @@ import {
 import { useInventory } from '@/contexts/InventoryContext';
 import { tursoDb } from '@/services/tursoDb';
 import { toast } from '@/hooks/use-toast';
-import { useReactFlow } from '@xyflow/react';
 import { EquipmentRemovalDialog } from '@/components/equipment/EquipmentRemovalDialog';
 import { useEquipmentUsageTracking } from '@/hooks/equipment/useEquipmentUsageTracking';
 
@@ -21,6 +20,7 @@ interface SimpleRedTagMenuProps {
   nodeType?: string;
   jobId?: string;
   jobName?: string;
+  onRemoveEquipment?: () => void;
 }
 
 export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({ 
@@ -28,10 +28,10 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
   nodeId,
   nodeType = 'Node',
   jobId,
-  jobName = 'Job'
+  jobName = 'Job',
+  onRemoveEquipment
 }) => {
   const { data: inventoryData, refreshData } = useInventory();
-  const { setNodes } = useReactFlow();
   const { createRedTagEvent, endUsageSession, startUsageSession } = useEquipmentUsageTracking();
   const [open, setOpen] = useState(false);
   const [showRemovalDialog, setShowRemovalDialog] = useState(false);
@@ -99,23 +99,10 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
         });
       }
 
-      // Remove from node
-      setNodes((nodes) => 
-        nodes.map((node) => {
-          if (node.id === nodeId) {
-            return {
-              ...node,
-              data: {
-                ...node.data,
-                equipmentId: null,
-                equipmentName: null,
-                assigned: false
-              }
-            };
-          }
-          return node;
-        })
-      );
+      // Call the removal callback if provided
+      if (onRemoveEquipment) {
+        onRemoveEquipment();
+      }
 
       await refreshData();
     } catch (error) {
@@ -136,23 +123,10 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
         notes: 'Red tagged from job diagram'
       });
 
-      // Remove from node
-      setNodes((nodes) => 
-        nodes.map((node) => {
-          if (node.id === nodeId) {
-            return {
-              ...node,
-              data: {
-                ...node.data,
-                equipmentId: null,
-                equipmentName: null,
-                assigned: false
-              }
-            };
-          }
-          return node;
-        })
-      );
+      // Call the removal callback if provided
+      if (onRemoveEquipment) {
+        onRemoveEquipment();
+      }
 
       await refreshData();
       
