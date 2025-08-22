@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  AlertTriangle, MoreVertical, Wrench, CheckCircle 
+  AlertTriangle, MoreVertical, Wrench, CheckCircle, XCircle, Package 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -12,19 +12,29 @@ import { useInventory } from '@/contexts/InventoryContext';
 import { tursoDb } from '@/services/tursoDb';
 import { toast } from '@/hooks/use-toast';
 import { useReactFlow } from '@xyflow/react';
+import { EquipmentRemovalDialog } from '@/components/equipment/EquipmentRemovalDialog';
+import { useEquipmentUsageTracking } from '@/hooks/equipment/useEquipmentUsageTracking';
 
 interface SimpleRedTagMenuProps {
   equipmentId: string;
   nodeId: string;
+  nodeType?: string;
+  jobId?: string;
+  jobName?: string;
 }
 
 export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({ 
   equipmentId,
-  nodeId 
+  nodeId,
+  nodeType = 'Node',
+  jobId,
+  jobName = 'Job'
 }) => {
   const { data: inventoryData, refreshData } = useInventory();
   const { setNodes } = useReactFlow();
+  const { createRedTagEvent, endUsageSession, startUsageSession } = useEquipmentUsageTracking();
   const [open, setOpen] = useState(false);
+  const [showRemovalDialog, setShowRemovalDialog] = useState(false);
   
   const equipment = inventoryData.individualEquipment.find(
     eq => eq.equipmentId === equipmentId
@@ -34,6 +44,88 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
   
   const isRedTagged = equipment.status === 'red-tagged';
   const isMaintenance = equipment.status === 'maintenance';
+
+  const handleRemove = () => {
+    setOpen(false);
+    setShowRemovalDialog(true);
+  };
+
+  const handleRemovalConfirm = async (
+    action: 'return' | 'redtag',
+    reason?: string,
+    severity?: 'low' | 'medium' | 'high' | 'critical'
+  ) => {
+    setShowRemovalDialog(false);
+    
+    if (!equipment) return;
+
+    try {
+      // End usage session if job ID is available
+      if (jobId) {
+        await endUsageSession(
+          equipment.id,
+          new Date(),
+          action === 'redtag' ? `Red tagged: ${reason}` : 'Returned to storage'
+        );
+      }
+
+      if (action === 'redtag') {
+        // Create red tag event
+        await createRedTagEvent(equipment.id, reason || 'Equipment failure', severity || 'medium');
+        
+        // Update equipment status
+        await tursoDb.updateIndividualEquipment(equipment.id, {
+          status: 'red-tagged',
+          jobId: null,
+          notes: `Red tagged: ${reason} (${severity} severity)`
+        });
+
+        toast({
+          title: "Equipment Red Tagged",
+          description: `${equipment.equipmentId} removed from job`,
+          variant: "destructive"
+        });
+      } else {
+        // Return to storage
+        await tursoDb.updateIndividualEquipment(equipment.id, {
+          status: 'available',
+          jobId: null,
+          notes: `Returned from ${jobName}`
+        });
+
+        toast({
+          title: "Equipment Returned",
+          description: `${equipment.equipmentId} returned to storage`,
+        });
+      }
+
+      // Remove from node
+      setNodes((nodes) => 
+        nodes.map((node) => {
+          if (node.id === nodeId) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                equipmentId: null,
+                equipmentName: null,
+                assigned: false
+              }
+            };
+          }
+          return node;
+        })
+      );
+
+      await refreshData();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to process equipment removal",
+        variant: "destructive"
+      });
+    }
+  };
 
   const handleRedTag = async () => {
     try {
@@ -119,9 +211,18 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
             <MoreVertical className="h-3 w-3 text-white" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-48 p-1" align="end">
+        <PopoverContent className="w-56 p-1" align="end">
           {!isRedTagged && !isMaintenance && (
             <>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start"
+                onClick={handleRemove}
+              >
+                <XCircle className="mr-2 h-4 w-4" />
+                Remove Equipment
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -129,7 +230,7 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
                 onClick={handleRedTag}
               >
                 <AlertTriangle className="mr-2 h-4 w-4" />
-                Red Tag & Remove
+                Quick Red Tag
               </Button>
               <Button
                 variant="ghost"
@@ -167,6 +268,17 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
           )}
         </PopoverContent>
       </Popover>
+      
+      {equipment && (
+        <EquipmentRemovalDialog
+          open={showRemovalDialog}
+          onOpenChange={setShowRemovalDialog}
+          equipmentId={equipment.equipmentId}
+          equipmentName={equipment.name}
+          nodeType={nodeType}
+          onConfirm={handleRemovalConfirm}
+        />
+      )}
     </div>
   );
 };

@@ -18,6 +18,7 @@ import { useEquipmentUsageAnalyzer } from '@/hooks/equipment/useEquipmentUsageAn
 import { useEdgeMigration } from '@/hooks/useEdgeMigration';
 import { useNodeDeletion } from '@/hooks/useNodeDeletion';
 import { useAllocatedEquipment } from '@/hooks/equipment/useAllocatedEquipment';
+import { useAutoEquipmentAllocation } from '@/hooks/equipment/useAutoEquipmentAllocation';
 import { JobDiagram as JobDiagramType } from '@/hooks/useJobs';
 import { useInventory } from '@/contexts/InventoryContext';
 
@@ -109,6 +110,14 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     isEquipmentAllocated,
     getAvailableEquipmentForType
   } = useAllocatedEquipment(job.id, nodes, edges);
+  
+  // Initialize auto-allocation for equipment
+  useAutoEquipmentAllocation({
+    nodes,
+    setNodes,
+    jobId: job.id,
+    jobName: job.name
+  });
 
   const {
     extrasOnLocation,
@@ -542,10 +551,6 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
               nodes={nodes}
               edges={edges}
               jobId={job.id}
-              onAllocateEquipment={handleAllocateEquipmentToNode}
-              onDeallocateEquipment={handleDeallocateEquipmentFromNode}
-              onAllocateCable={handleAllocateCableToEdge}
-              onDeallocateCable={handleDeallocateCableFromEdge}
             />
           </SheetContent>
         </Sheet>

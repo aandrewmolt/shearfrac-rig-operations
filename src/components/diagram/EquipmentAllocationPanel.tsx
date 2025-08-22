@@ -1,10 +1,9 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Cable, Square, Zap, Monitor, Satellite, MapPin, AlertTriangle, Package, X } from 'lucide-react';
+import { Cable, Square, Zap, Monitor, Satellite, MapPin, AlertTriangle, Package, CheckCircle, Info } from 'lucide-react';
 import { useInventory } from '@/contexts/InventoryContext';
 import { Node, Edge } from '@xyflow/react';
 
@@ -12,20 +11,12 @@ interface EquipmentAllocationPanelProps {
   nodes: Node[];
   edges: Edge[];
   jobId: string;
-  onAllocateEquipment: (nodeId: string) => void;
-  onDeallocateEquipment: (nodeId: string) => void;
-  onAllocateCable: (edgeId: string) => void;
-  onDeallocateCable: (edgeId: string) => void;
 }
 
 const EquipmentAllocationPanel: React.FC<EquipmentAllocationPanelProps> = ({
   nodes,
   edges,
-  jobId,
-  onAllocateEquipment,
-  onDeallocateEquipment,
-  onAllocateCable,
-  onDeallocateCable
+  jobId
 }) => {
   const { data: inventoryData } = useInventory();
 
@@ -96,9 +87,10 @@ const EquipmentAllocationPanel: React.FC<EquipmentAllocationPanelProps> = ({
                   <p className="text-sm text-gray-500">No equipment nodes in diagram</p>
                 ) : (
                   allocatableNodes.map(node => {
-                    const allocatedEquipmentId = node.data?.allocatedEquipmentId;
-                    const allocatedEquipment = allocatedEquipmentId ? getEquipmentById(allocatedEquipmentId) : null;
-                    const equipmentTypeId = getNodeEquipmentType(node.type || '');
+                    const assignedEquipmentId = node.data?.equipmentId;
+                    const assignedEquipment = assignedEquipmentId ? 
+                      inventoryData.individualEquipment.find(eq => eq.equipmentId === assignedEquipmentId) : 
+                      null;
                     
                     return (
                       <div key={node.id} className="border rounded-lg p-3 space-y-2">
@@ -109,44 +101,41 @@ const EquipmentAllocationPanel: React.FC<EquipmentAllocationPanelProps> = ({
                               {node.data?.label || node.type}
                             </span>
                           </div>
-                          {allocatedEquipment ? (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => onDeallocateEquipment(node.id)}
-                              className="h-7 px-2"
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
+                          {assignedEquipment ? (
+                            <Badge variant="outline" className="text-xs bg-green-50 text-green-700 flex items-center gap-1">
+                              <CheckCircle className="h-3 w-3" />
+                              Auto-Allocated
+                            </Badge>
                           ) : (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => onAllocateEquipment(node.id)}
-                              className="h-7 text-xs"
-                            >
-                              Allocate
-                            </Button>
+                            <Badge variant="outline" className="text-xs">
+                              Available
+                            </Badge>
                           )}
                         </div>
                         
-                        {allocatedEquipment && (
-                          <div className="bg-gray-50 rounded p-2 space-y-1">
+                        {assignedEquipment ? (
+                          <div className="bg-green-50 rounded p-2 space-y-1">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium">{allocatedEquipment.equipmentId}</span>
-                              <Badge variant="outline" className="text-xs bg-green-50 text-green-700">
-                                Allocated
-                              </Badge>
+                              <span className="text-sm font-medium">{assignedEquipment.equipmentId}</span>
+                              <span className="text-xs text-green-700">
+                                {assignedEquipment.status === 'deployed' ? 'Deployed' : assignedEquipment.status}
+                              </span>
                             </div>
-                            {allocatedEquipment.serialNumber && (
-                              <p className="text-xs text-gray-600">Serial: {allocatedEquipment.serialNumber}</p>
+                            {assignedEquipment.serialNumber && (
+                              <p className="text-xs text-gray-600">Serial: {assignedEquipment.serialNumber}</p>
                             )}
-                            {allocatedEquipment.locationId && (
+                            {assignedEquipment.locationId && (
                               <div className="flex items-center gap-1 text-xs text-gray-600">
                                 <MapPin className="h-3 w-3" />
-                                {getLocation(allocatedEquipment.locationId)?.name || allocatedEquipment.locationId}
+                                {getLocation(assignedEquipment.locationId)?.name || 'Storage'}
                               </div>
                             )}
+                          </div>
+                        ) : (
+                          <div className="bg-gray-50 rounded p-2">
+                            <p className="text-xs text-gray-500 italic">
+                              Drag equipment from inventory to assign
+                            </p>
                           </div>
                         )}
                       </div>
@@ -164,8 +153,6 @@ const EquipmentAllocationPanel: React.FC<EquipmentAllocationPanelProps> = ({
                   <p className="text-sm text-gray-500">No cable connections in diagram</p>
                 ) : (
                   cableEdges.map(edge => {
-                    const allocatedEquipmentId = edge.data?.allocatedEquipmentId;
-                    const allocatedCable = allocatedEquipmentId ? getEquipmentById(allocatedEquipmentId) : null;
                     const cableType = edge.data?.cableTypeId ? getEquipmentType(edge.data.cableTypeId) : null;
                     
                     return (
@@ -177,24 +164,10 @@ const EquipmentAllocationPanel: React.FC<EquipmentAllocationPanelProps> = ({
                               {edge.data?.label || 'Cable'}
                             </span>
                           </div>
-                          {allocatedCable ? (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => onDeallocateCable(edge.id)}
-                              className="h-7 px-2"
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          ) : (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => onAllocateCable(edge.id)}
-                              className="h-7 text-xs"
-                            >
-                              Allocate
-                            </Button>
+                          {cableType && (
+                            <Badge variant="outline" className="text-xs">
+                              {cableType.name}
+                            </Badge>
                           )}
                         </div>
                         
@@ -202,24 +175,17 @@ const EquipmentAllocationPanel: React.FC<EquipmentAllocationPanelProps> = ({
                           {edge.source} → {edge.target}
                         </div>
                         
-                        {allocatedCable ? (
-                          <div className="bg-gray-50 rounded p-2 space-y-1">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium">{allocatedCable.equipmentId}</span>
-                              <Badge variant="outline" className="text-xs bg-green-50 text-green-700">
-                                Allocated
-                              </Badge>
-                            </div>
-                            {allocatedCable.serialNumber && (
-                              <p className="text-xs text-gray-600">Serial: {allocatedCable.serialNumber}</p>
-                            )}
+                        {cableType ? (
+                          <div className="bg-blue-50 rounded p-2">
+                            <p className="text-xs text-blue-700">
+                              Type: {cableType.name}
+                            </p>
                           </div>
                         ) : (
-                          <div className="bg-amber-50 rounded p-2">
-                            <div className="flex items-center gap-1 text-xs text-amber-700">
-                              <AlertTriangle className="h-3 w-3" />
-                              No cable allocated
-                            </div>
+                          <div className="bg-gray-50 rounded p-2">
+                            <p className="text-xs text-gray-500">
+                              Cable type configured
+                            </p>
                           </div>
                         )}
                       </div>
@@ -231,9 +197,10 @@ const EquipmentAllocationPanel: React.FC<EquipmentAllocationPanelProps> = ({
 
             {/* Summary Alert */}
             <Alert>
+              <Info className="h-4 w-4" />
               <AlertDescription className="text-sm">
-                Equipment allocation tracks individual items by their unique IDs. 
-                Each piece of equipment can only be allocated to one location at a time.
+                <strong>Auto-Allocation Active:</strong> Equipment is automatically allocated when you drag and drop items onto nodes. 
+                When removing equipment, you'll be prompted to either return it to storage or red tag it for maintenance.
               </AlertDescription>
             </Alert>
           </div>
