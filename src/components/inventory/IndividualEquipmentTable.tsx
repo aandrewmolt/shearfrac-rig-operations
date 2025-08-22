@@ -69,8 +69,12 @@ const IndividualEquipmentTable: React.FC<IndividualEquipmentTableProps> = ({
         groups.jobDeployments[item.jobId].equipment.push(item);
       } else if (item.status === 'available') {
         groups.available.push(item);
-      } else {
+      } else if (item.status === 'maintenance' || item.status === 'red-tagged' || item.status === 'retired') {
+        // Only items that actually need attention
         groups.other.push(item);
+      } else if (item.status === 'deployed' && !item.jobId) {
+        // Deployed but no job ID - show in available section with deployed status
+        groups.available.push(item);
       }
     });
 

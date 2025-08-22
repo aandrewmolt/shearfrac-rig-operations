@@ -35,16 +35,30 @@ const ComprehensiveEquipmentDashboard: React.FC = () => {
     };
   });
 
-  // Process individual equipment only
+  // Process individual equipment
   data.individualEquipment.forEach(item => {
-    const locationKey = item.locationId || 'unassigned';
-    if (!equipmentByJob[locationKey]) {
-      equipmentByJob[locationKey] = {
-        jobName: 'Unassigned',
-        equipment: []
-      };
+    // Check if equipment is deployed to a job
+    if (item.status === 'deployed' && item.jobId) {
+      const jobKey = item.jobId;
+      if (!equipmentByJob[jobKey]) {
+        const job = jobs.find(j => j.id === jobKey);
+        equipmentByJob[jobKey] = {
+          jobName: job?.name || `Job ${jobKey}`,
+          equipment: []
+        };
+      }
+      equipmentByJob[jobKey].equipment.push(item);
+    } else {
+      // Equipment at storage location
+      const locationKey = item.locationId || 'unassigned';
+      if (!equipmentByJob[locationKey]) {
+        equipmentByJob[locationKey] = {
+          jobName: 'Unassigned',
+          equipment: []
+        };
+      }
+      equipmentByJob[locationKey].equipment.push(item);
     }
-    equipmentByJob[locationKey].equipment.push(item);
   });
 
   // Get equipment type details
