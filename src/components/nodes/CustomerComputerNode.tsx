@@ -52,6 +52,11 @@ const CustomerComputerNode = ({ id, data, selected }: { id: string; data: any; s
       <NodeWithRedTag
         equipmentId={data.equipmentId}
         nodeId={id}
+        jobId={data.jobId}
+        onEquipmentRemoved={() => {
+          // The node data will be updated by NodeWithRedTag
+          console.log(`Equipment ${data.equipmentId} removed from node ${id}`);
+        }}
       >
         {nodeContent}
       </NodeWithRedTag>

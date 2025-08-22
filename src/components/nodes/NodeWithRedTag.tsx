@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  AlertTriangle, CheckCircle, Wrench, MoreVertical, Clock 
+  AlertTriangle, CheckCircle, Wrench, MoreVertical, Clock, RefreshCw, Package 
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -22,31 +22,40 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { useInventory } from '@/contexts/InventoryContext';
 import { tursoDb } from '@/services/tursoDb';
 import { toast } from '@/hooks/use-toast';
 import { useEquipmentUsageTracking } from '@/hooks/equipment/useEquipmentUsageTracking';
+import { useReactFlow } from '@xyflow/react';
 
 interface NodeWithRedTagProps {
   children: React.ReactNode;
   equipmentId?: string;
   nodeId: string;
   className?: string;
+  onEquipmentRemoved?: () => void;
+  jobId?: string;
 }
 
 export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({ 
   children, 
   equipmentId,
   nodeId,
-  className = ''
+  className = '',
+  onEquipmentRemoved,
+  jobId
 }) => {
   const { data: inventoryData, refreshData } = useInventory();
-  const { createRedTagEvent, getEquipmentTotalHours } = useEquipmentUsageTracking();
+  const { createRedTagEvent, getEquipmentTotalHours, endUsageSession } = useEquipmentUsageTracking();
+  const { getNodes, setNodes } = useReactFlow();
   
   const [showRedTagDialog, setShowRedTagDialog] = useState(false);
   const [redTagReason, setRedTagReason] = useState('');
   const [redTagSeverity, setRedTagSeverity] = useState<'low' | 'medium' | 'high' | 'critical'>('medium');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showReplacementOptions, setShowReplacementOptions] = useState(false);
+  const [selectedReplacement, setSelectedReplacement] = useState<string>('');
 
   // Find the actual equipment from inventory
   const equipment = equipmentId ? inventoryData.individualEquipment.find(
@@ -56,6 +65,18 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
   const isRedTagged = equipment?.status === 'red-tagged';
   const isMaintenance = equipment?.status === 'maintenance';
   const totalHours = equipment ? getEquipmentTotalHours(equipment.id) : 0;
+
+  // Find available replacement equipment of the same type
+  const getAvailableReplacements = () => {
+    if (!equipment) return [];
+    return inventoryData.individualEquipment.filter(
+      eq => eq.typeId === equipment.typeId && 
+            eq.status === 'available' &&
+            eq.id !== equipment.id
+    );
+  };
+
+  const availableReplacements = getAvailableReplacements();
 
   const handleRedTag = async () => {
     if (!equipment) {
@@ -69,26 +90,58 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
 
     setIsProcessing(true);
     try {
+      // End any active usage session
+      if (jobId) {
+        await endUsageSession(equipment.id, new Date(), `Red tagged: ${redTagReason}`);
+      }
+
       // Create red tag event
       await createRedTagEvent(equipment.id, redTagReason, redTagSeverity);
       
       // Update equipment status in database
       await tursoDb.updateIndividualEquipment(equipment.id, {
         status: 'red-tagged',
+        jobId: null, // Remove from job
         notes: `Red Tagged: ${redTagReason} (${redTagSeverity} severity)`
       });
+
+      // Remove equipment from the node on the diagram
+      setNodes((nodes) => 
+        nodes.map((node) => {
+          if (node.id === nodeId) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                equipmentId: null,
+                equipmentName: null,
+                assigned: false
+              }
+            };
+          }
+          return node;
+        })
+      );
 
       // Refresh inventory data
       await refreshData();
 
+      // Notify parent component if callback provided
+      if (onEquipmentRemoved) {
+        onEquipmentRemoved();
+      }
+
       toast({
-        title: "Equipment Red Tagged",
-        description: `${equipment.equipmentId} has been marked as red-tagged`,
+        title: "Equipment Red Tagged & Removed",
+        description: `${equipment.equipmentId} has been red-tagged and removed from the job. You can now assign replacement equipment.`,
         variant: "destructive"
       });
 
       setShowRedTagDialog(false);
       setRedTagReason('');
+      
+      // Show replacement options
+      setShowReplacementOptions(true);
     } catch (error) {
       console.error('Failed to red tag equipment:', error);
       toast({
@@ -207,7 +260,7 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
                       className="text-red-600"
                     >
                       <AlertTriangle className="mr-2 h-4 w-4" />
-                      Red Tag Equipment
+                      Red Tag & Replace
                     </DropdownMenuItem>
                     
                     <DropdownMenuItem onClick={handleMarkMaintenance}>
@@ -254,9 +307,9 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
       <Dialog open={showRedTagDialog} onOpenChange={setShowRedTagDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Red Tag Equipment</DialogTitle>
+            <DialogTitle>Red Tag & Replace Equipment</DialogTitle>
             <DialogDescription>
-              Mark {equipment?.equipmentId} as requiring maintenance or repair
+              Mark {equipment?.equipmentId} as requiring repair and remove it from this job
             </DialogDescription>
           </DialogHeader>
           
@@ -294,6 +347,18 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
                 </SelectContent>
               </Select>
             </div>
+            
+            {availableReplacements.length > 0 && (
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <Label className="text-blue-900">Available Replacements</Label>
+                <p className="text-sm text-blue-700 mb-2">
+                  {availableReplacements.length} replacement(s) available
+                </p>
+                <div className="text-xs text-blue-600">
+                  Equipment will be removed from node. You can assign a replacement after.
+                </div>
+              </div>
+            )}
           </div>
           
           <DialogFooter>
@@ -310,7 +375,7 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
               disabled={!redTagReason || isProcessing}
             >
               <AlertTriangle className="h-4 w-4 mr-2" />
-              {isProcessing ? 'Processing...' : 'Confirm Red Tag'}
+              {isProcessing ? 'Processing...' : 'Red Tag & Remove from Job'}
             </Button>
           </DialogFooter>
         </DialogContent>
