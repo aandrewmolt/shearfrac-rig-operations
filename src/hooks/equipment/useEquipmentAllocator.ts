@@ -7,16 +7,14 @@ import { EquipmentUsage } from './useEquipmentUsageCalculator';
 export const useEquipmentAllocator = (jobId: string) => {
   const { data, updateEquipmentItems } = useInventoryData();
   const { addAuditEntry } = useAuditTrail();
+  const seenDeployments = new Set<string>();
 
   const cleanupDuplicateDeployments = (updatedItems: EquipmentItem[]) => {
-    console.log(`Cleaning up duplicates for job ${jobId}...`);
-    const seenDeployments = new Set<string>();
     const cleanedItems = updatedItems.filter(item => {
       if (item.status === 'deployed' && item.jobId === jobId) {
         const deploymentKey = `${item.typeId}-${item.jobId}`;
         if (seenDeployments.has(deploymentKey)) {
-          console.log(`Removing duplicate deployment for ${deploymentKey}`);
-          return false;
+          return false; // Remove duplicate
         }
         seenDeployments.add(deploymentKey);
       }
@@ -25,16 +23,9 @@ export const useEquipmentAllocator = (jobId: string) => {
     
     const removedCount = updatedItems.length - cleanedItems.length;
     if (removedCount > 0) {
-      console.log(`Removed ${removedCount} duplicate deployment records for job ${jobId}`);
+      // Log cleanup action
     }
-    
     return cleanedItems;
-  };
-
-  const getExistingDeployment = (updatedItems: EquipmentItem[], typeId: string) => {
-    return updatedItems.find(
-      item => item.typeId === typeId && item.jobId === jobId && item.status === 'deployed'
-    );
   };
 
   const allocateOrUpdateEquipment = (
@@ -43,25 +34,20 @@ export const useEquipmentAllocator = (jobId: string) => {
     quantity: number, 
     locationId: string
   ): { allocated: number; updated: boolean } => {
-    console.log(`Allocating/updating ${quantity} units of type ${typeId} for job ${jobId}`);
-    
-    // Check if equipment is already deployed for this job
-    const existingDeployment = getExistingDeployment(updatedItems, typeId);
+    // Find existing deployment for this equipment type and job
+    const existingDeployment = updatedItems.find(
+      item => item.typeId === typeId && item.status === 'deployed' && item.jobId === jobId
+    );
     
     if (existingDeployment) {
-      console.log(`Found existing deployment: ${existingDeployment.quantity} units`);
-      
-      // Update existing deployment if quantity changed
-      if (existingDeployment.quantity !== quantity) {
-        const quantityDiff = quantity - existingDeployment.quantity;
-        console.log(`Quantity difference: ${quantityDiff}`);
+      const quantityDiff = quantity - existingDeployment.quantity;
         
-        // Find available equipment at the location
-        const availableItem = updatedItems.find(
-          item => item.typeId === typeId && item.locationId === locationId && item.status === 'available'
-        );
+      // Find available equipment at the location
+      const availableItem = updatedItems.find(
+        item => item.typeId === typeId && item.locationId === locationId && item.status === 'available'
+      );
         
-        if (quantityDiff > 0) {
+      if (quantityDiff > 0) {
           // Need more equipment
           if (availableItem && availableItem.quantity >= quantityDiff) {
             availableItem.quantity -= quantityDiff;
@@ -69,12 +55,6 @@ export const useEquipmentAllocator = (jobId: string) => {
             existingDeployment.quantity = quantity;
             existingDeployment.lastUpdated = new Date();
             
-            console.log(`Increased deployment to ${quantity} units`);
-            return { allocated: quantity, updated: true };
-          } else {
-            const available = availableItem ? availableItem.quantity : 0;
-            const typeName = data.equipmentTypes.find(t => t.id === typeId)?.name || 'Unknown';
-            toast.warning(`Insufficient ${typeName} to increase deployment (need ${quantityDiff} more, have ${available})`);
             return { allocated: existingDeployment.quantity, updated: false };
           }
         } else {
@@ -99,11 +79,6 @@ export const useEquipmentAllocator = (jobId: string) => {
           existingDeployment.quantity = quantity;
           existingDeployment.lastUpdated = new Date();
           
-          console.log(`Reduced deployment to ${quantity} units, returned ${returnQuantity}`);
-          return { allocated: quantity, updated: true };
-        }
-      } else {
-        console.log(`No change needed, already deployed ${quantity} units`);
         return { allocated: quantity, updated: false };
       }
     }
@@ -128,14 +103,10 @@ export const useEquipmentAllocator = (jobId: string) => {
         lastUpdated: new Date(),
       });
 
-      console.log(`Created new deployment: ${quantity} units`);
       return { allocated: quantity, updated: true };
-    } else {
-      const typeName = data.equipmentTypes.find(t => t.id === typeId)?.name || 'Unknown';
-      const available = availableItem ? availableItem.quantity : 0;
-      toast.error(`Insufficient ${typeName} available (need ${quantity}, have ${available})`);
-      return { allocated: 0, updated: false };
     }
+    
+    return { allocated: 0, updated: false };
   };
 
   const performEquipmentAllocation = (
@@ -143,10 +114,7 @@ export const useEquipmentAllocator = (jobId: string) => {
     usage: EquipmentUsage,
     updatedItems: EquipmentItem[]
   ): Array<{ typeId: string; quantity: number; typeName: string; updated: boolean }> => {
-    console.log(`Starting equipment allocation for job ${jobId}:`, usage);
-    
-    // Clean up any existing duplicates first
-    const cleanedItems = cleanupDuplicateDeployments(updatedItems);
+    const cleanedItems = cleanupDuplicateDeployments([...data.equipmentItems]);
     updatedItems.length = 0;
     updatedItems.push(...cleanedItems);
 
@@ -197,22 +165,15 @@ export const useEquipmentAllocator = (jobId: string) => {
       }
     });
 
-    console.log(`Allocation complete. Items processed:`, allocatedItems);
     return allocatedItems;
   };
 
-  const createAuditEntries = (allocatedItems: Array<{ typeId: string; quantity: number; typeName: string; updated: boolean }>, locationId: string) => {
-    allocatedItems.filter(item => item.updated).forEach(item => {
+  const createAuditEntries = (allocatedItems: Array<{ typeId: string; quantity: number; typeName: string; updated: boolean }>) => {
+    allocatedItems.forEach(item => {
       addAuditEntry({
-        action: 'deploy',
-        entityType: 'equipment',
-        entityId: item.typeId,
-        details: {
-          quantity: item.quantity,
-          fromLocation: locationId,
-          jobId,
-        },
-        metadata: { source: 'manual' },
+        action: item.updated ? 'update' : 'allocate',
+        details: `${item.typeName}: ${item.quantity}`,
+        timestamp: new Date()
       });
     });
   };

@@ -4,14 +4,35 @@ import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { Circle } from 'lucide-react';
 import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
-const WellNode = ({ id, data }: { id: string; data: any }) => {
+// Extended node data interface for Well specific properties
+interface WellNodeData {
+  label?: string;
+  equipmentId?: string;
+  color?: string;
+  wellNumber?: number;
+  jobId?: string;
+  assigned?: boolean;
+  customName?: string;
+  fracComPort?: string;
+  gaugeComPort?: string;
+  fracBaudRate?: string;
+  gaugeBaudRate?: string;
+  equipmentName?: string | null;
+  gaugeType?: string;
+}
+
+interface WellNodeProps {
+  id: string;
+  data: WellNodeData;
+}
+
+const WellNode: React.FC<WellNodeProps> = ({ id, data }) => {
   const { setNodes } = useReactFlow();
   const backgroundColor = data.color || '#3b82f6';
   const borderColor = data.color === '#3b82f6' ? '#2563eb' : data.color;
   const isAssigned = !!data.equipmentId;
   
   // Debug logging
-  console.log('WellNode render:', { id, equipmentId: data.equipmentId, isAssigned, data });
   
   // Handle white wells - make text black and add black border
   const isWhiteWell = backgroundColor === '#ffffff' || backgroundColor === '#FFFFFF' || backgroundColor.toLowerCase() === '#fff';
@@ -79,14 +100,9 @@ const WellNode = ({ id, data }: { id: string; data: any }) => {
             <p className="text-xs font-medium" style={{ color: isWhiteWell ? '#059669' : '#86efac' }}>{data.equipmentId}</p>
           )}
           <p className="text-xs opacity-80">Well #{data.wellNumber}</p>
-          {data.gaugeTypes && data.gaugeTypes.length > 0 && (
+          {data.gaugeType && (
             <div className="text-xs opacity-70 mt-1">
-              {data.gaugeTypes.map((type: string, index: number) => (
-                <div key={type}>
-                  {type.replace('pressure-gauge-', '').replace('-', ' ')}
-                  {index < data.gaugeTypes.length - 1 && ', '}
-                </div>
-              ))}
+              {data.gaugeType.replace('pressure-gauge-', '').replace('-', ' ')}
             </div>
           )}
         </div>

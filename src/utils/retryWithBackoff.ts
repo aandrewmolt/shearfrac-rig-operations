@@ -77,10 +77,7 @@ export async function retryDatabaseOperation<T>(
   return retryWithBackoff(operation, {
     ...options,
     onRetry: (attempt, error) => {
-      console.log(`Retrying ${operationName} (attempt ${attempt})`, error);
-      if (attempt === 1) {
-        toast.info(`Retrying ${operationName}...`);
-      }
+        // Log retry attempts for database operations
     },
     shouldRetry: (error) => {
       // Database-specific error handling
@@ -110,11 +107,7 @@ export function createDebouncedRetry<T extends (...args: unknown[]) => Promise<u
     }
     
     timeoutId = setTimeout(async () => {
-      try {
-        await retryWithBackoff(() => fn(...args), retryOptions);
-      } catch (error) {
-        console.error('Failed after retries:', error);
-      }
+      await retryWithBackoff(() => fn(...args), retryOptions);
     }, delay);
   };
 }
@@ -137,7 +130,7 @@ export async function batchWithRetry<T, R>(
       {
         ...options,
         onRetry: (attempt, error) => {
-          console.log(`Retrying batch ${i / batchSize + 1} (attempt ${attempt})`, error);
+          // Log batch retry attempts
         }
       }
     );
@@ -182,15 +175,9 @@ export class CircuitBreaker {
       
       if (this.failures >= this.threshold) {
         this.state = 'open';
-        console.error('Circuit breaker opened due to repeated failures');
       }
       
       throw error;
     }
-  }
-  
-  reset() {
-    this.failures = 0;
-    this.state = 'closed';
   }
 }

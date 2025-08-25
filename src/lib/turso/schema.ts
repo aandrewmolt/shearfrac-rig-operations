@@ -92,6 +92,7 @@ export async function createSchema() {
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         client TEXT,
+        pad TEXT,
         well_count INTEGER DEFAULT 0,
         has_wellside_gauge BOOLEAN DEFAULT FALSE,
         nodes TEXT,
@@ -222,6 +223,23 @@ export async function createSchema() {
     await turso.execute('CREATE INDEX IF NOT EXISTS idx_contacts_type ON contacts(type)');
     await turso.execute('CREATE INDEX IF NOT EXISTS idx_contacts_name ON contacts(name)');
     await turso.execute('CREATE INDEX IF NOT EXISTS idx_contacts_company ON contacts(company)');
+
+    // Add pad column to existing jobs tables (migration)
+    try {
+      await turso.execute(`
+        ALTER TABLE jobs ADD COLUMN pad TEXT
+      `);
+      console.log('✅ Added pad column to jobs table');
+    } catch (error: any) {
+      if (error.message?.includes('duplicate column name') || 
+          error.message?.includes('already exists') ||
+          error.code === 'SQLITE_ERROR') {
+        console.log('✅ Pad column already exists in jobs table');
+      } else {
+        console.error('❌ Error adding pad column:', error);
+        // Don't throw here, continue with schema creation
+      }
+    }
 
     console.log('✅ Database schema created successfully');
     return true;

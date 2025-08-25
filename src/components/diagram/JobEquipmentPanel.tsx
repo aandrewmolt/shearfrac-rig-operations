@@ -11,6 +11,7 @@ import EquipmentLocationSelector from './equipment/EquipmentLocationSelector';
 import EquipmentAvailabilityStatus from './equipment/EquipmentAvailabilityStatus';
 import { Node, Edge } from '@xyflow/react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { SyncStatusIndicator } from '@/components/InventoryMapperSync/SyncStatusIndicator';
 import { isEquipmentAtLocation } from '@/utils/equipmentLocation';
 
@@ -294,7 +295,7 @@ const JobEquipmentPanel: React.FC<JobEquipmentPanelProps> = ({
                       <span className="font-medium">1</span>
                     </div>
                   );
-                })
+                })}
               </div>
             ) : (
               <p className="text-gray-500 text-sm">No equipment currently deployed</p>
@@ -303,13 +304,9 @@ const JobEquipmentPanel: React.FC<JobEquipmentPanelProps> = ({
 
           {/* Actions */}
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={() => performComprehensiveAllocation(selectedLocation)}
-              className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${
-                !selectedLocation || isProcessing || availability.hasIssues
-                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-500 text-white hover:bg-blue-600'
-              }`}
+              className="flex-1"
               disabled={!selectedLocation || isProcessing || availability.hasIssues}
             >
               {isProcessing ? (
@@ -320,26 +317,28 @@ const JobEquipmentPanel: React.FC<JobEquipmentPanelProps> = ({
               ) : (
                 'Allocate Equipment'
               )}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={returnAllJobEquipment}
-              className="flex-1 bg-red-500 text-white px-3 py-2 rounded text-sm hover:bg-red-600 disabled:opacity-50"
+              className="flex-1"
+              variant="destructive"
               disabled={isProcessing}
             >
               Return All Equipment
-            </button>
+            </Button>
           </div>
 
           {/* Validation Actions */}
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={() => validateInventoryConsistency()}
-              className="flex-1 bg-yellow-500 text-white px-3 py-2 rounded text-sm hover:bg-yellow-600 disabled:opacity-50"
+              className="flex-1 bg-yellow-500 hover:bg-yellow-600"
+              variant="secondary"
               disabled={isProcessing}
             >
               <Wrench className="h-4 w-4 mr-2 inline" />
               Validate Consistency
-            </button>
+            </Button>
           </div>
         </CardContent>
       </Card>

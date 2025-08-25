@@ -11,7 +11,7 @@ export const useEquipmentAllocationPersistence = () => {
       if (stored) {
         const parsed = JSON.parse(stored);
         // Convert array back to Map
-        return new Map(Object.entries(parsed).map(([key, value]: [string, any]) => [
+        return new Map(Object.entries(parsed).map(([key, value]: [string, Omit<EquipmentAllocation, 'timestamp'> & { timestamp: string }]) => [
           key,
           {
             ...value,

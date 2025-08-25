@@ -1,15 +1,8 @@
-import { turso } from '@/lib/turso/client';
+import { turso } from '@/utils/consolidated/databaseUtils';
 
 export async function fixMissingJobDates() {
   try {
-    console.log('Fetching jobs with missing dates...');
-    
-    // Get all jobs with missing created_at or updated_at
-    const result = await turso.execute({
-      sql: 'SELECT * FROM jobs WHERE created_at IS NULL OR updated_at IS NULL',
-      args: []
-    });
-    
+    const result = await turso.execute('SELECT * FROM jobs WHERE created_at IS NULL OR updated_at IS NULL');
     const jobs = result.rows;
     
     if (!jobs || jobs.length === 0) {
@@ -48,35 +41,40 @@ export async function fixMissingJobDates() {
             args
           });
           
-          console.log(`Updated job ${job.id} (${job.name}) with dates`);
+          console.log('Updated job', job.id);
           updatedCount++;
-        } catch (updateError) {
-          console.error(`Error updating job ${job.id}:`, updateError);
+        } catch (error) {
+          console.error(`Failed to update job ${job.id}:`, error);
+          continue;
         }
       }
     }
     
-    console.log(`Successfully updated ${updatedCount} jobs with creation dates`);
+    console.log(`Updated ${updatedCount} jobs with missing dates`);
     return { success: true, updated: updatedCount };
-    
   } catch (error) {
-    console.error('Unexpected error:', error);
+    console.error('Error fixing missing job dates:', error);
     return { success: false, error };
   }
 }
 
 // Function to fix dates for all tables that might have missing dates
 export async function fixAllMissingDates() {
-  console.log('Starting comprehensive date fix...');
-  
-  // Fix jobs
-  const jobResult = await fixMissingJobDates();
-  console.log('Job date fix result:', jobResult);
-  
-  // You can add more tables here if needed
-  // For example: equipment_items, individual_equipment, etc.
-  
-  return {
-    jobs: jobResult
-  };
+  try {
+    const jobResult = await fixMissingJobDates();
+    
+    // Add more table fixes as needed
+    // const equipmentResult = await fixMissingEquipmentDates();
+    // const locationResult = await fixMissingLocationDates();
+    
+    return {
+      success: true,
+      results: {
+        jobs: jobResult
+      }
+    };
+  } catch (error) {
+    console.error('Error fixing all missing dates:', error);
+    return { success: false, error };
+  }
 }

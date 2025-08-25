@@ -3,10 +3,33 @@ import React, { useState, useEffect } from 'react';
 import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { Square, RotateCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import NodeDeleteButton from './NodeDeleteButton';
 import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
-const YAdapterNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
+// Extended node data interface for Y-Adapter specific properties
+interface YAdapterNodeData {
+  label?: string;
+  equipmentId?: string;
+  color?: string;
+  wellNumber?: number;
+  jobId?: string;
+  assigned?: boolean;
+  customName?: string;
+  fracComPort?: string;
+  gaugeComPort?: string;
+  fracBaudRate?: string;
+  gaugeBaudRate?: string;
+  equipmentName?: string | null;
+}
+
+interface YAdapterNodeProps {
+  id: string;
+  data: YAdapterNodeData;
+  selected?: boolean;
+}
+
+const YAdapterNode: React.FC<YAdapterNodeProps> = ({ id, data, selected }) => {
   const { getEdges, getNodes, deleteElements, setNodes } = useReactFlow();
   const [topPortNumber, setTopPortNumber] = useState<string>('1');
   const [bottomPortNumber, setBottomPortNumber] = useState<string>('2');
@@ -14,18 +37,14 @@ const YAdapterNode = ({ id, data, selected }: { id: string; data: any; selected?
   const isAssigned = !!data.equipmentId;
   
   // Debug logging
-  console.log('YAdapterNode render:', { id, equipmentId: data.equipmentId, isAssigned, data });
 
   // Determine the correct port numbers based on the connected pressure port
   useEffect(() => {
     const edges = getEdges();
     const incomingEdge = edges.find(edge => edge.target === id);
     
-    console.log('YAdapter debugging - incoming edge:', incomingEdge);
-    
     if (incomingEdge) {
       const sourceHandle = incomingEdge.sourceHandle;
-      console.log('YAdapter debugging - sourceHandle detected:', sourceHandle);
       
       // Map pressure ports to their port numbers
       const portMapping = {
@@ -37,44 +56,24 @@ const YAdapterNode = ({ id, data, selected }: { id: string; data: any; selected?
       
       if (sourceHandle && portMapping[sourceHandle as keyof typeof portMapping]) {
         const mapping = portMapping[sourceHandle as keyof typeof portMapping];
-        console.log('YAdapter debugging - setting ports from mapping:', mapping);
         setTopPortNumber(mapping.top);
         setBottomPortNumber(mapping.bottom);
       } else {
-        console.warn('YAdapter debugging - no valid sourceHandle found, checking edge data...');
-        
-        // Fallback: check if edge data contains sourceHandle info
-        if (incomingEdge.data?.sourceHandle) {
-          const fallbackHandle = incomingEdge.data.sourceHandle;
-          console.log('YAdapter debugging - using fallback sourceHandle:', fallbackHandle);
-          if (portMapping[fallbackHandle as keyof typeof portMapping]) {
-            const mapping = portMapping[fallbackHandle as keyof typeof portMapping];
-            setTopPortNumber(mapping.top);
-            setBottomPortNumber(mapping.bottom);
-          }
-        } else {
-          // Further fallback: check source node type and try to determine port
-          const sourceNode = getNodes().find(node => node.id === incomingEdge.source);
-          console.log('YAdapter debugging - source node:', sourceNode);
-          
-          // Default to P1 mapping if we can't determine the exact port
-          console.log('YAdapter debugging - using default P1 mapping as fallback');
-        }
+        // Fallback to p1 if no valid mapping found
+        setTopPortNumber('1');
+        setBottomPortNumber('2');
       }
-    } else {
-      console.log('YAdapter debugging - no incoming edge found');
     }
-  }, [id, getEdges, getNodes]);
+  }, [id, getEdges]);
+
+  const handleDelete = () => {
+    deleteElements({ nodes: [{ id }] });
+  };
 
   const swapPortNumbers = () => {
     const tempTop = topPortNumber;
     setTopPortNumber(bottomPortNumber);
     setBottomPortNumber(tempTop);
-    console.log('YAdapter debugging - ports swapped:', { top: bottomPortNumber, bottom: tempTop });
-  };
-
-  const handleDelete = () => {
-    deleteElements({ nodes: [{ id }] });
   };
 
   const handleRemoveEquipment = () => {
@@ -97,7 +96,7 @@ const YAdapterNode = ({ id, data, selected }: { id: string; data: any; selected?
   };
 
   return (
-    <div className="bg-yellow-500 text-gray-900 rounded-lg p-3 border-2 border-yellow-400 min-w-[100px] text-center relative">
+    <Card className="bg-yellow-500 text-gray-900 p-3 border-2 border-yellow-400 min-w-[100px] text-center relative">
       <Handle
         type="target"
         position={Position.Left}
@@ -196,7 +195,7 @@ const YAdapterNode = ({ id, data, selected }: { id: string; data: any; selected?
       >
         {bottomPortNumber}
       </div>
-    </div>
+    </Card>
   );
 };
 

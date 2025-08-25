@@ -17,7 +17,7 @@ export const useAdvancedEquipmentSearch = () => {
   });
 
   const searchResults = useMemo(() => {
-    let results: any[] = [];
+    let results: unknown[] = [];
 
     // Combine all equipment into searchable format - deduplicate by ID
     const equipmentMap = new Map();
@@ -96,7 +96,7 @@ export const useAdvancedEquipmentSearch = () => {
     return results;
   }, [data, searchFilters]);
 
-  const updateFilter = (key: string, value: any) => {
+  const updateFilter = (key: keyof typeof searchFilters, value: string | boolean) => {
     setSearchFilters(prev => ({ ...prev, [key]: value }));
   };
 
@@ -125,9 +125,10 @@ export const useAdvancedEquipmentSearch = () => {
           case 'status': return `Status: ${value}`;
           case 'location': 
             return `Location: ${getLocationName(value)}`;
-          case 'equipmentType':
+          case 'equipmentType': {
             const type = data.equipmentTypes.find(t => t.id === value);
             return `Type: ${type?.name || value}`;
+          }
           case 'showIndividualOnly': return 'Individual equipment only';
           case 'showBulkOnly': return 'Bulk equipment only';
           default: return `${key}: ${value}`;

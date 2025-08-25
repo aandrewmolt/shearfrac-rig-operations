@@ -50,7 +50,7 @@ export const usePopulateIndividualEquipment = () => {
             toast.info('All individual equipment already exists');
           }
         } catch (error) {
-          console.error('Failed to create individual equipment:', error);
+          console.error('Failed to populate individual equipment:', error);
           toast.error('Failed to create individual equipment');
         }
       }

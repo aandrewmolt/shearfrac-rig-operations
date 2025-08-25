@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Progress } from '@/components/ui/progress';
 import { Upload, Camera, Zap, Image as ImageIcon } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -192,9 +193,7 @@ const JobPhotoUpload: React.FC<JobPhotoUploadProps> = ({
         {isProcessing && (
           <div className="text-xs text-blue-600 text-center space-y-1">
             <p>{isOptimizing ? 'Optimizing image...' : 'Uploading...'}</p>
-            <div className="w-full bg-gray-200 rounded-full h-1">
-              <div className="bg-blue-600 h-1 rounded-full animate-pulse w-3/4"></div>
-            </div>
+            <Progress value={75} className="h-1" />
           </div>
         )}
       </CardContent>

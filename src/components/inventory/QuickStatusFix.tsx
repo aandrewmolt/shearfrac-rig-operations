@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Loader2, CheckCircle } from 'lucide-react';
 import { useEquipmentStatusFix } from '@/hooks/useEquipmentStatusFix';
@@ -13,11 +13,7 @@ const QuickStatusFix: React.FC<QuickStatusFixProps> = ({ onFixed }) => {
   const [needsFix, setNeedsFix] = React.useState(false);
   const [isChecking, setIsChecking] = React.useState(false);
 
-  React.useEffect(() => {
-    checkStatus();
-  }, []);
-
-  const checkStatus = async () => {
+  const checkStatus = useCallback(async () => {
     setIsChecking(true);
     try {
       const result = await checkEquipmentStatuses();
@@ -30,7 +26,11 @@ const QuickStatusFix: React.FC<QuickStatusFixProps> = ({ onFixed }) => {
     } finally {
       setIsChecking(false);
     }
-  };
+  }, [checkEquipmentStatuses]);
+
+  React.useEffect(() => {
+    checkStatus();
+  }, [checkStatus]);
 
   const handleFix = async () => {
     try {

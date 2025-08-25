@@ -2,7 +2,10 @@
 import { useCallback } from 'react';
 import { Node, Edge } from '@xyflow/react';
 import { JobDiagram } from '@/hooks/useJobs';
-import { migrateCableTypeId } from '@/utils/cableTypeMigration';
+import { migrateCableTypeId } from '@/utils/consolidated/migrationUtils';
+import { validateJobDiagramEquipment, cleanOrphanedEquipmentReferences, logValidationResults } from '@/utils/jobDiagramValidation';
+import { toast } from '@/hooks/use-toast';
+import { IndividualEquipment } from '@/types/equipment';
 
 interface UseJobDiagramInitializationProps {
   job: JobDiagram;
@@ -22,10 +25,11 @@ interface UseJobDiagramInitializationProps {
   setSelectedStarlink: (starlink: string) => void;
   setSelectedCustomerComputers: (computers: string[]) => void;
   setEquipmentAssignment: (assignment: any) => void;
-  syncWithLoadedData: (data: any) => void;
+  syncWithLoadedData: (data: unknown) => void;
   mainBoxName: string;
   satelliteName: string;
   wellsideGaugeName: string;
+  inventoryData?: IndividualEquipment[];
 }
 
 export const useJobDiagramInitialization = ({
@@ -50,6 +54,7 @@ export const useJobDiagramInitialization = ({
   mainBoxName,
   satelliteName,
   wellsideGaugeName,
+  inventoryData,
 }: UseJobDiagramInitializationProps) => {
 
   const createInitialNodes = useCallback((wellCount: number, hasWellsideGauge: boolean) => {
@@ -119,7 +124,7 @@ export const useJobDiagramInitialization = ({
     return initialNodes;
   }, [job.id, mainBoxName, satelliteName, wellsideGaugeName, setNodeIdCounter]);
 
-  const restoreNodesWithEnhancedData = useCallback((savedNodes: any[]) => {
+  const restoreNodesWithEnhancedData = useCallback((savedNodes: unknown[]) => {
     return savedNodes.map(node => ({
       ...node,
       data: {
@@ -137,7 +142,7 @@ export const useJobDiagramInitialization = ({
     }));
   }, [job.id]);
 
-  const restoreEdgesWithEnhancedData = useCallback((savedEdges: any[]) => {
+  const restoreEdgesWithEnhancedData = useCallback((savedEdges: unknown[]) => {
     return savedEdges.map(edge => {
       // Migrate cable type ID if needed
       const cableTypeId = edge.data?.cableTypeId ? migrateCableTypeId(edge.data.cableTypeId) : undefined;
@@ -194,7 +199,31 @@ export const useJobDiagramInitialization = ({
       
       // Restore nodes with enhanced data
       const restoredNodes = restoreNodesWithEnhancedData(job.nodes);
-      setNodes(restoredNodes);
+      
+      // Validate equipment references against inventory if available
+      if (inventoryData && inventoryData.length > 0) {
+        const validationResult = validateJobDiagramEquipment(restoredNodes, inventoryData);
+        logValidationResults(validationResult, job.name);
+        
+        if (!validationResult.isValid) {
+          // Show warning to user about orphaned equipment
+          toast({
+            title: "Equipment Validation Warning",
+            description: `Found ${validationResult.orphanedEquipment.length} equipment references that don't exist in inventory. These have been removed from the diagram.`,
+            variant: "destructive",
+          });
+          
+          // Clean orphaned equipment references
+          const { cleanedNodes, removedCount } = cleanOrphanedEquipmentReferences(restoredNodes, inventoryData);
+          console.log(`🧹 Cleaned ${removedCount} orphaned equipment references from job diagram`);
+          setNodes(cleanedNodes);
+        } else {
+          setNodes(restoredNodes);
+        }
+      } else {
+        // No inventory data available, just restore nodes without validation
+        setNodes(restoredNodes);
+      }
 
       // Restore edges with enhanced data
       if (job.edges && job.edges.length > 0) {
@@ -252,6 +281,7 @@ export const useJobDiagramInitialization = ({
     setSelectedCustomerComputers,
     setEquipmentAssignment,
     syncWithLoadedData,
+    inventoryData,
   ]);
 
   return {

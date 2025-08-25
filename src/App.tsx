@@ -15,14 +15,13 @@ import EquipmentInventory from "./pages/EquipmentInventory";
 import MainDashboard from "./pages/MainDashboard";
 import NotFound from "./pages/NotFound";
 import InitDatabase from "./pages/InitDatabase";
-import { OfflineStatusBar } from "./components/offline/OfflineStatusBar";
 import { RealtimeConnectionMonitor } from "./components/RealtimeConnectionMonitor";
 import { LocalModeBanner } from "./components/LocalModeBanner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { SafeWrapper } from "./components/SafeWrapper";
 import { ContactsPage } from "./contacts/components/ContactsPage";
 // Import these dynamically to avoid module initialization issues
-import { DATABASE_MODE } from "./config/database.config";
+import { DATABASE_MODE } from "./utils/consolidated/databaseUtils";
 import { logEnvironmentStatus } from "./utils/validateEnvironment";
 import "./App.css";
 
@@ -109,7 +108,6 @@ function App() {
                   <Route path="/404" element={<NotFound />} />
                   <Route path="*" element={<Navigate to="/404" replace />} />
                 </Routes>
-                <OfflineStatusBar />
                 <RealtimeConnectionMonitor />
               </BrowserRouter>
             </TooltipProvider>

@@ -8,10 +8,10 @@ export const useInventoryValidation = () => {
   const { DEFAULT_EQUIPMENT_TYPES } = useInventoryDefaults();
 
   const cleanupDuplicateDeployments = useCallback((items: EquipmentItem[]): EquipmentItem[] => {
-    console.log('Cleaning up duplicate deployments...');
-    const deploymentMap = new Map<string, EquipmentItem>();
     const cleanedItems: EquipmentItem[] = [];
+    const deploymentMap = new Map<string, EquipmentItem>();
     let hasChanges = false;
+    let removedCount = 0;
     
     for (const item of items) {
       if (item.status === 'deployed' && item.jobId) {
@@ -20,9 +20,8 @@ export const useInventoryValidation = () => {
         if (deploymentMap.has(deploymentKey)) {
           // Found duplicate - consolidate quantities
           const existing = deploymentMap.get(deploymentKey)!;
-          console.log(`Consolidating duplicate deployment: ${deploymentKey} (${existing.quantity} + ${item.quantity})`);
           existing.quantity += item.quantity;
-          existing.lastUpdated = new Date();
+          removedCount++;
           hasChanges = true;
         } else {
           // First instance of this deployment
@@ -40,14 +39,7 @@ export const useInventoryValidation = () => {
     });
     
     // Only return new array if there were actual changes
-    if (!hasChanges) {
-      console.log('No duplicate deployments found, returning original array');
-      return items;
-    }
-    
-    const removedCount = items.length - cleanedItems.length;
-    if (removedCount > 0) {
-      console.log(`Removed ${removedCount} duplicate deployment records`);
+    if (hasChanges) {
       toast.info(`Cleaned up ${removedCount} duplicate equipment records`);
     }
     
@@ -93,7 +85,6 @@ export const useInventoryValidation = () => {
     });
 
     if (itemsToRemove.length > 0) {
-      console.log(`Removing ${itemsToRemove.length} bulk items that should be individually tracked`);
       const filteredItems = updatedItems.filter(item => {
         const equipmentType = DEFAULT_EQUIPMENT_TYPES.find(type => type.id === item.typeId);
         return !equipmentType?.requiresIndividualTracking;

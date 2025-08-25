@@ -26,7 +26,7 @@ const CableConfigurationPanel: React.FC<CableConfigurationPanelProps> = ({
 }) => {
   const { data } = useInventory();
 
-  const cableTypes = data.equipmentTypes.filter(type => type.category === 'cables');
+  const cableTypes = data?.equipmentTypes?.filter(type => type.category === 'cables') || [];
   const selectedCable = cableTypes.find(cable => cable.id === selectedCableType);
 
   return (

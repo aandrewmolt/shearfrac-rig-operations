@@ -3,11 +3,34 @@ import React, { useState, useEffect } from 'react';
 import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { Square } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card } from '@/components/ui/card';
 import { useJobs } from '@/hooks/useJobs';
 import NodeDeleteButton from './NodeDeleteButton';
 import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
-const MainBoxNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
+// Extended node data interface for Main Box specific properties
+interface MainBoxNodeData {
+  label?: string;
+  equipmentId?: string;
+  color?: string;
+  wellNumber?: number;
+  jobId?: string;
+  assigned?: boolean;
+  customName?: string;
+  fracComPort?: string;
+  gaugeComPort?: string;
+  fracBaudRate?: string;
+  gaugeBaudRate?: string;
+  equipmentName?: string | null;
+}
+
+interface MainBoxNodeProps {
+  id: string;
+  data: MainBoxNodeData;
+  selected?: boolean;
+}
+
+const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
   const { getNodes, setNodes, deleteElements } = useReactFlow();
   const { saveJob } = useJobs();
   const [fracDataPort, setFracDataPort] = useState<string>(data.fracComPort || '');
@@ -16,36 +39,26 @@ const MainBoxNode = ({ id, data, selected }: { id: string; data: any; selected?:
   const [gaugeBaudRate, setGaugeBaudRate] = useState<string>(data.gaugeBaudRate || '9600');
 
   // Enhanced update node data function with immediate persistence
-  const updateNodeData = (updates: any) => {
-    console.log('Enhanced MainBoxNode data update:', { id, updates, currentData: data });
-    
+  const updateNodeData = (updates: Partial<MainBoxNodeData>) => {
     setNodes((nodes) => {
-      const updatedNodes = nodes.map((node) =>
-        node.id === id
-          ? {
-              ...node,
-              data: {
-                ...node.data,
-                ...updates,
-              },
+      const updatedNodes = nodes.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              ...updates
             }
-          : node
-      );
-      
-      console.log('Nodes updated with COM port data:', {
-        nodeId: id,
-        updates,
-        updatedNode: updatedNodes.find(n => n.id === id)?.data
+          };
+        }
+        return node;
       });
-      
       return updatedNodes;
     });
   };
 
   // Enhanced frac data port change handler
   const handleFracDataPortChange = (value: string) => {
-    console.log('Enhanced frac COM port change:', { from: fracDataPort, to: value });
-    setFracDataPort(value);
     
     // If ColdBore is selected, clear the baud rate
     if (value === 'coldbore') {
@@ -64,53 +77,34 @@ const MainBoxNode = ({ id, data, selected }: { id: string; data: any; selected?:
 
   // Enhanced gauge data port change handler
   const handleGaugeDataPortChange = (value: string) => {
-    console.log('Enhanced gauge COM port change:', { from: gaugeDataPort, to: value });
-    setGaugeDataPort(value);
     updateNodeData({ gaugeComPort: value });
   };
 
   // Enhanced frac baud rate change handler
   const handleFracBaudRateChange = (value: string) => {
-    console.log('Enhanced frac baud rate change:', { from: fracBaudRate, to: value });
-    setFracBaudRate(value);
     updateNodeData({ fracBaudRate: value });
   };
 
   // Enhanced gauge baud rate change handler
   const handleGaugeBaudRateChange = (value: string) => {
-    console.log('Enhanced gauge baud rate change:', { from: gaugeBaudRate, to: value });
-    setGaugeBaudRate(value);
     updateNodeData({ gaugeBaudRate: value });
   };
 
   // Enhanced sync with node data when data changes
   useEffect(() => {
-    console.log('Enhanced MainBoxNode data sync effect:', {
-      nodeId: id,
-      dataFracComPort: data.fracComPort,
-      dataGaugeComPort: data.gaugeComPort,
-      dataFracBaudRate: data.fracBaudRate,
-      dataGaugeBaudRate: data.gaugeBaudRate,
-      currentState: { fracDataPort, gaugeDataPort, fracBaudRate, gaugeBaudRate }
-    });
-
     if (data.fracComPort !== undefined && data.fracComPort !== fracDataPort) {
-      console.log('Syncing frac COM port from data:', data.fracComPort);
       setFracDataPort(data.fracComPort);
     }
     if (data.gaugeComPort !== undefined && data.gaugeComPort !== gaugeDataPort) {
-      console.log('Syncing gauge COM port from data:', data.gaugeComPort);
       setGaugeDataPort(data.gaugeComPort);
     }
     if (data.fracBaudRate !== undefined && data.fracBaudRate !== fracBaudRate) {
-      console.log('Syncing frac baud rate from data:', data.fracBaudRate);
       setFracBaudRate(data.fracBaudRate);
     }
     if (data.gaugeBaudRate !== undefined && data.gaugeBaudRate !== gaugeBaudRate) {
-      console.log('Syncing gauge baud rate from data:', data.gaugeBaudRate);
       setGaugeBaudRate(data.gaugeBaudRate);
     }
-  }, [data.fracComPort, data.gaugeComPort, data.fracBaudRate, data.gaugeBaudRate, fracDataPort, gaugeDataPort, fracBaudRate, gaugeBaudRate, id]);
+  }, [data.fracComPort, data.gaugeComPort, data.fracBaudRate, data.gaugeBaudRate, fracDataPort, gaugeDataPort, fracBaudRate, gaugeBaudRate]);
 
   // Available COM ports for selection
   const comPorts = [
@@ -148,21 +142,6 @@ const MainBoxNode = ({ id, data, selected }: { id: string; data: any; selected?:
   ];
 
   const isAssigned = !!data.equipmentId;
-
-  console.log('Enhanced MainBoxNode render:', {
-    id,
-    fracDataPort,
-    gaugeDataPort,
-    fracBaudRate,
-    gaugeBaudRate,
-    dataValues: {
-      fracComPort: data.fracComPort,
-      gaugeComPort: data.gaugeComPort,
-      fracBaudRate: data.fracBaudRate,
-      gaugeBaudRate: data.gaugeBaudRate
-    }
-  });
-
   const handleDelete = () => {
     deleteElements({ nodes: [{ id }] });
   };
@@ -187,7 +166,7 @@ const MainBoxNode = ({ id, data, selected }: { id: string; data: any; selected?:
   };
 
   return (
-    <div className="bg-slate-900 text-white rounded-lg p-4 border-2 border-slate-600 min-w-[280px] shadow-lg relative">
+    <Card className="bg-slate-900 text-white p-4 border-2 border-slate-600 min-w-[280px] shadow-lg relative">
       {selected && <NodeDeleteButton onDelete={handleDelete} />}
       {isAssigned && data.equipmentId && (
         <SimpleRedTagMenu 
@@ -294,7 +273,7 @@ const MainBoxNode = ({ id, data, selected }: { id: string; data: any; selected?:
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 };
 

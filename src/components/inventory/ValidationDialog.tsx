@@ -13,7 +13,7 @@ import { useDataConsistencyFixer } from '@/hooks/inventory/useDataConsistencyFix
 interface ValidationDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAutoFix?: (issues: any[]) => void;
+  onAutoFix?: (issues: unknown[]) => void;
 }
 
 const ValidationDialog: React.FC<ValidationDialogProps> = ({
@@ -59,7 +59,7 @@ const ValidationDialog: React.FC<ValidationDialogProps> = ({
     }
   };
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityColor = (severity: string): 'destructive' | 'secondary' | 'outline' | 'default' => {
     switch (severity) {
       case 'error':
         return 'destructive';
@@ -165,7 +165,7 @@ const ValidationDialog: React.FC<ValidationDialogProps> = ({
                         </div>
                         <div className="flex-1 space-y-2">
                           <div className="flex items-center gap-2">
-                            <Badge variant={getSeverityColor(issue.severity) as any}>
+                            <Badge variant={getSeverityColor(issue.severity)}>
                               {issue.severity.toUpperCase()}
                             </Badge>
                             <Badge variant="outline">

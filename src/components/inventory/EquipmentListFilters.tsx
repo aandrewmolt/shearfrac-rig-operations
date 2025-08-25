@@ -17,8 +17,8 @@ interface EquipmentListFiltersProps {
   filterCategory: string;
   setFilterCategory: (category: string) => void;
   data: {
-    storageLocations: any[];
-    equipmentTypes: any[];
+    storageLocations: unknown[];
+    equipmentTypes: unknown[];
   };
   onClearFilters: () => void;
   getCategoryColor: (category: string) => string;

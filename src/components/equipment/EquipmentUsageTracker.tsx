@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -216,18 +217,19 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
 
           {/* Active Sessions */}
           {activeEquipmentSessions.length > 0 && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-              <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                <Clock className="h-4 w-4 animate-pulse" />
-                Active Usage Sessions ({activeEquipmentSessions.length})
-              </h4>
+            <Alert className="mt-4 bg-blue-50 border-blue-200">
+              <Clock className="h-4 w-4" />
+              <AlertDescription>
+                <h4 className="text-sm font-medium mb-2">
+                  Active Usage Sessions ({activeEquipmentSessions.length})
+                </h4>
               <div className="space-y-2">
                 {activeEquipmentSessions.map(session => {
                   const equipment = inventoryData.individualEquipment.find(e => e.id === session.equipmentId);
                   const currentHours = calculateHours(session.startTime);
                   
                   return (
-                    <div key={session.id} className="flex items-center justify-between p-2 bg-white rounded">
+                    <Card key={session.id} className="flex items-center justify-between p-2 bg-white">
                       <div className="flex items-center gap-3">
                         <Timer className="h-4 w-4 text-blue-500" />
                         <div>
@@ -247,11 +249,12 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                         <Pause className="h-4 w-4 mr-1" />
                         End
                       </Button>
-                    </div>
+                    </Card>
                   );
                 })}
               </div>
-            </div>
+              </AlertDescription>
+            </Alert>
           )}
         </CardContent>
       </Card>
@@ -396,7 +399,7 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                         .slice(-5)
                         .reverse()
                         .map(session => (
-                          <div key={session.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                          <Card key={session.id} className="flex items-center justify-between p-2 bg-gray-50">
                             <div>
                               <p className="text-sm font-medium">{session.jobName}</p>
                               <p className="text-xs text-muted-foreground">
@@ -411,7 +414,7 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                                 <p className="text-xs text-blue-600 mt-1">Active</p>
                               )}
                             </div>
-                          </div>
+                          </Card>
                         ))}
                     </div>
                   </div>
@@ -433,7 +436,7 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
               <CardContent>
                 <div className="space-y-3">
                   {jobStats.equipment.map(eq => (
-                    <div key={eq.equipmentId} className="flex items-center justify-between p-3 border rounded-lg">
+                    <Card key={eq.equipmentId} className="flex items-center justify-between p-3">
                       <div>
                         <p className="font-medium">{eq.equipmentName}</p>
                         <p className="text-sm text-muted-foreground">{eq.type}</p>
@@ -447,7 +450,7 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                           <Badge variant="destructive">Replaced</Badge>
                         )}
                       </div>
-                    </div>
+                    </Card>
                   ))}
                 </div>
               </CardContent>
@@ -471,7 +474,7 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                   {redTagEvents.map(event => {
                     const equipment = inventoryData.individualEquipment.find(e => e.id === event.equipmentId);
                     return (
-                      <div key={event.id} className="p-3 border rounded-lg">
+                      <Card key={event.id} className="p-3">
                         <div className="flex items-start justify-between">
                           <div>
                             <p className="font-medium">{equipment?.equipmentId}</p>
@@ -501,7 +504,7 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                             <Badge variant="destructive">Active</Badge>
                           )}
                         </div>
-                      </div>
+                      </Card>
                     );
                   })}
                 </div>
@@ -532,7 +535,7 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
             </div>
             <div>
               <Label>Severity</Label>
-              <Select value={redTagSeverity} onValueChange={(v: any) => setRedTagSeverity(v)}>
+              <Select value={redTagSeverity} onValueChange={(v) => setRedTagSeverity(v as 'low' | 'medium' | 'high' | 'critical')}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

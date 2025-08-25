@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Trash2, RefreshCw } from 'lucide-react';
-import { clearOfflineData } from '@/utils/clearOfflineData';
+import { clearOfflineData } from '@/utils/consolidated/storageUtils';
 import { toast } from 'sonner';
 
 export function ClearOfflineDataButton() {

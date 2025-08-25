@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Save, RefreshCw, CheckCircle, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -9,7 +10,7 @@ interface DiagramControlsProps {
   onManualSave: () => void;
   onValidateEquipment: () => void;
   onValidateDiagram: () => void;
-  validationResults?: any[];
+  validationResults?: unknown[];
   isValidating?: boolean;
 }
 
@@ -83,22 +84,25 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         </div>
 
         {hasIssues && (
-          <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-            <h4 className="text-sm font-medium text-yellow-800 mb-2">Validation Issues:</h4>
-            <ul className="text-xs text-yellow-700 space-y-1">
-              {validationResults.slice(0, 3).map((issue, index) => (
-                <li key={index} className="flex items-start gap-1">
-                  <span className="text-yellow-600">•</span>
-                  <span>{issue.description}</span>
-                </li>
-              ))}
-              {validationResults.length > 3 && (
-                <li className="text-yellow-600 font-medium">
-                  ... and {validationResults.length - 3} more issues
-                </li>
-              )}
-            </ul>
-          </div>
+          <Alert className="mt-3 bg-yellow-50 border-yellow-200">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              <h4 className="text-sm font-medium mb-2">Validation Issues:</h4>
+              <ul className="text-xs space-y-1">
+                {validationResults.slice(0, 3).map((issue, index) => (
+                  <li key={index} className="flex items-start gap-1">
+                    <span>•</span>
+                    <span>{issue.description}</span>
+                  </li>
+                ))}
+                {validationResults.length > 3 && (
+                  <li className="font-medium">
+                    ... and {validationResults.length - 3} more issues
+                  </li>
+                )}
+              </ul>
+            </AlertDescription>
+          </Alert>
         )}
       </CardContent>
     </Card>

@@ -12,8 +12,8 @@ export const useEquipmentAllocatorV2 = (jobId: string) => {
   const { getJobById } = useJobs();
 
   const allocateEquipmentFromUsage = useCallback(async (usage: DetailedEquipmentUsage, locationId: string) => {
-    console.log('🔍 Allocating equipment for job:', jobId, 'from location:', locationId);
-    console.log('📦 Usage requirements:', usage);
+    const updatePromises: Promise<unknown>[] = [];
+    const allocatedItems: string[] = [];
     
     // Ensure job exists as a storage location before allocating equipment
     const job = getJobById(jobId);
@@ -21,36 +21,24 @@ export const useEquipmentAllocatorV2 = (jobId: string) => {
       try {
         await ensureJobLocationExists(job.name);
       } catch (error) {
-        console.error('Failed to ensure job location exists:', error);
+        toast.error('Failed to create job location');
+        return [];
       }
     }
     
-    const allocatedItems: string[] = [];
-    const updatePromises: Promise<void>[] = [];
-
-    // Handle cables - all are now individual items
-    if (usage.cables && typeof usage.cables === 'object') {
-      for (const [typeId, details] of Object.entries(usage.cables)) {
-        if (details.quantity > 0) {
-          const availableEquipment = data.individualEquipment.filter(
-            eq => eq.typeId === typeId && eq.locationId === locationId && eq.status === 'available'
-          );
-
-          if (availableEquipment.length >= details.quantity) {
-            for (let i = 0; i < details.quantity; i++) {
-              console.log(`📍 Allocating ${availableEquipment[i].equipmentId} to job ${jobId}`);
-              updatePromises.push(
-                updateIndividualEquipment(availableEquipment[i].id, {
-                  status: 'deployed',
-                  jobId: jobId
-                  // Keep current locationId - equipment stays at physical location
-                })
-              );
-            }
-            allocatedItems.push(`${details.quantity}x ${details.typeName}`);
-          } else {
-            toast.error(`Insufficient ${details.typeName} at selected location`);
-          }
+    // Handle cables as bulk items
+    for (const [cableType, details] of Object.entries(usage.cables)) {
+      if (details.quantity > 0) {
+        const availableEquipment = data.equipmentItems?.filter(
+          item => item.typeId === details.typeId && item.locationId === locationId && item.status === 'available'
+        ) || [];
+        
+        const totalAvailable = availableEquipment.reduce((sum, item) => sum + item.quantity, 0);
+        if (totalAvailable >= details.quantity) {
+          // Allocate cables from bulk inventory
+          allocatedItems.push(`${details.quantity}x ${details.typeName}`);
+        } else {
+          toast.error(`Insufficient ${details.typeName} at selected location`);
         }
       }
     }
@@ -163,16 +151,12 @@ export const useEquipmentAllocatorV2 = (jobId: string) => {
         toast.error(`Insufficient Customer Computers/Tablets at selected location`);
       }
     }
-
-
     // Wait for all individual equipment updates to complete
     await Promise.all(updatePromises);
     
-    console.log('✅ Allocation complete! Allocated items:', allocatedItems);
-    console.log(`📍 Equipment allocated to job: ${jobId} (physical location unchanged)`);
     
     return allocatedItems;
-  }, [jobId, data.individualEquipment, data.equipmentTypes, updateIndividualEquipment, ensureJobLocationExists, getJobById]);
+  }, [jobId, data.individualEquipment, data.equipmentItems, updateIndividualEquipment, ensureJobLocationExists, getJobById]);
 
   return {
     allocateEquipmentFromUsage

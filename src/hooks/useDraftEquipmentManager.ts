@@ -6,10 +6,10 @@ export const useDraftEquipmentManager = (
   existingEquipment: IndividualEquipment[],
   onSave: (equipment: IndividualEquipment[]) => void
 ) => {
-  const [draftEquipment, setDraftEquipment] = useState<any[]>([]);
+  const [draftEquipment, setDraftEquipment] = useState<Partial<IndividualEquipment>[]>([]);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const addDraftEquipment = useCallback((equipment: any) => {
+  const addDraftEquipment = useCallback((equipment: Omit<IndividualEquipment, 'id'>) => {
     const newDraft = { ...equipment, id: `draft-${Date.now()}` };
     setDraftEquipment(prev => [...prev, newDraft]);
     setHasUnsavedChanges(true);

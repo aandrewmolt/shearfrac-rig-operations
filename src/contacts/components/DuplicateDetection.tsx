@@ -17,6 +17,7 @@ import {
   AlertTitle,
 } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { Contact } from '../types';
 import { detectDuplicates, DuplicateGroup, suggestMerge } from '../utils/duplicateDetection';
 import { cn } from '@/lib/utils';
@@ -117,7 +118,7 @@ export function DuplicateDetection({
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">Sensitivity:</label>
+              <Label className="text-sm font-medium">Sensitivity:</Label>
               <input
                 type="range"
                 min="0.5"

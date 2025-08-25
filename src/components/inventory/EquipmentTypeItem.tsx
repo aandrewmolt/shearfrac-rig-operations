@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2, AlertTriangle, Info } from 'lucide-react';
 
 interface EquipmentTypeItemProps {
-  type: any;
+  type: { id: string; name: string; category: string; description?: string; };
   equipmentCounts: {
     equipmentItems: number;
     individualEquipment: number;
@@ -14,7 +14,7 @@ interface EquipmentTypeItemProps {
   };
   canDelete: boolean;
   deleteDetails?: string[];
-  onEdit: (type: any) => void;
+  onEdit: (type: { id: string; name: string; category: string; description?: string; }) => void;
   onDelete: (typeId: string, typeName: string) => void;
   getCategoryColor: (category: string) => string;
 }

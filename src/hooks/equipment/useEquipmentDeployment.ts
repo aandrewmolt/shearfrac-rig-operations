@@ -2,11 +2,13 @@
 import { useCallback } from 'react';
 import { useInventory } from '@/contexts/InventoryContext';
 import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
+import { useEquipmentUsageTracking } from './useEquipmentUsageTracking';
 import { toast } from 'sonner';
 
 export const useEquipmentDeployment = () => {
   const { data, updateIndividualEquipment } = useInventory();
   const { validateEquipmentAvailability } = useInventoryMapperSync();
+  const { startUsageSession, endUsageSession } = useEquipmentUsageTracking();
 
   const deployEquipment = useCallback(async (equipmentId: string, jobId: string) => {
     try {
@@ -28,12 +30,16 @@ export const useEquipmentDeployment = () => {
         jobId: jobId,
         locationId: jobId // Use job ID as location when deployed
       });
+      
+      // Automatically start usage tracking when equipment is deployed
+      await startUsageSession(equipmentId, jobId);
+      
       toast.success(`Equipment ${equipment.name} deployed to job`);
     } catch (error) {
       console.error('Failed to deploy equipment:', error);
       toast.error('Failed to deploy equipment');
     }
-  }, [updateIndividualEquipment, data.individualEquipment, validateEquipmentAvailability]);
+  }, [updateIndividualEquipment, data.individualEquipment, validateEquipmentAvailability, startUsageSession]);
 
   const returnEquipment = useCallback(async (equipmentId: string) => {
     try {
@@ -41,6 +47,11 @@ export const useEquipmentDeployment = () => {
       const equipment = data.individualEquipment.find(item => item.equipmentId === equipmentId);
       if (!equipment) {
         throw new Error(`Equipment with ID ${equipmentId} not found`);
+      }
+
+      // Automatically end usage tracking when equipment is returned
+      if (equipment.jobId) {
+        await endUsageSession(equipmentId, equipment.jobId);
       }
 
       // Find the default storage location
@@ -59,7 +70,7 @@ export const useEquipmentDeployment = () => {
       console.error('Failed to return equipment:', error);
       toast.error('Failed to return equipment');
     }
-  }, [updateIndividualEquipment, data.storageLocations, data.individualEquipment]);
+  }, [updateIndividualEquipment, data.storageLocations, data.individualEquipment, endUsageSession]);
 
   return {
     deployEquipment,

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -23,29 +23,43 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useEquipmentHistory } from '@/hooks/equipment/useEquipmentHistory';
-import { EquipmentHistoryDialog } from '@/components/equipment/EquipmentHistoryDialog';
+import { UnifiedEquipmentHistoryDialog } from '@/components/shared';
 import { useInventory } from '@/contexts/InventoryContext';
+import { IndividualEquipment } from '@/types/inventory';
 import { format } from 'date-fns';
-import { DATABASE_MODE } from '@/config/database.config';
+import { DATABASE_MODE } from '@/utils/consolidated/databaseUtils';
 
 const EquipmentHistoryViewer: React.FC = () => {
   const { history, isLoading, error, refreshHistory } = useEquipmentHistory();
   const { data: inventoryData } = useInventory();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAction, setSelectedAction] = useState<string>('all');
-  const [selectedEquipment, setSelectedEquipment] = useState<any>(null);
+  const [selectedEquipment, setSelectedEquipment] = useState<unknown>(null);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+
+  // Create equipment lookup map for performance
+  const equipmentMap = useMemo(() => {
+    const map = new Map<string, IndividualEquipment>();
+    inventoryData.individualEquipment.forEach(equipment => {
+      map.set(equipment.id, equipment);
+    });
+    return map;
+  }, [inventoryData.individualEquipment]);
 
   // Filter history based on search and action
   const filteredHistory = useMemo(() => {
     let filtered = history;
 
     if (searchTerm) {
-      filtered = filtered.filter(entry => 
-        entry.equipmentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        entry.jobName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        entry.notes?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      filtered = filtered.filter(entry => {
+        // Use the equipment map for faster lookup
+        const equipment = equipmentMap.get(entry.equipmentId);
+        const userFriendlyId = equipment?.equipmentId || entry.equipmentId;
+        
+        return userFriendlyId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+               entry.jobName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+               entry.notes?.toLowerCase().includes(searchTerm.toLowerCase());
+      });
     }
 
     if (selectedAction !== 'all') {
@@ -53,7 +67,7 @@ const EquipmentHistoryViewer: React.FC = () => {
     }
 
     return filtered;
-  }, [history, searchTerm, selectedAction]);
+  }, [history, searchTerm, selectedAction, equipmentMap]);
 
   const getActionIcon = (action: string) => {
     switch (action) {
@@ -97,8 +111,24 @@ const EquipmentHistoryViewer: React.FC = () => {
     }
   };
 
+  const getEquipmentDisplayInfo = useCallback((equipmentId: string) => {
+    const equipment = equipmentMap.get(equipmentId);
+    if (equipment) {
+      return {
+        id: equipment.equipmentId,
+        name: equipment.name,
+        found: true
+      };
+    }
+    return {
+      id: `Unknown (${equipmentId.substring(0, 8)}...)`,
+      name: 'Equipment not found in current inventory',
+      found: false
+    };
+  }, [equipmentMap]);
+
   const handleViewEquipmentHistory = (equipmentId: string) => {
-    const equipment = inventoryData.individualEquipment.find(e => e.id === equipmentId);
+    const equipment = equipmentMap.get(equipmentId);
     if (equipment) {
       setSelectedEquipment(equipment);
       setHistoryDialogOpen(true);
@@ -208,7 +238,21 @@ const EquipmentHistoryViewer: React.FC = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="font-mono text-sm">{record.equipmentId}</div>
+                          <div className="font-mono text-sm">
+                            {(() => {
+                              const displayInfo = getEquipmentDisplayInfo(record.equipmentId);
+                              return (
+                                <div>
+                                  <div className={`font-semibold ${displayInfo.found ? 'text-black' : 'text-orange-600'}`}>
+                                    {displayInfo.id}
+                                  </div>
+                                  <div className={`text-xs ${displayInfo.found ? 'text-gray-500' : 'text-orange-500'}`}>
+                                    {displayInfo.name}
+                                  </div>
+                                </div>
+                              );
+                            })()}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
@@ -317,7 +361,7 @@ const EquipmentHistoryViewer: React.FC = () => {
       </div>
 
       {/* Equipment History Dialog */}
-      <EquipmentHistoryDialog
+      <UnifiedEquipmentHistoryDialog
         equipment={selectedEquipment}
         isOpen={historyDialogOpen}
         onClose={() => {

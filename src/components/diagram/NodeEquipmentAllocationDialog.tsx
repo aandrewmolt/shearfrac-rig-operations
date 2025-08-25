@@ -26,9 +26,16 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
 }) => {
   const { data: inventoryData } = useInventory();
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<string>('');
-  const [availableEquipment, setAvailableEquipment] = useState<any[]>([]);
+  const [availableEquipment, setAvailableEquipment] = useState<Array<{
+    id: string;
+    equipmentId: string;
+    name: string;
+    locationId: string;
+    status: string;
+    typeId: string;
+  }>>([]);
 
-  const getNodeEquipmentType = (nodeType: string, nodeData?: any) => {
+  const getNodeEquipmentType = (nodeType: string, nodeData?: { gaugeType?: string }) => {
     switch (nodeType) {
       case 'mainBox': return 'shearstream-box';
       case 'yAdapter': return 'y-adapter';
@@ -36,10 +43,10 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
       case 'companyComputer': return 'customer-computer';
       case 'satellite': return 'starlink';
       case 'well':
-        // For wells, check the selected gauge types
-        if (nodeData?.gaugeTypes?.length > 0) {
-          // Return the first selected gauge type
-          return nodeData.gaugeTypes[0];
+        // For wells, check the selected gauge type
+        if (nodeData?.gaugeType) {
+          // Return the selected gauge type
+          return nodeData.gaugeType;
         }
         return 'pressure-gauge-1502'; // Default to 1502
       case 'wellsideGauge': return 'pressure-gauge-1502';
@@ -72,14 +79,13 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
                           item.equipmentTypeId === equipmentTypeId ||
                           item.Type === equipmentTypeId;
           
-          // For wells with multiple gauge types, check all selected types
-          if (node.type === 'well' && node.data?.gaugeTypes?.length > 0) {
-            const matchesAnyGaugeType = node.data.gaugeTypes.some((gaugeType: string) => 
-              item.typeId === gaugeType || 
-              item.equipmentTypeId === gaugeType ||
-              item.Type === gaugeType
-            );
-            if (!matchesAnyGaugeType) return false;
+          // For wells with gauge type, check selected type
+          if (node.type === 'well' && node.data?.gaugeType) {
+            const matchesGaugeType = 
+              item.typeId === node.data.gaugeType || 
+              item.equipmentTypeId === node.data.gaugeType ||
+              item.Type === node.data.gaugeType;
+            if (!matchesGaugeType) return false;
           }
           
           // Status check
@@ -145,21 +151,21 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
           )}
 
           {/* Show gauge type selection for wells */}
-          {node?.type === 'well' && node.data?.gaugeTypes?.length > 1 && (
+          {node?.type === 'well' && node.data?.gaugeType && (
             <div className="bg-blue-50 p-3 rounded-lg text-sm">
-              <p className="font-medium mb-1">Selected Gauge Types:</p>
+              <p className="font-medium mb-1">Selected Gauge Type:</p>
               <div className="flex flex-wrap gap-1">
-                {node.data.gaugeTypes.map((typeId: string) => {
-                  const type = inventoryData.equipmentTypes.find(t => t.id === typeId);
+                {(() => {
+                  const type = inventoryData.equipmentTypes.find(t => t.id === node.data.gaugeType);
                   return (
-                    <Badge key={typeId} variant="outline" className="text-xs">
-                      {type?.name || typeId}
+                    <Badge variant="outline" className="text-xs">
+                      {type?.name || node.data.gaugeType}
                     </Badge>
                   );
-                })}
+                })()}
               </div>
               <p className="text-xs text-blue-600 mt-2">
-                You can allocate equipment from any of these gauge types.
+                Equipment will be allocated for this gauge type.
               </p>
             </div>
           )}

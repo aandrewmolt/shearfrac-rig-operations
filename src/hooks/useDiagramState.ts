@@ -65,7 +65,18 @@ export const useDiagramState = () => {
     );
   }, []);
 
-  const syncWithLoadedData = useCallback((jobData: any) => {
+  const syncWithLoadedData = useCallback((jobData: { 
+    selectedCableType?: string; 
+    equipmentAssignment?: Record<string, string>; 
+    companyComputerNames?: Record<string, string>;
+    fracBaudRate?: string;
+    gaugeBaudRate?: string;
+    fracComPort?: string;
+    gaugeComPort?: string;
+    mainBoxName?: string;
+    satelliteName?: string;
+    wellsideGaugeName?: string;
+  }) => {
     if (jobData.selectedCableType) {
       setSelectedCableType(jobData.selectedCableType);
     }

@@ -9,8 +9,8 @@ interface AuditEntry {
   entityType: 'equipment' | 'job' | 'location' | 'type';
   entityId: string;
   details: {
-    before?: any;
-    after?: any;
+    before?: Record<string, unknown>;
+    after?: Record<string, unknown>;
     quantity?: number;
     fromLocation?: string;
     toLocation?: string;
@@ -142,7 +142,7 @@ export const useAuditTrail = () => {
     try {
       const stored = localStorage.getItem('audit-trail');
       if (stored) {
-        const parsed = JSON.parse(stored).map((entry: any) => ({
+        const parsed = JSON.parse(stored).map((entry: Omit<AuditEntry, 'timestamp'> & { timestamp: string }) => ({
           ...entry,
           timestamp: new Date(entry.timestamp),
         }));

@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Shield, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react';
 import { useUnifiedInventory } from '@/hooks/useUnifiedInventory';
 import { toast } from 'sonner';
+import { EquipmentItem } from '@/types/types';
 
 const InventoryConsistencyValidator: React.FC = () => {
   const { data, updateEquipment } = useUnifiedInventory();
@@ -27,7 +28,7 @@ const InventoryConsistencyValidator: React.FC = () => {
       const updatedItems = [...data.equipmentItems];
 
       // Check for duplicate deployments
-      const deploymentMap = new Map<string, any[]>();
+      const deploymentMap = new Map<string, EquipmentItem[]>();
       data.equipmentItems.forEach(item => {
         if (item.status === 'deployed' && item.jobId) {
           const key = `${item.typeId}-${item.jobId}`;

@@ -17,7 +17,7 @@ import { useUnifiedInventory } from '@/hooks/useUnifiedInventory';
 const RedTagManager: React.FC = () => {
   const { data, updateEquipment } = useUnifiedInventory();
   const { jobs } = useJobs();
-  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [selectedItem, setSelectedItem] = useState<unknown>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [redTagData, setRedTagData] = useState({
@@ -67,7 +67,7 @@ const RedTagManager: React.FC = () => {
     }));
   };
 
-  const handleRedTag = async (item: any) => {
+  const handleRedTag = async (item: unknown) => {
     if (!redTagData.reason) {
       toast.error('Red tag reason is required');
       return;
@@ -94,7 +94,7 @@ const RedTagManager: React.FC = () => {
     }
   };
 
-  const handleRemoveRedTag = async (item: any) => {
+  const handleRemoveRedTag = async (item: unknown) => {
     try {
       const updates = {
         status: 'available' as const,
@@ -113,7 +113,7 @@ const RedTagManager: React.FC = () => {
     }
   };
 
-  const getLocationName = (item: any) => {
+  const getLocationName = (item: unknown) => {
     const displayLocation = getEquipmentDisplayLocation(item);
     
     if (displayLocation.type === 'job') {
@@ -161,7 +161,7 @@ const RedTagManager: React.FC = () => {
                     <CardTitle className="text-lg text-red-800">
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="h-5 w-5" />
-                        {isIndividual ? item.equipmentId : `${typeName} (Qty: ${(item as any).quantity})`}
+                        {isIndividual ? item.equipmentId : `${typeName} (Qty: ${'quantity' in item ? item.quantity : 0})`}
                       </div>
                     </CardTitle>
                     <Badge variant="destructive">

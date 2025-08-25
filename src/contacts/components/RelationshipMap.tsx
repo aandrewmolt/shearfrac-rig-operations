@@ -180,7 +180,7 @@ function NetworkVisualization({
     }
 
     return { nodes, relationships, positions: nodePositions };
-  }, [filteredData, dimensions, viewSettings.layout]);
+  }, [filteredData, dimensions]);
 
   const getNodeSize = (node: ContactNode) => {
     switch (viewSettings.nodeSize) {
@@ -195,7 +195,7 @@ function NetworkVisualization({
 
   const getNodeColor = (node: ContactNode) => {
     switch (viewSettings.colorBy) {
-      case 'type':
+      case 'type': {
         const typeColors = {
           client: '#3B82F6',
           frac: '#10B981',
@@ -203,11 +203,13 @@ function NetworkVisualization({
           default: '#6B7280'
         };
         return typeColors[node.type as keyof typeof typeColors] || typeColors.default;
+      }
       case 'company':
         return networkData.clusters.find(c => c.type === 'company' && c.contacts.includes(node.id))?.color || '#6B7280';
-      case 'cluster':
+      case 'cluster': {
         const cluster = networkData.clusters.find(c => c.contacts.includes(node.id));
         return cluster?.color || '#6B7280';
+      }
       default:
         return '#6B7280';
     }

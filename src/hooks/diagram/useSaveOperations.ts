@@ -3,9 +3,10 @@ import React, { useCallback } from 'react';
 import { useJobs } from '@/hooks/useJobs';
 import { useEquipmentNameSync } from '@/hooks/useEquipmentNameSync';
 import { useExtrasEquipmentSync } from '@/hooks/useExtrasEquipmentSync';
+import { Job } from '@/types/types';
 
 interface UseSaveOperationsProps {
-  saveDataMemo: any;
+  saveDataMemo: Job;
   isInitialized: boolean;
   hasDataChanged: () => boolean;
   markAsSaved: () => void;
@@ -49,7 +50,7 @@ export const useSaveOperations = ({
           fracBaud: saveDataMemo.fracBaudRate,
           gaugeBaud: saveDataMemo.gaugeBaudRate
         },
-        edgeTypes: saveDataMemo.edges.map((e: any) => ({ id: e.id, type: e.type, connectionType: e.data?.connectionType }))
+        edgeTypes: saveDataMemo.edges.map((e) => ({ id: e.id, type: e.type, connectionType: e.data?.connectionType }))
       });
       
       setSaveInProgress(true);

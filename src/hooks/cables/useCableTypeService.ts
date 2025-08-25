@@ -1,6 +1,6 @@
 
 import { EquipmentType } from '@/types/inventory';
-import { migrateCableTypeId } from '@/utils/cableTypeMigration';
+import { migrateCableTypeId } from '@/utils/consolidated/migrationUtils';
 
 export const useCableTypeService = (equipmentTypes: EquipmentType[]) => {
   

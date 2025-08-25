@@ -38,18 +38,17 @@ export class TransactionManager {
         data: results as T
       };
     } catch (error) {
-      console.error('Transaction failed:', error);
-      
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Transaction failed',
+        error: error instanceof Error ? error.message : 'Unknown transaction error',
+        data: null as T
       };
     }
   }
 
   private async executeOperation(operation: TransactionOperation): Promise<unknown> {
-    const { table, operation: op, data, id, conditions } = operation;
-
+    const { op, table, data, id, conditions } = operation;
+    
     switch (op) {
       case 'insert':
         if (!data) throw new Error('Insert operation requires data');

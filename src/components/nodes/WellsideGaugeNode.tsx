@@ -5,7 +5,29 @@ import { Gauge } from 'lucide-react';
 import NodeDeleteButton from './NodeDeleteButton';
 import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
-const WellsideGaugeNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
+// Extended node data interface for Wellside Gauge specific properties
+interface WellsideGaugeNodeData {
+  label?: string;
+  equipmentId?: string;
+  color?: string;
+  wellNumber?: number;
+  jobId?: string;
+  assigned?: boolean;
+  customName?: string;
+  fracComPort?: string;
+  gaugeComPort?: string;
+  fracBaudRate?: string;
+  gaugeBaudRate?: string;
+  equipmentName?: string | null;
+}
+
+interface WellsideGaugeNodeProps {
+  id: string;
+  data: WellsideGaugeNodeData;
+  selected?: boolean;
+}
+
+const WellsideGaugeNode: React.FC<WellsideGaugeNodeProps> = ({ id, data, selected }) => {
   const { deleteElements, setNodes } = useReactFlow();
   const backgroundColor = data.color || '#f59e0b';
   const borderColor = data.color === '#f59e0b' ? '#d97706' : data.color;

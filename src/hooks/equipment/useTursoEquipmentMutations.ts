@@ -17,24 +17,17 @@ export const useTursoEquipmentMutations = () => {
       await tursoDb.addEquipmentType(equipmentType);
       return equipmentType;
     } catch (error) {
-      console.error('Failed to add equipment type:', error);
+      console.error('Error adding equipment type:', error);
       throw error;
     }
   };
 
-  const updateEquipmentType = async (id: string, data: Partial<EquipmentType>) => {
+  const updateEquipmentType = async (id: string, updateData: Partial<EquipmentType>) => {
     try {
-      const updateData = {
-        name: data.name,
-        category: data.category,
-        description: data.description,
-        default_id_prefix: data.defaultIdPrefix
-      };
-      
       await tursoDb.updateEquipmentType(id, updateData);
       return { id, ...updateData };
     } catch (error) {
-      console.error('Failed to update equipment type:', error);
+      console.error('Error updating equipment type:', error);
       throw error;
     }
   };
@@ -44,7 +37,7 @@ export const useTursoEquipmentMutations = () => {
       await tursoDb.deleteEquipmentType(id);
       return true;
     } catch (error) {
-      console.error('Failed to delete equipment type:', error);
+      console.error('Error deleting equipment type:', error);
       throw error;
     }
   };
@@ -56,30 +49,25 @@ export const useTursoEquipmentMutations = () => {
       const storageLocation = {
         id,
         name: data.name,
-        address: data.address || '',
-        is_default: data.isDefault || false
+        description: data.description || '',
+        locationType: data.locationType || 'storage',
+        isDefault: data.isDefault || false
       };
       
       await tursoDb.addStorageLocation(storageLocation);
       return storageLocation;
     } catch (error) {
-      console.error('Failed to add storage location:', error);
+      console.error('Error adding storage location:', error);
       throw error;
     }
   };
 
-  const updateStorageLocation = async (id: string, data: Partial<StorageLocation>) => {
+  const updateStorageLocation = async (id: string, updateData: Partial<StorageLocation>) => {
     try {
-      const updateData = {
-        name: data.name,
-        address: data.address,
-        is_default: data.isDefault
-      };
-      
       await tursoDb.updateStorageLocation(id, updateData);
       return { id, ...updateData };
     } catch (error) {
-      console.error('Failed to update storage location:', error);
+      console.error('Error updating storage location:', error);
       throw error;
     }
   };
@@ -89,7 +77,7 @@ export const useTursoEquipmentMutations = () => {
       await tursoDb.deleteStorageLocation(id);
       return true;
     } catch (error) {
-      console.error('Failed to delete storage location:', error);
+      console.error('Error deleting storage location:', error);
       throw error;
     }
   };
@@ -100,37 +88,31 @@ export const useTursoEquipmentMutations = () => {
       const id = `equipment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       const equipment = {
         id,
-        equipment_id: data.equipmentId,
-        equipment_type_id: data.equipmentTypeId,
-        storage_location_id: data.storageLocationId,
+        equipmentId: data.equipmentId,
+        name: data.name,
+        typeId: data.typeId,
+        locationId: data.locationId,
         status: data.status || 'available',
-        notes: data.notes || '',
-        last_updated_date: new Date().toISOString()
+        lastUpdated: new Date()
       };
       
       await tursoDb.addIndividualEquipment(equipment);
       return equipment;
     } catch (error) {
-      console.error('Failed to add individual equipment:', error);
+      console.error('Error adding individual equipment:', error);
       throw error;
     }
   };
 
-  const updateIndividualEquipment = async (id: string, data: Partial<IndividualEquipment>) => {
+  const updateIndividualEquipment = async (id: string, updateData: Partial<IndividualEquipment>) => {
     try {
-      const updateData = {
-        equipment_id: data.equipmentId,
-        equipment_type_id: data.equipmentTypeId,
-        storage_location_id: data.storageLocationId,
-        status: data.status,
-        notes: data.notes,
-        last_updated_date: new Date().toISOString()
-      };
-      
-      await tursoDb.updateIndividualEquipment(id, updateData);
+      await tursoDb.updateIndividualEquipment(id, {
+        ...updateData,
+        lastUpdated: new Date()
+      });
       return { id, ...updateData };
     } catch (error) {
-      console.error('Failed to update individual equipment:', error);
+      console.error('Error updating individual equipment:', error);
       throw error;
     }
   };
@@ -140,41 +122,43 @@ export const useTursoEquipmentMutations = () => {
       await tursoDb.deleteIndividualEquipment(id);
       return true;
     } catch (error) {
-      console.error('Failed to delete individual equipment:', error);
+      console.error('Error deleting individual equipment:', error);
       throw error;
     }
   };
 
   // Batch operations
-  const addBulkIndividualEquipment = async (equipmentList: Omit<IndividualEquipment, 'id'>[]) => {
+  const batchUpdateEquipment = async (updates: Array<{ id: string; data: Partial<IndividualEquipment> }>) => {
     try {
       const results = [];
-      for (const equipment of equipmentList) {
-        const result = await addIndividualEquipment(equipment);
+      for (const update of updates) {
+        const result = await updateIndividualEquipment(update.id, update.data);
         results.push(result);
       }
       return results;
     } catch (error) {
-      console.error('Failed to add bulk individual equipment:', error);
+      console.error('Error in batch equipment update:', error);
       throw error;
     }
   };
 
   return {
-    // Equipment Types
+    // Equipment Type operations
     addEquipmentType,
     updateEquipmentType,
     deleteEquipmentType,
     
-    // Storage Locations
+    // Storage Location operations
     addStorageLocation,
     updateStorageLocation,
     deleteStorageLocation,
     
-    // Individual Equipment
+    // Individual Equipment operations
     addIndividualEquipment,
     updateIndividualEquipment,
     deleteIndividualEquipment,
-    addBulkIndividualEquipment,
+    
+    // Batch operations
+    batchUpdateEquipment
   };
 };

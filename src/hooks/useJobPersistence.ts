@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Node, Edge } from '@xyflow/react';
 import { JobEquipmentAssignment } from '@/types/equipment';
 
@@ -25,7 +25,7 @@ export interface JobData {
 export const useJobPersistence = (jobId: string) => {
   const [jobData, setJobData] = useState<JobData | null>(null);
 
-  const validateJobData = (data: any): boolean => {
+  const validateJobData = (data: unknown): boolean => {
     if (!data || typeof data !== 'object') return false;
     
     // Check required fields
@@ -54,7 +54,7 @@ export const useJobPersistence = (jobId: string) => {
            typeof edge.target === 'string';
   };
 
-  const sanitizeEdgeData = (edges: any[]): Edge[] => {
+  const sanitizeEdgeData = useCallback((edges: unknown[]): Edge[] => {
     return edges.map((edge) => {
       if (!validateEdgeData(edge)) {
         console.warn('Invalid edge data found, attempting to fix:', edge);
@@ -92,7 +92,7 @@ export const useJobPersistence = (jobId: string) => {
 
       return sanitizedEdge;
     }).filter(edge => validateEdgeData(edge));
-  };
+  }, []);
 
   const saveJobData = (data: Partial<JobData>) => {
     console.log('Saving job data with keys:', Object.keys(data));
@@ -139,7 +139,7 @@ export const useJobPersistence = (jobId: string) => {
     }
   };
 
-  const loadJobData = () => {
+  const loadJobData = useCallback(() => {
     const primaryKey = `job-${jobId}`;
     const backupKey = `job-backup-${jobId}`;
     
@@ -221,11 +221,11 @@ export const useJobPersistence = (jobId: string) => {
       }
     }
     return null;
-  };
+  }, [jobId, setJobData, sanitizeEdgeData]);
 
   useEffect(() => {
     loadJobData();
-  }, [jobId]);
+  }, [jobId, loadJobData]);
 
   return { jobData, saveJobData, loadJobData };
 };

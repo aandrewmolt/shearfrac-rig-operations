@@ -54,7 +54,7 @@ export class SyncManager {
     const { operation, tableName, data } = op;
     
     switch (operation) {
-      case 'create':
+      case 'create': {
         const { data: created, error: createError } = await supabase
           .from(tableName)
           .insert(data)
@@ -72,8 +72,9 @@ export class SyncManager {
           );
         }
         break;
+      }
         
-      case 'update':
+      case 'update': {
         const { error: updateError } = await supabase
           .from(tableName)
           .update(data.updates)
@@ -86,8 +87,9 @@ export class SyncManager {
           { syncStatus: 'synced' }
         );
         break;
+      }
         
-      case 'delete':
+      case 'delete': {
         const { error: deleteError } = await supabase
           .from(tableName)
           .delete()
@@ -95,6 +97,7 @@ export class SyncManager {
           
         if (deleteError) throw deleteError;
         break;
+      }
     }
   }
   

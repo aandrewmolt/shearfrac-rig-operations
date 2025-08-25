@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Edit, Trash2, MapPin, History, Info } from 'lucide-react';
 import { IndividualEquipment, StorageLocation } from '@/types/inventory';
-import EquipmentHistoryDialog from './EquipmentHistoryDialog';
+import { UnifiedEquipmentHistoryDialog } from '@/components/shared';
 
 interface EnhancedEquipmentCardProps {
   equipment: IndividualEquipment;
@@ -171,10 +171,11 @@ const EnhancedEquipmentCard: React.FC<EnhancedEquipmentCardProps> = ({
           </div>
         </CardContent>
         
-        <EquipmentHistoryDialog
+        <UnifiedEquipmentHistoryDialog
           isOpen={isHistoryOpen}
           onClose={() => setIsHistoryOpen(false)}
           equipment={equipment}
+          variant="basic"
         />
       </Card>
     </TooltipProvider>

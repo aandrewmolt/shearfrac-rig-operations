@@ -101,7 +101,7 @@ async function ensureRequiredEquipmentTypes() {
         try {
           await tursoDb.createEquipmentType(type);
           console.log(`✅ Created ${type.name}`);
-        } catch (error: any) {
+        } catch (error: unknown) {
           if (error?.message?.includes('UNIQUE')) {
             console.log(`⚠️ ${type.name} already exists`);
           } else {
@@ -136,7 +136,7 @@ async function initializeFullInventory() {
           is_default: true
         });
         console.log('✅ Created Midland Office location');
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error?.message?.includes('UNIQUE')) {
           console.log('⚠️ Midland Office already exists');
         } else {

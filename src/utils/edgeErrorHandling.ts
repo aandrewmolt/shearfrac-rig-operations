@@ -21,11 +21,6 @@ export class EdgeErrorHandler {
       toast.warning(`Edge Warning: ${error.message}`);
     }
     
-    console.error('Edge error:', error);
-  }
-
-  static clearEdgeError(edgeId: string): void {
-    this.errors.delete(edgeId);
   }
 
   static getEdgeError(edgeId: string): EdgeError | undefined {

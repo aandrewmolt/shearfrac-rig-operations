@@ -17,7 +17,7 @@ export const useDiagramInitialization = (
   wellsideGaugeName: string,
   isInitialized: boolean,
   setNodes: (nodes: Node[]) => void,
-  setEdges: (edges: any[]) => void,
+  setEdges: (edges: unknown[]) => void,
   setNodeIdCounter: (counter: number) => void,
   setIsInitialized: (initialized: boolean) => void
 ) => {

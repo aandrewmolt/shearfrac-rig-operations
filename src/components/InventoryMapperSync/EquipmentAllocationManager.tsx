@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
 import { useInventory } from '@/contexts/InventoryContext';
 import { Package, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface EquipmentAllocationManagerProps {
   jobId: string;
@@ -107,11 +110,14 @@ export const EquipmentAllocationManager: React.FC<EquipmentAllocationManagerProp
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-        <Package className="h-5 w-5" />
-        Equipment Allocation - {jobName}
-      </h3>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Package className="h-5 w-5" />
+          Equipment Allocation - {jobName}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
 
       {/* Allocation Form */}
       <div className="mb-6">
@@ -119,33 +125,36 @@ export const EquipmentAllocationManager: React.FC<EquipmentAllocationManagerProp
           Allocate Equipment
         </label>
         <div className="flex gap-2">
-          <select
+          <Select
             value={selectedEquipmentId}
-            onChange={(e) => setSelectedEquipmentId(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onValueChange={setSelectedEquipmentId}
             disabled={isLoading || isValidating}
           >
-            <option value="">Select equipment...</option>
-            {availableEquipment.map((item) => {
-              const isIndividual = 'equipmentId' in item;
-              const id = isIndividual ? item.equipmentId : item.id;
-              const name = isIndividual ? item.name : getEquipmentDisplay(item.id).name;
-              
-              return (
-                <option key={id} value={id}>
-                  {name} ({id})
-                </option>
-              );
-            })}
-          </select>
+            <SelectTrigger className="flex-1">
+              <SelectValue placeholder="Select equipment..." />
+            </SelectTrigger>
+            <SelectContent>
+              {availableEquipment.map((item) => {
+                const isIndividual = 'equipmentId' in item;
+                const id = isIndividual ? item.equipmentId : item.id;
+                const name = isIndividual ? item.name : getEquipmentDisplay(item.id).name;
+                
+                return (
+                  <SelectItem key={id} value={id}>
+                    {name} ({id})
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
           
-          <button
+          <Button
             onClick={handleAllocate}
             disabled={!selectedEquipmentId || isLoading || isValidating}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            size="default"
           >
             {isLoading ? 'Allocating...' : 'Allocate'}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -181,24 +190,35 @@ export const EquipmentAllocationManager: React.FC<EquipmentAllocationManagerProp
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      status === 'deployed' 
-                        ? 'bg-green-100 text-green-700' 
-                        : status === 'allocated' 
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'bg-gray-100 text-gray-700'
-                    }`}>
+                    <Badge 
+                      variant={
+                        status === 'deployed' 
+                          ? 'default' 
+                          : status === 'allocated' 
+                          ? 'secondary'
+                          : 'outline'
+                      }
+                      className={`text-xs ${
+                        status === 'deployed' 
+                          ? 'bg-green-100 text-green-700 hover:bg-green-100' 
+                          : status === 'allocated' 
+                          ? 'bg-blue-100 text-blue-700 hover:bg-blue-100'
+                          : ''
+                      }`}
+                    >
                       {status}
-                    </span>
+                    </Badge>
                     
-                    <button
+                    <Button
                       onClick={() => handleRelease(equipmentId)}
                       disabled={isLoading}
-                      className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors"
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
                       title="Release equipment"
                     >
                       <XCircle className="h-4 w-4" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               );
@@ -206,6 +226,7 @@ export const EquipmentAllocationManager: React.FC<EquipmentAllocationManagerProp
           </div>
         )}
       </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };

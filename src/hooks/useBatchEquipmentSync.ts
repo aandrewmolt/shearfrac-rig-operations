@@ -1,15 +1,16 @@
 import { useCallback } from 'react';
 import { useInventory } from '@/contexts/InventoryContext';
 import { toast } from 'sonner';
+import { UpdateIndividualEquipmentInput } from '@/types/types';
 
 interface EquipmentUpdate {
   id: string;
-  updates: any;
+  updates: UpdateIndividualEquipmentInput;
 }
 
 interface BulkEquipmentUpdate {
   id: string;
-  updates: any;
+  updates: Partial<{ quantity: number; status: string; notes?: string; }>;
 }
 
 export const useBatchEquipmentSync = () => {

@@ -1,6 +1,6 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
-import { DATABASE_MODE } from '@/config/database.config';
+import { DATABASE_MODE } from '@/utils/consolidated/databaseUtils';
 
 export const LocalModeBanner = () => {
   // Show banner based on mode

@@ -18,7 +18,13 @@ interface ConnectionEditorDialogProps {
     target: string;
     sourceHandle?: string;
     targetHandle?: string;
-    data?: any;
+    data?: {
+      label?: string;
+      cableType?: string;
+      cableLength?: number;
+      isYConnection?: boolean;
+      [key: string]: unknown;
+    };
   };
   nodes: Node[];
 }

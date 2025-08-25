@@ -1,7 +1,8 @@
 import React from 'react';
 import { Wifi, Cloud } from 'lucide-react';
 import { Badge } from '../ui/badge';
-import { DATABASE_MODE } from '@/config/database.config';
+import { Card } from '../ui/card';
+import { DATABASE_MODE } from '@/utils/consolidated/databaseUtils';
 
 export function OfflineStatusBar() {
   // Only show for Turso mode
@@ -14,7 +15,7 @@ export function OfflineStatusBar() {
   
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 flex items-center gap-3">
+      <Card className="bg-white dark:bg-gray-800 shadow-lg p-3 flex items-center gap-3">
         {/* Connection Status */}
         <div className="flex items-center gap-2">
           {isOnline ? (
@@ -34,7 +35,7 @@ export function OfflineStatusBar() {
         <Badge variant="secondary" className="text-xs">
           Turso DB
         </Badge>
-      </div>
+      </Card>
     </div>
   );
 }

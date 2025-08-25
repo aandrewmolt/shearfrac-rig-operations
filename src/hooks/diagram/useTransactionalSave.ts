@@ -2,11 +2,17 @@ import { useCallback } from 'react';
 import { executeTransaction, TransactionOperation } from '@/utils/transactionWrapper';
 import { tursoDb } from '@/services/tursoDb';
 import { toast } from 'sonner';
+import { Job, JobEdge } from '@/types/types';
+import { IndividualEquipment } from '@/types/inventory';
 
 interface UseTransactionalSaveProps {
   jobId: string;
-  equipmentAssignment?: any;
-  extrasOnLocation?: any[];
+  equipmentAssignment?: {
+    shearstreamBoxIds?: string[];
+    starlinkId?: string;
+    customerComputerIds?: string[];
+  };
+  extrasOnLocation?: IndividualEquipment[];
 }
 
 export const useTransactionalSave = ({ jobId, equipmentAssignment, extrasOnLocation }: UseTransactionalSaveProps) => {
@@ -14,7 +20,7 @@ export const useTransactionalSave = ({ jobId, equipmentAssignment, extrasOnLocat
   /**
    * Save job diagram with all related equipment in a transaction
    */
-  const saveJobWithTransaction = useCallback(async (jobData: any) => {
+  const saveJobWithTransaction = useCallback(async (jobData: Job) => {
     const operations: TransactionOperation[] = [];
 
     // 1. Main job save operation
@@ -86,7 +92,7 @@ export const useTransactionalSave = ({ jobId, equipmentAssignment, extrasOnLocat
             data: {
               status: 'deployed',
               job_id: jobId,
-              name: extra.name // Sync name if changed
+              name: extra.name || '' // Sync name if changed
             },
             id: extra.id
           });
@@ -145,7 +151,7 @@ export const useTransactionalSave = ({ jobId, equipmentAssignment, extrasOnLocat
     }
 
     // Update the edges with new cable types
-    const updatedEdges = currentJob.edges.map((edge: any) => {
+    const updatedEdges = currentJob.edges.map((edge: JobEdge) => {
       const update = edges.find(e => e.id === edge.id);
       if (update) {
         return {

@@ -3,7 +3,7 @@ import React from 'react';
 import { Node } from '@xyflow/react';
 import WellConfigurationPanel from './WellConfigurationPanel';
 import CompactJobEquipmentPanel from './CompactJobEquipmentPanel';
-import CompactEquipmentSelectionPanel from './CompactEquipmentSelectionPanel';
+import { UnifiedEquipmentSelectionPanel } from '@/components/shared';
 
 interface Job {
   id: string;
@@ -16,7 +16,7 @@ interface Job {
 interface JobDiagramPanelsProps {
   job: Job;
   nodes: Node[];
-  edges: any[];
+  edges: unknown[];
   selectedCableType: string;
   setSelectedCableType: (type: string) => void;
   selectedShearstreamBoxes: string[];
@@ -63,7 +63,8 @@ const JobDiagramPanels: React.FC<JobDiagramPanelsProps> = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-      <CompactEquipmentSelectionPanel
+      <UnifiedEquipmentSelectionPanel
+        variant="compact"
         selectedShearstreamBoxes={selectedShearstreamBoxes}
         selectedStarlink={selectedStarlink}
         selectedCustomerComputers={selectedCustomerComputers}

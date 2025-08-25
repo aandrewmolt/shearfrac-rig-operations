@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-export const useInventoryRealtime = (refetch: any) => {
+export const useInventoryRealtime = (refetch: () => void) => {
   const [optimisticDeletes, setOptimisticDeletes] = useState<Set<string>>(new Set());
   const debounceTimeoutRef = useRef<NodeJS.Timeout>();
 

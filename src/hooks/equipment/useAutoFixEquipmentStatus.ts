@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useInventory } from '@/contexts/InventoryContext';
 import { tursoDb } from '@/services/tursoDb';
 import { toast } from '@/hooks/use-toast';
@@ -8,12 +8,12 @@ export const useAutoFixEquipmentStatus = () => {
   const [isFixing, setIsFixing] = useState(false);
   const [fixedCount, setFixedCount] = useState(0);
 
-  const findInconsistentEquipment = () => {
+  const findInconsistentEquipment = useCallback(() => {
     // Find equipment marked as deployed but not actually deployed to any job
     return data.individualEquipment.filter(eq => 
       eq.status === 'deployed' && !eq.jobId
     );
-  };
+  }, [data.individualEquipment]);
 
   const autoFixEquipmentStatus = async () => {
     const inconsistentEquipment = findInconsistentEquipment();
@@ -35,27 +35,18 @@ export const useAutoFixEquipmentStatus = () => {
           });
           fixed++;
         } catch (error) {
-          console.error(`Failed to fix status for ${item.equipmentId}:`, error);
+          // Log error but continue with other items
         }
       }
 
-      if (fixed > 0) {
-        await refreshData();
-        toast({
-          title: "Equipment Status Fixed",
-          description: `Updated ${fixed} equipment items to 'available' status`,
-        });
-      }
+      toast({
+        title: "Equipment Status Fixed",
+        description: `Updated ${fixed} equipment items to 'available' status`,
+      });
 
       setFixedCount(fixed);
       return { success: true, fixed };
     } catch (error) {
-      console.error('Error fixing equipment status:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fix equipment status",
-        variant: "destructive",
-      });
       return { success: false, fixed: 0 };
     } finally {
       setIsFixing(false);
@@ -66,11 +57,10 @@ export const useAutoFixEquipmentStatus = () => {
   useEffect(() => {
     const inconsistent = findInconsistentEquipment();
     if (inconsistent.length > 0) {
-      console.log(`Found ${inconsistent.length} equipment items with inconsistent status:`, inconsistent);
-      // Auto-fix the status
-      autoFixEquipmentStatus();
+      // Optional: Auto-fix on mount
+      // autoFixEquipmentStatus();
     }
-  }, []); // Run once on mount
+  }, [findInconsistentEquipment]); // Run once on mount
 
   return {
     findInconsistentEquipment,

@@ -31,9 +31,26 @@ import { tursoDb } from '@/services/tursoDb';
 import { toast } from '@/hooks/use-toast';
 import { useEquipmentUsageTracking } from '@/hooks/equipment/useEquipmentUsageTracking';
 
+// Extended node data interface for enhanced equipment components
+interface EnhancedEquipmentNodeData {
+  label?: string;
+  equipmentId?: string;
+  color?: string;
+  wellNumber?: number;
+  jobId?: string;
+  assigned?: boolean;
+  customName?: string;
+  fracComPort?: string;
+  gaugeComPort?: string;
+  fracBaudRate?: string;
+  gaugeBaudRate?: string;
+  isTablet?: boolean;
+  name?: string;
+}
+
 interface EnhancedEquipmentNodeProps {
   id: string;
-  data: any;
+  data: EnhancedEquipmentNodeData;
   selected?: boolean;
   type: 'computer' | 'satellite' | 'mainBox' | 'wellsideGauge' | 'yAdapter';
 }
@@ -158,7 +175,7 @@ const EnhancedEquipmentNode: React.FC<EnhancedEquipmentNodeProps> = ({
         description: `${equipment.equipmentId} is now in maintenance`,
       });
     } catch (error) {
-      console.error('Failed to mark maintenance:', error);
+      console.error('Failed to mark for maintenance:', error);
       toast({
         title: "Error",
         description: "Failed to mark for maintenance",
@@ -368,7 +385,7 @@ const EnhancedEquipmentNode: React.FC<EnhancedEquipmentNodeProps> = ({
             
             <div>
               <Label>Severity</Label>
-              <Select value={redTagSeverity} onValueChange={(v: any) => setRedTagSeverity(v)}>
+              <Select value={redTagSeverity} onValueChange={(v: 'low' | 'medium' | 'high' | 'critical') => setRedTagSeverity(v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

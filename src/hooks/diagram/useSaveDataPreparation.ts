@@ -12,8 +12,8 @@ interface Job {
 
 interface UseSaveDataPreparationProps {
   job: Job;
-  nodes: any[];
-  edges: any[];
+  nodes: unknown[];
+  edges: unknown[];
   mainBoxName: string;
   satelliteName: string;
   wellsideGaugeName: string;
@@ -22,7 +22,7 @@ interface UseSaveDataPreparationProps {
   selectedShearstreamBoxes: string[];
   selectedStarlink: string;
   selectedCustomerComputers: string[];
-  extrasOnLocation?: any[];
+  extrasOnLocation?: unknown[];
 }
 
 export const useSaveDataPreparation = ({

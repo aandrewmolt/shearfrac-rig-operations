@@ -89,8 +89,6 @@ const JobDiagramCanvas: React.FC<JobDiagramCanvasProps> = ({
           fitView
           className="bg-gray-50"
           deleteKeyCode={['Backspace', 'Delete']}
-          edgesSelectable={true} // Enable edge selection
-          selectEdgesOnDrag={false} // Don't select edges on drag
           defaultEdgeOptions={{
             type: 'cable',
             animated: false,

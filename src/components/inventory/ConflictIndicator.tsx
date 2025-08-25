@@ -1,40 +1,31 @@
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { EquipmentConflict } from '@/types/equipment-allocation';
-import { ConflictResolver } from '@/components/InventoryMapperSync/ConflictResolver';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface ConflictIndicatorProps {
-  conflicts: EquipmentConflict[];
+  hasConflict: boolean;
+  conflictMessage?: string;
 }
 
-const ConflictIndicator: React.FC<ConflictIndicatorProps> = ({ conflicts }) => {
-  if (conflicts.length === 0) return null;
+export const ConflictIndicator: React.FC<ConflictIndicatorProps> = ({ 
+  hasConflict, 
+  conflictMessage 
+}) => {
+  if (!hasConflict) {
+    return (
+      <div className="flex items-center gap-2 text-green-600">
+        <CheckCircle className="h-4 w-4" />
+        <span className="text-sm">Available</span>
+      </div>
+    );
+  }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="destructive" size="sm" className="gap-2">
-          <AlertCircle className="h-4 w-4" />
-          <span>{conflicts.length} Conflict{conflicts.length > 1 ? 's' : ''}</span>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Equipment Conflicts</DialogTitle>
-        </DialogHeader>
-        <ConflictResolver />
-      </DialogContent>
-    </Dialog>
+    <div className="flex items-center gap-2 text-amber-600">
+      <AlertTriangle className="h-4 w-4" />
+      <span className="text-sm">{conflictMessage || 'Conflict detected'}</span>
+    </div>
   );
 };
 
+// Add default export for compatibility
 export default ConflictIndicator;

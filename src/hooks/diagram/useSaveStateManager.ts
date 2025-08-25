@@ -1,7 +1,8 @@
 
 import { useRef, useMemo } from 'react';
+import { Job } from '@/types/types';
 
-export const useSaveStateManager = (saveDataMemo: any) => {
+export const useSaveStateManager = (saveDataMemo: Job) => {
   const lastSavedDataRef = useRef<string>('');
   const initialLoadCompleteRef = useRef(false);
   const saveInProgressRef = useRef(false);

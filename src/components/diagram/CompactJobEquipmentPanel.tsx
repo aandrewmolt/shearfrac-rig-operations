@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,8 +39,25 @@ const CompactJobEquipmentPanel: React.FC<CompactJobEquipmentPanelProps> = ({
   edges,
 }) => {
   const { data, getInventorySummary, getDeployedEquipment } = useUnifiedInventory();
-  const [selectedLocation, setSelectedLocation] = useState<string>(data.storageLocations[0]?.id || '');
+  
+  // Find "Midland Office" or default location as the initial selection
+  const defaultLocation = data.storageLocations.find(loc => 
+    loc.name.toLowerCase().includes('midland') || loc.isDefault
+  ) || data.storageLocations[0];
+  
+  const [selectedLocation, setSelectedLocation] = useState<string>(defaultLocation?.id || '');
   const [autoAllocationEnabled, setAutoAllocationEnabled] = useState(false);
+  
+  // Reset to Midland Office when storage locations change
+  useEffect(() => {
+    const midlandOffice = data.storageLocations.find(loc => 
+      loc.name.toLowerCase().includes('midland') || loc.isDefault
+    ) || data.storageLocations[0];
+    
+    if (midlandOffice && (!selectedLocation || !data.storageLocations.find(loc => loc.id === selectedLocation))) {
+      setSelectedLocation(midlandOffice.id);
+    }
+  }, [data.storageLocations, selectedLocation]);
   
   // Debug equipment state
   useEquipmentDebugger();

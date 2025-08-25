@@ -11,7 +11,7 @@ interface EdgeDebugPanelProps {
 const EdgeDebugPanel: React.FC<EdgeDebugPanelProps> = ({ edges }) => {
   // Group edges by cable type
   const edgesByCableType = edges.reduce((acc, edge) => {
-    const cableTypeId = (edge.data as any)?.cableTypeId || 'NO_CABLE_TYPE_ID';
+    const cableTypeId = (edge.data as { cableTypeId?: string })?.cableTypeId || 'NO_CABLE_TYPE_ID';
     if (!acc[cableTypeId]) {
       acc[cableTypeId] = [];
     }
@@ -56,7 +56,12 @@ const EdgeDebugPanel: React.FC<EdgeDebugPanelProps> = ({ edges }) => {
         <div className="space-y-2 border-t pt-2">
           <div className="font-semibold">All Edge Details:</div>
           {edges.map((edge, index) => {
-            const data = edge.data as any;
+            const data = edge.data as { 
+              cableTypeId?: string;
+              label?: string;
+              isYConnection?: boolean;
+              equipmentId?: string;
+            };
             return (
               <div key={edge.id} className="ml-2 p-2 bg-gray-50 rounded text-xs space-y-1">
                 <div className="font-medium">Edge {index + 1}:</div>

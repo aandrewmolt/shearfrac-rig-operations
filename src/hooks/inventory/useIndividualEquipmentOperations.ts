@@ -4,6 +4,7 @@ import { IndividualEquipment, StorageLocation } from '@/types/inventory';
 import { useInventory } from '@/contexts/InventoryContext';
 import { toast } from 'sonner';
 import { validateStatusUpdate, showStatusValidationError, ValidEquipmentStatus } from '@/utils/equipmentStatusValidation';
+import { useEquipmentUsageTracking } from '@/hooks/equipment/useEquipmentUsageTracking';
 
 export const useIndividualEquipmentOperations = (
   individualEquipment: IndividualEquipment[],
@@ -11,6 +12,7 @@ export const useIndividualEquipmentOperations = (
   storageLocations: StorageLocation[]
 ) => {
   const { updateIndividualEquipment, deleteIndividualEquipment } = useInventory();
+  const { endUsageSession } = useEquipmentUsageTracking();
 
   const handleStatusChange = useCallback(async (equipmentId: string, newStatus: ValidEquipmentStatus) => {
     try {
@@ -28,13 +30,19 @@ export const useIndividualEquipmentOperations = (
         return;
       }
 
+      // Automatically end usage tracking if equipment is being red-tagged or put in maintenance
+      if ((newStatus === 'red-tagged' || newStatus === 'maintenance' || newStatus === 'retired') && 
+          equipment.jobId && equipment.equipmentId) {
+        await endUsageSession(equipment.equipmentId, equipment.jobId);
+      }
+
       await updateIndividualEquipment(equipmentId, { status: validation.status });
       toast.success('Equipment status updated');
     } catch (error) {
       console.error('Failed to update equipment status:', error);
       toast.error('Failed to update equipment status');
     }
-  }, [individualEquipment, updateIndividualEquipment]);
+  }, [individualEquipment, updateIndividualEquipment, endUsageSession]);
 
   const handleLocationChange = useCallback(async (equipmentId: string, newLocationId: string) => {
     try {

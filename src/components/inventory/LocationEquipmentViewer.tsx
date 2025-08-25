@@ -64,7 +64,7 @@ const LocationEquipmentViewer: React.FC = () => {
             />
           </div>
         </div>
-        <Select value={filterType} onValueChange={(value: any) => setFilterType(value)}>
+        <Select value={filterType} onValueChange={(value: unknown) => setFilterType(value)}>
           <SelectTrigger className="w-48">
             <SelectValue>
               <div className="flex items-center gap-2">

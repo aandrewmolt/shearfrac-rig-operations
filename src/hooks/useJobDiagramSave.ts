@@ -104,7 +104,7 @@ export const useJobDiagramSave = ({
 
       return () => clearTimeout(timer);
     }
-  }, [isInitialized, currentDataString, setInitialLoadComplete, isInitialLoadComplete, markAsSaved]);
+  }, [isInitialized, setInitialLoadComplete, isInitialLoadComplete, markAsSaved]);
 
   // Trigger debounced save with enhanced debugging
   useEffect(() => {

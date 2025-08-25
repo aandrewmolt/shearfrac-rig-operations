@@ -88,9 +88,9 @@ export function ContactsGroupedView({ contacts, onEdit, onDelete }: ContactsGrou
                   )}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {crewContacts.map(contact => (
-                      <div
+                      <Card
                         key={contact.id}
-                        className="p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow"
+                        className="p-3 hover:shadow-md transition-shadow"
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div>
@@ -156,7 +156,7 @@ export function ContactsGroupedView({ contacts, onEdit, onDelete }: ContactsGrou
                             </Badge>
                           )}
                         </div>
-                      </div>
+                      </Card>
                     ))}
                   </div>
                 </div>

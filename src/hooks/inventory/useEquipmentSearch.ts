@@ -1,5 +1,5 @@
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { EquipmentItem, IndividualEquipment, EquipmentType, StorageLocation } from '@/types/inventory';
 import { useJobLocationIntegration } from '@/hooks/useJobLocationIntegration';
 
@@ -30,10 +30,10 @@ export const useEquipmentSearch = ({
     return equipmentTypes.find(type => type.id === typeId)?.category || 'other';
   };
 
-  const getLocationName = (locationId: string) => {
+  const getLocationName = useCallback((locationId: string) => {
     // Use job-aware location name lookup
     return getJobAwareLocationName(locationId);
-  };
+  }, [getJobAwareLocationName]);
 
   const filteredEquipmentItems = useMemo(() => {
     return equipmentItems.filter(item => {
@@ -62,7 +62,7 @@ export const useEquipmentSearch = ({
       
       return true;
     });
-  }, [equipmentItems, equipmentTypes, storageLocations, searchTerm, filterStatus, filterLocation, filterCategory]);
+  }, [equipmentItems, equipmentTypes, searchTerm, filterStatus, filterLocation, filterCategory, getLocationName]);
 
   const filteredIndividualEquipment = useMemo(() => {
     return individualEquipment.filter(item => {
@@ -93,7 +93,7 @@ export const useEquipmentSearch = ({
       
       return true;
     });
-  }, [individualEquipment, equipmentTypes, storageLocations, searchTerm, filterStatus, filterLocation, filterCategory]);
+  }, [individualEquipment, equipmentTypes, searchTerm, filterStatus, filterLocation, filterCategory, getLocationName]);
 
   const clearFilters = () => {
     setSearchTerm('');

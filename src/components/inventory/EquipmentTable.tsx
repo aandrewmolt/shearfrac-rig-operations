@@ -11,9 +11,12 @@ import { useJobs } from '@/hooks/useJobs';
 import { EquipmentConflict } from '@/types/equipment-allocation';
 
 interface EquipmentTableProps {
-  filteredEquipment: any[];
-  data: any;
-  onEdit: (item: any) => void;
+  filteredEquipment: unknown[];
+  data: {
+    storageLocations: Array<{ id: string; name: string; }>;
+    equipmentTypes: Array<{ id: string; name: string; category: string; }>;
+  };
+  onEdit: (item: unknown) => void;
   onDelete: (itemId: string) => void;
   onStatusChange: (itemId: string, newStatus: 'available' | 'deployed' | 'red-tagged') => void;
   getEquipmentTypeName: (typeId: string) => string;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -10,6 +10,8 @@ import { Trash2, CheckCircle2, MoreVertical } from 'lucide-react';
 import { JobDiagram } from '@/hooks/useJobs';
 import { JobCompletionDialog } from './JobCompletionDialog';
 import { JobDeletionDialog } from './JobDeletionDialog';
+import { useInventory } from '@/contexts/InventoryContext';
+import { useEquipmentDeployment } from '@/hooks/equipment/useEquipmentDeployment';
 
 interface JobActionsMenuProps {
   job: JobDiagram;
@@ -24,13 +26,36 @@ export const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
 }) => {
   const [showCompletionDialog, setShowCompletionDialog] = useState(false);
   const [showDeletionDialog, setShowDeletionDialog] = useState(false);
+  const { data, updateIndividualEquipment } = useInventory();
+  const { returnEquipment } = useEquipmentDeployment();
+
+  // Find all equipment currently deployed to this job
+  const deployedEquipment = useMemo(() => {
+    return data.individualEquipment.filter(
+      equipment => equipment.jobId === job.id && equipment.status === 'deployed'
+    );
+  }, [data.individualEquipment, job.id]);
 
   const handleComplete = (endDate: string) => {
     onCompleteJob(job, endDate);
     setShowCompletionDialog(false);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async (returnLocationId?: string) => {
+    // If there's deployed equipment, return it to the selected location
+    if (deployedEquipment.length > 0 && returnLocationId) {
+      for (const equipment of deployedEquipment) {
+        if (equipment.equipmentId) {
+          // Update equipment to set it to available and move it to the selected location
+          await updateIndividualEquipment(equipment.id, {
+            status: 'available',
+            jobId: null,
+            locationId: returnLocationId
+          });
+        }
+      }
+    }
+    
     onDeleteJob(job);
     setShowDeletionDialog(false);
   };
@@ -86,7 +111,13 @@ export const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
         onOpenChange={setShowDeletionDialog}
         onConfirm={handleDelete}
         jobName={job.name}
-        hasEquipment={job.equipmentAllocated}
+        hasEquipment={deployedEquipment.length > 0}
+        deployedEquipment={deployedEquipment.map(equipment => ({
+          id: equipment.id,
+          typeId: equipment.typeId,
+          quantity: 1,
+          typeName: equipment.name || equipment.equipmentId || 'Unknown Equipment'
+        }))}
       />
     </>
   );

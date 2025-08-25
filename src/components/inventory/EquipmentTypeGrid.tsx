@@ -4,8 +4,10 @@ import { CardContent } from '@/components/ui/card';
 import EquipmentTypeItem from './EquipmentTypeItem';
 
 interface EquipmentTypeGridProps {
-  filteredTypes: any[];
-  data: any;
+  filteredTypes: unknown[];
+  data: {
+    equipmentTypes: Array<{ id: string; name: string; category: string; }>;
+  };
   canDeleteEquipmentType: (typeId: string) => { canDelete: boolean; reason?: string; details?: string[] };
   getEquipmentCountForType: (typeId: string) => {
     equipmentItems: number;
@@ -13,7 +15,7 @@ interface EquipmentTypeGridProps {
     totalQuantity: number;
   };
   getCategoryColor: (category: string) => string;
-  onEdit: (type: any) => void;
+  onEdit: (type: { id: string; name: string; category: string; }) => void;
   onDelete: (typeId: string, typeName: string) => void;
 }
 

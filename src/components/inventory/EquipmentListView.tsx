@@ -38,7 +38,7 @@ const EquipmentListView = () => {
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   // Removed viewMode - only showing individual equipment now
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<any>(null);
+  const [editingItem, setEditingItem] = useState<unknown>(null);
   const [formData, setFormData] = useState({
     typeId: '',
     locationId: '',
@@ -189,7 +189,7 @@ const EquipmentListView = () => {
     setIsAddDialogOpen(false);
   };
 
-  const handleEdit = (item: any) => {
+  const handleEdit = (item: unknown) => {
     setEditingItem(item);
     setFormData({
       typeId: item.typeId,

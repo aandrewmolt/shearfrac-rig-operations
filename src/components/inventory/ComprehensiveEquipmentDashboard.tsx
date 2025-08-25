@@ -16,7 +16,7 @@ const ComprehensiveEquipmentDashboard: React.FC = () => {
   // Group equipment by job and type
   const equipmentByJob: Record<string, {
     jobName: string;
-    equipment: any[];
+    equipment: unknown[];
   }> = {};
 
   // Initialize with all jobs
@@ -148,7 +148,7 @@ const ComprehensiveEquipmentDashboard: React.FC = () => {
                   if (!acc[typeName]) acc[typeName] = [];
                   acc[typeName].push(item);
                   return acc;
-                }, {} as Record<string, any[]>);
+                }, {} as Record<string, Array<{ id: string; name: string; equipmentId: string; status: string; }>>);
                 
                 // Create a row for each equipment type at this location
                 return Object.entries(groupedEquipment).map(([typeName, items], index) => (
@@ -169,9 +169,9 @@ const ComprehensiveEquipmentDashboard: React.FC = () => {
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {items.map(i => (
-                          <span key={i.id} className="text-xs bg-gray-100 px-2 py-1 rounded">
+                          <Badge key={i.id} variant="secondary" className="text-xs">
                             {i.equipmentId}
-                          </span>
+                          </Badge>
                         ))}
                       </div>
                     </TableCell>

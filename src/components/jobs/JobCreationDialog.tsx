@@ -27,7 +27,7 @@ import { cn } from '@/lib/utils';
 interface JobCreationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreateJob: (jobData: { name: string; client: string; wellCount: number; hasWellsideGauge: boolean }) => void;
+  onCreateJob: (jobData: { name: string; client: string; pad: string; wellCount: number; hasWellsideGauge: boolean }) => void;
 }
 
 const JobCreationDialog: React.FC<JobCreationDialogProps> = ({ 
@@ -35,7 +35,7 @@ const JobCreationDialog: React.FC<JobCreationDialogProps> = ({
   onOpenChange, 
   onCreateJob 
 }) => {
-  const [newJobName, setNewJobName] = useState('');
+  const [newJobPad, setNewJobPad] = useState('');
   const [newJobClient, setNewJobClient] = useState('');
   const [newJobWells, setNewJobWells] = useState('1');
   const [hasWellsideGauge, setHasWellsideGauge] = useState(false);
@@ -76,8 +76,8 @@ const JobCreationDialog: React.FC<JobCreationDialogProps> = ({
       return;
     }
     
-    if (!newJobName.trim()) {
-      toast.error('Please enter a job name');
+    if (!newJobPad.trim()) {
+      toast.error('Please enter a pad name');
       return;
     }
 
@@ -87,14 +87,18 @@ const JobCreationDialog: React.FC<JobCreationDialogProps> = ({
       return;
     }
 
+    // Create job name as "Client - Pad"
+    const jobName = `${newJobClient.trim()} - ${newJobPad.trim()}`;
+
     onCreateJob({
-      name: newJobName.trim(),
+      name: jobName,
       client: newJobClient.trim(),
+      pad: newJobPad.trim(),
       wellCount: wellCount,
       hasWellsideGauge,
     });
     
-    setNewJobName('');
+    setNewJobPad('');
     setNewJobClient('');
     setNewJobWells('1');
     setHasWellsideGauge(false);
@@ -193,11 +197,11 @@ const JobCreationDialog: React.FC<JobCreationDialogProps> = ({
             </Popover>
           </div>
           <div>
-            <Label htmlFor="jobName">Job Name</Label>
+            <Label htmlFor="padName">Pad Name</Label>
             <Input
-              id="jobName"
-              value={newJobName}
-              onChange={(e) => setNewJobName(e.target.value)}
+              id="padName"
+              value={newJobPad}
+              onChange={(e) => setNewJobPad(e.target.value)}
               placeholder="e.g. Mohawk 1, Green Beret 24..."
               className="mt-1"
             />

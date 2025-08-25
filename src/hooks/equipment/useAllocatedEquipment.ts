@@ -4,6 +4,7 @@ import { useInventory } from '@/contexts/InventoryContext';
 import { useEquipmentHistory } from '@/hooks/equipment/useEquipmentHistory';
 import { useJobs } from '@/hooks/useJobs';
 import { toast } from 'sonner';
+import { IndividualEquipment, EquipmentType } from '@/types/inventory';
 
 interface AllocatedEquipment {
   nodeAllocations: Record<string, string>; // nodeId -> equipmentId
@@ -74,8 +75,6 @@ export const useAllocatedEquipment = (jobId: string, nodes: Node[], edges: Edge[
       toast.success('Equipment allocated successfully');
       return true;
     } catch (error) {
-      console.error('Failed to allocate equipment:', error);
-      toast.error('Failed to allocate equipment');
       return false;
     }
   }, [jobId, updateIndividualEquipment, inventoryData.individualEquipment, trackEquipmentChange, currentJob]);
@@ -117,8 +116,6 @@ export const useAllocatedEquipment = (jobId: string, nodes: Node[], edges: Edge[
       toast.success('Equipment deallocated successfully');
       return true;
     } catch (error) {
-      console.error('Failed to deallocate equipment:', error);
-      toast.error('Failed to deallocate equipment');
       return false;
     }
   }, [jobId, allocatedEquipment.nodeAllocations, updateIndividualEquipment, inventoryData.individualEquipment, trackEquipmentChange, currentJob]);
@@ -156,8 +153,6 @@ export const useAllocatedEquipment = (jobId: string, nodes: Node[], edges: Edge[
       toast.success('Cable allocated successfully');
       return true;
     } catch (error) {
-      console.error('Failed to allocate cable:', error);
-      toast.error('Failed to allocate cable');
       return false;
     }
   }, [jobId, updateIndividualEquipment, inventoryData.individualEquipment, trackEquipmentChange, currentJob]);
@@ -199,16 +194,26 @@ export const useAllocatedEquipment = (jobId: string, nodes: Node[], edges: Edge[
       toast.success('Cable deallocated successfully');
       return true;
     } catch (error) {
-      console.error('Failed to deallocate cable:', error);
-      toast.error('Failed to deallocate cable');
       return false;
     }
   }, [jobId, allocatedEquipment.edgeAllocations, updateIndividualEquipment, inventoryData.individualEquipment, trackEquipmentChange, currentJob]);
 
   const getAllocatedEquipmentSummary = useCallback(() => {
     const summary = {
-      nodes: [] as any[],
-      cables: [] as any[],
+      nodes: [] as Array<{
+        nodeId: string;
+        nodeLabel: string;
+        equipmentId: string;
+        equipmentName?: string;
+        equipmentType?: string;
+      }>,
+      cables: [] as Array<{
+        edgeId: string;
+        connection: string;
+        cableId: string;
+        cableName?: string;
+        cableType?: string;
+      }>,
       totalAllocated: 0
     };
 

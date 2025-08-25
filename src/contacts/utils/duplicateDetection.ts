@@ -210,9 +210,10 @@ export function suggestMerge(contacts: Contact[]): Contact {
   // Merge fields, preferring non-empty values
   contacts.forEach(contact => {
     Object.keys(contact).forEach(key => {
-      const value = contact[key as keyof Contact];
-      if (value && !mergedContact[key as keyof Contact]) {
-        (mergedContact as any)[key] = value;
+      const contactKey = key as keyof Contact;
+      const value = contact[contactKey];
+      if (value && !mergedContact[contactKey]) {
+        mergedContact[contactKey] = value as never;
       }
     });
   });

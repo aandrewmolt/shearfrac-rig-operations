@@ -3,7 +3,21 @@
 export const DATABASE_MODE = 'turso';
 
 // Lazy-loaded configuration to avoid accessing env vars at module level
-let _databaseConfig: any = null;
+interface DatabaseConfig {
+  mode: string;
+  turso: {
+    available: boolean;
+    url: string;
+  };
+  features: {
+    realtime: boolean;
+    fileStorage: boolean;
+    authentication: boolean;
+    cloudSync: boolean;
+  };
+}
+
+let _databaseConfig: DatabaseConfig | null = null;
 
 export const getDatabaseConfig = () => {
   if (!_databaseConfig) {
@@ -31,10 +45,10 @@ export const getDatabaseConfig = () => {
 };
 
 // Export for backward compatibility
-export const databaseConfig = new Proxy({} as any, {
+export const databaseConfig = new Proxy({} as DatabaseConfig, {
   get(target, prop) {
     const config = getDatabaseConfig();
-    return config[prop];
+    return config[prop as keyof DatabaseConfig];
   }
 });
 

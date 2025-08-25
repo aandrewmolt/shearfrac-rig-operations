@@ -166,7 +166,8 @@ const RedTagDashboard = () => {
               </div>
             ) : (
               filteredItems.map(item => (
-                <div key={item.id} className="p-4 border border-red-200 rounded-lg bg-red-50">
+                <Card key={item.id} className="border-red-200 bg-red-50">
+                  <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -209,7 +210,8 @@ const RedTagDashboard = () => {
                       </Button>
                     </div>
                   </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))
             )}
           </TabsContent>

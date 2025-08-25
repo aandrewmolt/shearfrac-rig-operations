@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useInventoryData } from './useInventoryData';
 import { toast } from 'sonner';
 
@@ -18,7 +18,7 @@ export const useRealTimeInventory = () => {
   const [alerts, setAlerts] = useState<InventoryAlert[]>([]);
   const [lastValidation, setLastValidation] = useState<Date>(() => new Date());
 
-  const validateInventoryIntegrity = () => {
+  const validateInventoryIntegrity = useCallback(() => {
     const newAlerts: InventoryAlert[] = [];
     
     // Check for equipment types without any inventory
@@ -82,7 +82,7 @@ export const useRealTimeInventory = () => {
     setLastValidation(new Date());
     
     return newAlerts;
-  };
+  }, [data.equipmentItems, data.equipmentTypes, data.storageLocations]);
 
   const autoCorrectInventory = () => {
     const correctionsMade: string[] = [];
@@ -150,7 +150,7 @@ export const useRealTimeInventory = () => {
   // Run validation when inventory data changes
   useEffect(() => {
     validateInventoryIntegrity();
-  }, [data.equipmentItems, data.equipmentTypes, data.storageLocations]);
+  }, [data.equipmentItems, data.equipmentTypes, data.storageLocations, validateInventoryIntegrity]);
 
   return {
     alerts,

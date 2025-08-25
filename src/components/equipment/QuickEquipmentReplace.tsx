@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card } from '@/components/ui/card';
 import { RefreshCw, Package, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import { useInventory } from '@/contexts/InventoryContext';
 import { tursoDb } from '@/services/tursoDb';
@@ -91,11 +93,6 @@ export const QuickEquipmentReplace: React.FC<QuickEquipmentReplaceProps> = ({
       onOpenChange(false);
     } catch (error) {
       console.error('Failed to replace equipment:', error);
-      toast({
-        title: "Error",
-        description: "Failed to replace equipment",
-        variant: "destructive"
-      });
     } finally {
       setIsProcessing(false);
     }
@@ -133,9 +130,9 @@ export const QuickEquipmentReplace: React.FC<QuickEquipmentReplaceProps> = ({
                       {availableEquipment.map(eq => {
                         const location = inventoryData.storageLocations.find(l => l.id === eq.locationId);
                         return (
-                          <div
+                          <Card
                             key={eq.id}
-                            className={`flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer ${
+                            className={`flex items-center space-x-3 p-3 hover:bg-gray-50 cursor-pointer ${
                               selectedEquipment === eq.id ? 'border-blue-500 bg-blue-50' : ''
                             }`}
                             onClick={() => setSelectedEquipment(eq.id)}
@@ -166,7 +163,7 @@ export const QuickEquipmentReplace: React.FC<QuickEquipmentReplaceProps> = ({
                                 Available
                               </Badge>
                             </div>
-                          </div>
+                          </Card>
                         );
                       })}
                     </div>
@@ -175,12 +172,14 @@ export const QuickEquipmentReplace: React.FC<QuickEquipmentReplaceProps> = ({
               </div>
 
               {selectedEquipment && (
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-blue-900 font-medium">Replacement Summary</p>
-                  <p className="text-xs text-blue-700 mt-1">
-                    Equipment will be deployed to {jobName} and usage tracking will begin
-                  </p>
-                </div>
+                <Alert className="bg-blue-50 border-blue-200">
+                  <AlertDescription>
+                    <p className="text-sm font-medium mb-1">Replacement Summary</p>
+                    <p className="text-xs">
+                      Equipment will be deployed to {jobName} and usage tracking will begin
+                    </p>
+                  </AlertDescription>
+                </Alert>
               )}
             </>
           )}

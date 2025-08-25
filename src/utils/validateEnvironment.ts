@@ -1,4 +1,4 @@
-import { DATABASE_MODE } from '@/config/database.config';
+import { DATABASE_MODE } from '@/utils/consolidated/databaseUtils';
 
 interface EnvironmentValidation {
   isValid: boolean;
@@ -62,22 +62,24 @@ export function validateEnvironment(): EnvironmentValidation {
 export function logEnvironmentStatus(): void {
   const validation = validateEnvironment();
   
-  console.group('🔍 Environment Validation');
-  console.log(`Database Mode: ${DATABASE_MODE}`);
-  console.log(`Environment: ${import.meta.env.MODE}`);
-  console.log(`Production: ${import.meta.env.PROD}`);
+  console.log('Environment validation results:', {
+    isValid: validation.isValid,
+    errors: validation.errors,
+    warnings: validation.warnings,
+    databaseMode: DATABASE_MODE
+  });
   
   if (validation.errors.length > 0) {
-    console.error('❌ Errors:', validation.errors);
+    console.error('Environment validation errors:', validation.errors);
   }
   
   if (validation.warnings.length > 0) {
-    console.warn('⚠️ Warnings:', validation.warnings);
+    console.warn('Environment validation warnings:', validation.warnings);
   }
   
   if (validation.isValid) {
-    console.log('✅ Environment configuration is valid');
+    console.log('Environment validation passed successfully');
+  } else {
+    console.error('Environment validation failed');
   }
-  
-  console.groupEnd();
 }

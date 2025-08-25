@@ -5,6 +5,7 @@ import { useUnifiedInventory } from '@/hooks/useUnifiedInventory';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -72,15 +73,15 @@ const JobsList: React.FC<JobsListProps> = ({
         isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
       )}>
         {[1, 2, 3].map(i => (
-          <div key={i} className="bg-white rounded-lg shadow-sm border p-4 sm:p-6 animate-pulse">
-            <div className="h-6 bg-gray-200 rounded mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded mb-4"></div>
+          <Card key={i} className="p-4 sm:p-6">
+            <Skeleton className="h-6 w-3/4 mb-4" />
+            <Skeleton className="h-4 w-1/2 mb-2" />
+            <Skeleton className="h-4 w-full mb-4" />
             <div className="flex gap-2">
-              <div className="h-8 bg-gray-200 rounded flex-1"></div>
-              <div className="h-8 bg-gray-200 rounded flex-1"></div>
+              <Skeleton className="h-8 flex-1" />
+              <Skeleton className="h-8 flex-1" />
             </div>
-          </div>
+          </Card>
         ))}
       </div>
     );

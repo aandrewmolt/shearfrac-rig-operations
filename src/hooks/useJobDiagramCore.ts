@@ -4,8 +4,9 @@ import { useJobDiagramState } from '@/hooks/useJobDiagramState';
 import { useJobDiagramInitialization } from '@/hooks/useJobDiagramInitialization';
 import { useDiagramConnections } from '@/hooks/useDiagramConnections';
 import { JobDiagram } from '@/hooks/useJobs';
+import { IndividualEquipment } from '@/types/equipment';
 
-export const useJobDiagramCore = (job: JobDiagram) => {
+export const useJobDiagramCore = (job: JobDiagram, inventoryData?: IndividualEquipment[]) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
   // State management
@@ -69,6 +70,7 @@ export const useJobDiagramCore = (job: JobDiagram) => {
     mainBoxName,
     satelliteName,
     wellsideGaugeName,
+    inventoryData,
   });
 
   // Initialize cable type

@@ -13,8 +13,8 @@ interface UseJobDiagramActionsProps {
   job: Job;
   nodeIdCounter: number;
   setNodeIdCounter: (counter: number) => void;
-  setNodes: (updater: (nodes: any[]) => any[]) => void;
-  setEdges: (updater: (edges: any[]) => any[]) => void;
+  setNodes: (updater: (nodes: unknown[]) => any[]) => void;
+  setEdges: (updater: (edges: unknown[]) => any[]) => void;
   setIsInitialized: (initialized: boolean) => void;
   initializeJob: () => void;
   reactFlowWrapper: React.RefObject<HTMLDivElement>;

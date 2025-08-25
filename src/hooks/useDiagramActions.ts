@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Node, getNodesBounds, getViewportForBounds } from '@xyflow/react';
+import { Node, Edge, getNodesBounds, getViewportForBounds } from '@xyflow/react';
 import { toast } from 'sonner';
 import { toPng, toJpeg, toSvg } from 'html-to-image';
 
@@ -16,7 +16,7 @@ export const useDiagramActions = (
   nodeIdCounter: number,
   setNodeIdCounter: (counter: number) => void,
   setNodes: (updater: (nodes: Node[]) => Node[]) => void,
-  setEdges: (updater: (edges: any[]) => any[]) => void,
+  setEdges: (updater: (edges: Edge[]) => Edge[]) => void,
   setIsInitialized: (initialized: boolean) => void,
   initializeJob: () => void,
   reactFlowWrapper: React.RefObject<HTMLDivElement>,
@@ -254,7 +254,7 @@ export const useDiagramActions = (
     } finally {
       toast.dismiss(loadingToast);
     }
-  }, [job.name, reactFlowWrapper, downloadImage]);
+  }, [reactFlowWrapper, downloadImage]);
 
   const addYAdapterWithEquipment = useCallback((equipmentId: string, equipmentName: string) => {
     const newYAdapter: Node = {

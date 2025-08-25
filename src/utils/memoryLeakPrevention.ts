@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useEffect, useRef, useCallback, MutableRefObject } from 'react';
 
 /**
@@ -396,6 +397,3 @@ export function useDisposableStore(): DisposableStore {
 
   return storeRef.current;
 }
-
-// Missing React import
-import * as React from 'react';

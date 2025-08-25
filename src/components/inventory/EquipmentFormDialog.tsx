@@ -12,7 +12,7 @@ import { Plus } from 'lucide-react';
 interface EquipmentFormDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  editingItem: any;
+  editingItem: { id: string; equipmentId: string; name: string; } | null;
   formData: {
     typeId: string;
     locationId: string;
@@ -21,10 +21,10 @@ interface EquipmentFormDialogProps {
     status: 'available' | 'deployed' | 'red-tagged';
     notes: string;
   };
-  setFormData: (data: any) => void;
+  setFormData: (data: unknown) => void;
   data: {
-    equipmentTypes: any[];
-    storageLocations: any[];
+    equipmentTypes: unknown[];
+    storageLocations: unknown[];
   };
   onSubmit: () => void;
   onCancel: () => void;

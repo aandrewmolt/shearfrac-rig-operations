@@ -10,6 +10,8 @@ import {
   Edge,
   Connection,
   ConnectionLineType,
+  NodeChange,
+  EdgeChange,
 } from '@xyflow/react';
 import { Card, CardContent } from '@/components/ui/card';
 import '../edges/EdgeSelectionStyles.css';
@@ -40,8 +42,8 @@ const edgeTypes = {
 interface DiagramCanvasProps {
   nodes: Node[];
   edges: Edge[];
-  onNodesChange: (changes: any) => void;
-  onEdgesChange: (changes: any) => void;
+  onNodesChange: (changes: NodeChange[]) => void;
+  onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (connection: Connection) => void;
   reactFlowWrapper: React.RefObject<HTMLDivElement>;
 }
@@ -87,8 +89,6 @@ const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
             style={{ backgroundColor: '#f8fafc' }}
             deleteKeyCode={['Delete', 'Backspace']} // Enable delete key for edges
             multiSelectionKeyCode={null} // Simplify selection
-            edgesSelectable={true} // Enable edge selection
-            selectEdgesOnDrag={false} // Don't select edges on drag
             defaultEdgeOptions={{
               style: { strokeWidth: 3, stroke: '#374151' },
               type: 'cable',

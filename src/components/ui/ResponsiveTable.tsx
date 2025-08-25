@@ -3,6 +3,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { MoreVertical, ChevronRight } from 'lucide-react';
 import {
   DropdownMenu,
@@ -10,6 +11,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 interface ResponsiveTableColumn<T> {
@@ -68,7 +78,7 @@ export function ResponsiveTable<T>({
     return (
       <div className="space-y-3">
         {[1, 2, 3].map(i => (
-          <div key={i} className="h-20 bg-gray-100 rounded-lg animate-pulse" />
+          <Skeleton key={i} className="h-20 w-full" />
         ))}
       </div>
     );
@@ -113,12 +123,10 @@ export function ResponsiveTable<T>({
                 {/* Selection checkbox */}
                 {onSelectRow && (
                   <div className="absolute top-4 left-4">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={isSelected}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        onSelectRow(id, e.target.checked);
+                      onCheckedChange={(checked) => {
+                        onSelectRow(id, checked as boolean);
                       }}
                       className="h-4 w-4 text-blue-600 rounded border-gray-300"
                       onClick={(e) => e.stopPropagation()}
@@ -216,86 +224,80 @@ export function ResponsiveTable<T>({
       )}
       
       <div className="overflow-x-auto rounded-lg border bg-white">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b">
-            <tr>
+        <Table>
+          <TableHeader>
+            <TableRow>
               {onSelectRow && (
-                <th className="w-12 px-4 py-3">
-                  <input
-                    type="checkbox"
+                <TableHead className="w-12">
+                  <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
-                    onChange={(e) => {
+                    onCheckedChange={(checked) => {
                       data.forEach(item => {
-                        onSelectRow(getRowId(item), e.target.checked);
+                        onSelectRow(getRowId(item), checked as boolean);
                       });
                     }}
                     className="h-4 w-4 text-blue-600 rounded border-gray-300"
                   />
-                </th>
+                </TableHead>
               )}
               {visibleColumns.map((column) => (
-                <th
+                <TableHead
                   key={column.key}
                   className={cn(
-                    "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
                     column.align === 'center' && "text-center",
                     column.align === 'right' && "text-right",
                     column.width
                   )}
                 >
                   {column.header}
-                </th>
+                </TableHead>
               ))}
               {actions && actions.length > 0 && (
-                <th className="w-20 px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <TableHead className="w-20 text-right">
                   Actions
-                </th>
+                </TableHead>
               )}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {data.map((item) => {
               const id = getRowId(item);
               const isSelected = selectedRows.includes(id);
               
               return (
-                <tr
+                <TableRow
                   key={id}
                   className={cn(
-                    "transition-colors",
-                    onRowClick && "cursor-pointer hover:bg-gray-50",
+                    onRowClick && "cursor-pointer",
                     isSelected && "bg-blue-50"
                   )}
                   onClick={() => onRowClick?.(item)}
                 >
                   {onSelectRow && (
-                    <td className="px-4 py-4">
-                      <input
-                        type="checkbox"
+                    <TableCell>
+                      <Checkbox
                         checked={isSelected}
-                        onChange={(e) => {
-                          e.stopPropagation();
-                          onSelectRow(id, e.target.checked);
+                        onCheckedChange={(checked) => {
+                          onSelectRow(id, checked as boolean);
                         }}
                         onClick={(e) => e.stopPropagation()}
                         className="h-4 w-4 text-blue-600 rounded border-gray-300"
                       />
-                    </td>
+                    </TableCell>
                   )}
                   {visibleColumns.map((column) => (
-                    <td
+                    <TableCell
                       key={column.key}
                       className={cn(
-                        "px-4 py-4 text-sm",
                         column.align === 'center' && "text-center",
                         column.align === 'right' && "text-right"
                       )}
                     >
                       {column.render(item)}
-                    </td>
+                    </TableCell>
                   ))}
                   {actions && actions.length > 0 && (
-                    <td className="px-4 py-4 text-right">
+                    <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                           <Button variant="ghost" size="sm">
@@ -323,13 +325,13 @@ export function ResponsiveTable<T>({
                           })}
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    </td>
+                    </TableCell>
                   )}
-                </tr>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

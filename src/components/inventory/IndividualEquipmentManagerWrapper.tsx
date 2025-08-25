@@ -291,7 +291,7 @@ const IndividualEquipmentManagerWrapper: React.FC = () => {
               <Label>Category</Label>
               <Select 
                 value={newTypeData.category} 
-                onValueChange={(value: any) => setNewTypeData(prev => ({ ...prev, category: value }))}
+                onValueChange={(value: unknown) => setNewTypeData(prev => ({ ...prev, category: value }))}
               >
                 <SelectTrigger>
                   <SelectValue />

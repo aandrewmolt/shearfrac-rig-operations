@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import AppHeader from '@/components/AppHeader';
 import ComprehensiveEquipmentDashboard from '@/components/inventory/ComprehensiveEquipmentDashboard';
 import EquipmentTypeManager from '@/components/inventory/EquipmentTypeManager';
-import StorageLocationManager from '@/components/inventory/StorageLocationManager';
+import UnifiedLocationsManager from '@/components/inventory/UnifiedLocationsManager';
 import EquipmentListView from '@/components/inventory/EquipmentListView';
-import EquipmentTransferSystem from '@/components/inventory/EquipmentTransferSystem';
 import EquipmentHistoryViewer from '@/components/inventory/EquipmentHistoryViewer';
 import EnhancedEquipmentReports from '@/components/inventory/EnhancedEquipmentReports';
 import { EquipmentUsageTracker } from '@/components/equipment/EquipmentUsageTracker';
@@ -36,7 +35,7 @@ const EquipmentInventory = () => {
     { value: 'equipment-types', label: 'Types', icon: Settings },
     { value: 'equipment-list', label: 'Inventory', icon: List },
     { value: 'usage', label: 'Usage Tracking', icon: History },
-    { value: 'locations', label: 'Locations & Transfers', icon: MapPin },
+    { value: 'locations', label: 'Locations & Jobs', icon: MapPin },
     { value: 'history', label: 'History', icon: History },
     { value: 'reports', label: 'Reports', icon: FileText },
     { value: 'system', label: 'System', icon: CheckSquare },
@@ -159,10 +158,7 @@ const EquipmentInventory = () => {
               </TabsContent>
 
               <TabsContent value="locations" className="h-full">
-                <div className="space-y-6">
-                  <StorageLocationManager />
-                  <EquipmentTransferSystem />
-                </div>
+                <UnifiedLocationsManager />
               </TabsContent>
 
               <TabsContent value="history" className="h-full">

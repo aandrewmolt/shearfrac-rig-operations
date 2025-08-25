@@ -17,8 +17,8 @@ interface InteractiveCableEdgeProps {
   sourceY: number;
   targetX: number;
   targetY: number;
-  sourcePosition: any;
-  targetPosition: any;
+  sourcePosition: Position;
+  targetPosition: Position;
   style?: React.CSSProperties;
   markerEnd?: string;
   selected?: boolean;
@@ -61,10 +61,8 @@ const InteractiveCableEdge: React.FC<InteractiveCableEdgeProps> = ({
   const nodes = getNodes();
   const currentEdge = edges.find(edge => edge.id === id);
   
-  if (!currentEdge) return null;
-
-  const sourceNode = nodes.find(n => n.id === currentEdge.source);
-  const targetNode = nodes.find(n => n.id === currentEdge.target);
+  const sourceNode = currentEdge ? nodes.find(n => n.id === currentEdge.source) : undefined;
+  const targetNode = currentEdge ? nodes.find(n => n.id === currentEdge.target) : undefined;
 
   // Get current label and ensure it's a string with type guard
   const labelResult = getCurrentLabel(data, currentEdge);
@@ -94,34 +92,10 @@ const InteractiveCableEdge: React.FC<InteractiveCableEdgeProps> = ({
   // Check if this is a Y to Well connection (can toggle between 100ft and direct)
   const isYToWellConnection = checkIsYToWellConnection(sourceNode?.type, targetNode?.type);
   
-  // Additional debug for Y-Well connections
-  if (sourceNode?.type === 'yAdapter' || targetNode?.type === 'yAdapter') {
-    console.log('Y-adapter edge detected:', {
-      id,
-      sourceType: sourceNode?.type,
-      targetType: targetNode?.type,
-      isYToWellConnection,
-      canToggle: isYToWellConnection
-    });
-  }
-  
-  // Additional debugging for selection state
-  React.useEffect(() => {
-    if (selected) {
-      console.log('Edge selected:', { 
-        id, 
-        isYToWellConnection,
-        sourceType: sourceNode?.type,
-        targetType: targetNode?.type,
-        canToggle: isYToWellConnection
-      });
-    }
-  }, [selected, id, isYToWellConnection, sourceNode?.type, targetNode?.type]);
-
-  // Use the edge toggle logic hook
+  // Use the edge toggle logic hook - must be called before any early returns
   const { handleEdgeToggle } = useEdgeToggleLogic({ id, data, currentEdge });
 
-  // Handle edge deletion
+  // Handle edge deletion - must be defined before any early returns
   const handleEdgeDelete = useCallback(() => {
     console.log('Deleting edge:', id);
     setEdges((edges) => edges.filter(edge => edge.id !== id));
@@ -132,8 +106,16 @@ const InteractiveCableEdge: React.FC<InteractiveCableEdgeProps> = ({
       setTimeout(() => data.immediateSave!(), 50);
     }
   }, [id, setEdges, data]);
+  
+  // Add click handler directly to the edge - must be defined before any early returns
+  const handleEdgeClick = useCallback(() => {
+    console.log('Edge clicked directly:', { id, selected, isYToWellConnection });
+    if (isYToWellConnection) {
+      handleEdgeToggle();
+    }
+  }, [id, selected, isYToWellConnection, handleEdgeToggle]);
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts - must be defined before any early returns
   useEffect(() => {
     if (!selected) return;
 
@@ -159,8 +141,35 @@ const InteractiveCableEdge: React.FC<InteractiveCableEdgeProps> = ({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [selected, handleEdgeDelete, handleEdgeToggle, isYToWellConnection]);
+  }, [selected, handleEdgeDelete, handleEdgeToggle, isYToWellConnection, id, sourceNode?.type, targetNode?.type]);
 
+  // Additional debugging for selection state
+  React.useEffect(() => {
+    if (selected) {
+      console.log('Edge selected:', { 
+        id, 
+        isYToWellConnection,
+        sourceType: sourceNode?.type,
+        targetType: targetNode?.type,
+        canToggle: isYToWellConnection
+      });
+    }
+  }, [selected, id, isYToWellConnection, sourceNode?.type, targetNode?.type]);
+  
+  // Additional debug for Y-Well connections
+  if (sourceNode?.type === 'yAdapter' || targetNode?.type === 'yAdapter') {
+    console.log('Y-adapter edge detected:', {
+      id,
+      sourceType: sourceNode?.type,
+      targetType: targetNode?.type,
+      isYToWellConnection,
+      canToggle: isYToWellConnection
+    });
+  }
+  
+  // Early return if no current edge - AFTER all hooks
+  if (!currentEdge) return null;
+  
   // Enhanced styling based on connection type and selection state
   const getEdgeStyle = () => {
     const connectionType = getConnectionType();
@@ -187,14 +196,6 @@ const InteractiveCableEdge: React.FC<InteractiveCableEdgeProps> = ({
     
     return baseStyle;
   };
-
-  // Add click handler directly to the edge
-  const handleEdgeClick = useCallback(() => {
-    console.log('Edge clicked directly:', { id, selected, isYToWellConnection });
-    if (isYToWellConnection) {
-      handleEdgeToggle();
-    }
-  }, [id, selected, isYToWellConnection, handleEdgeToggle]);
 
   return (
     <>

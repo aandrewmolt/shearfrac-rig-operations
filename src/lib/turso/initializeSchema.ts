@@ -1,40 +1,46 @@
-import { createSchema } from './schema';
-import { addJobStatusFields } from './migrations/addJobStatusFields';
+import { turso } from './client';
 
 let schemaInitialized = false;
 
-export async function ensureSchemaInitialized() {
-  if (schemaInitialized) {
-    return true;
-  }
-
+export async function initializeSchema() {
   try {
-    console.log('🔨 Ensuring database schema is initialized...');
-    await createSchema();
+    // Check if tables exist first
+    const result = await turso.execute(`
+      SELECT name FROM sqlite_master 
+      WHERE type='table' AND name='users'
+    `);
     
-    // Run migrations
-    console.log('🔧 Running database migrations...');
-    try {
-      await addJobStatusFields();
-    } catch (migrationError: any) {
-      // Ignore if columns already exist
-      if (!migrationError.message?.includes('duplicate column')) {
-        console.error('Migration error:', migrationError);
-      }
-    }
-    
-    schemaInitialized = true;
-    console.log('✅ Database schema initialized successfully');
-    return true;
-  } catch (error: any) {
-    // If error is about tables already existing, that's fine
-    if (error.message?.includes('already exists')) {
-      console.log('✅ Database schema already exists');
+    if (result.rows.length > 0) {
+      console.log('✅ Database schema already initialized');
       schemaInitialized = true;
       return true;
     }
+
+    console.log('🔨 Initializing database schema...');
     
+    // Create tables
+    await turso.execute(`
+      CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        email TEXT UNIQUE NOT NULL,
+        name TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    console.log('✅ Database schema initialized successfully');
+    schemaInitialized = true;
+    return true;
+  } catch (error) {
     console.error('❌ Failed to initialize database schema:', error);
     return false;
   }
+}
+
+// Export the function that was expected
+export async function ensureSchemaInitialized() {
+  if (!schemaInitialized) {
+    return await initializeSchema();
+  }
+  return true;
 }

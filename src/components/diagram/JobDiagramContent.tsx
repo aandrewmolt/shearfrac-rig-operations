@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Node } from '@xyflow/react';
+import { Node, NodeChange, EdgeChange, Connection } from '@xyflow/react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Camera } from 'lucide-react';
@@ -21,10 +21,10 @@ interface Job {
 interface JobDiagramContentProps {
   job: Job;
   nodes: Node[];
-  edges: any[];
-  onNodesChange: (changes: any) => void;
-  onEdgesChange: (changes: any) => void;
-  onConnect: (connection: any) => void;
+  edges: unknown[];
+  onNodesChange: (changes: NodeChange[]) => void;
+  onEdgesChange: (changes: EdgeChange[]) => void;
+  onConnect: (connection: Connection) => void;
   reactFlowWrapper: React.RefObject<HTMLDivElement>;
   selectedCableType: string;
   setSelectedCableType: (type: string) => void;

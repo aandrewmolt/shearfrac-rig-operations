@@ -9,9 +9,13 @@ export const useEquipmentMigration = () => {
 
   const migrateEquipmentNaming = useCallback(async () => {
     try {
-      console.log('Starting equipment ID padding migration...');
-      
-      const updates = [];
+      const updates: Array<{
+        id: string;
+        equipmentId: string;
+        name: string;
+        originalName: string;
+        originalId: string;
+      }> = [];
       
       for (const equipment of data.individualEquipment) {
         const equipmentType = data.equipmentTypes.find(type => type.id === equipment.typeId);
@@ -20,6 +24,11 @@ export const useEquipmentMigration = () => {
         let needsUpdate = false;
         let newEquipmentId = equipment.equipmentId;
         let newName = equipment.name;
+
+        // Check if equipment has old naming patterns
+        const hasOldNaming = equipment.name.includes('(') || 
+                            equipment.name.includes('Terminal') ||
+                            !equipment.name.match(/^[A-Za-z-]+\d+$/);
 
         // STEP 1: Fix equipment IDs - remove any dashes and ensure proper zero padding
         if (equipment.equipmentId.includes('-')) {
@@ -53,24 +62,9 @@ export const useEquipmentMigration = () => {
         if (correctId !== equipment.equipmentId) {
           newEquipmentId = correctId;
           needsUpdate = true;
-          console.log(`ID padding fix: ${equipment.equipmentId} -> ${newEquipmentId}`);
         }
 
-        // STEP 2: Update names to match new IDs
-        const oldNamePatterns = [
-          'Alpha', 'Beta', 'Gamma', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel',
-          'Unit', 'Terminal', 'Field', 'Laptop', 'Dell', 'Lenovo', 'HP', 'Computer',
-          'Tablet', 'iPad', 'Surface', 'Android', 'Gauge', 'Pressure', '1502',
-          'Battery', 'Pack', 'Power', 'Box', 'Dish', 'Sat', 'ShearStream Unit',
-          'Customer Computer Unit', 'Customer Tablet Unit', 'Starlink Unit',
-          'Company Computer Unit'
-        ];
-
-        const hasOldNaming = oldNamePatterns.some(pattern => 
-          equipment.name.toLowerCase().includes(pattern.toLowerCase())
-        );
-
-        // STEP 3: Generate correct names based on equipment type and new ID
+        // STEP 2: Generate correct names based on equipment type and new ID
         if (equipmentType.name === 'ShearStream Box' || hasOldNaming || !equipment.name.startsWith('ShearStream-')) {
           if (newEquipmentId.startsWith('SS')) {
             const numberPart = newEquipmentId.replace('SS', '');
@@ -131,12 +125,9 @@ export const useEquipmentMigration = () => {
       }
 
       if (updates.length > 0) {
-        console.log(`Updating ${updates.length} equipment items with correct padding...`);
-        console.log('Updates:', updates);
         
         // Update each equipment item
         for (const update of updates) {
-          console.log(`Updating ${update.originalId} (${update.originalName}) -> ${update.equipmentId} (${update.name})`);
           await updateIndividualEquipment(update.id, {
             equipmentId: update.equipmentId,
             name: update.name
@@ -144,14 +135,11 @@ export const useEquipmentMigration = () => {
         }
 
         toast.success(`Updated ${updates.length} equipment items with correct ID padding`);
-        console.log('Equipment ID padding migration completed successfully');
       } else {
-        toast.info('No equipment items needed ID padding updates');
-        console.log('No equipment items needed ID padding updates');
+        toast.info('All equipment items are already properly formatted');
       }
-
     } catch (error) {
-      console.error('Failed to migrate equipment ID padding:', error);
+      console.error('Error migrating equipment naming:', error);
       toast.error('Failed to migrate equipment ID padding');
     }
   }, [data.individualEquipment, data.equipmentTypes, updateIndividualEquipment]);

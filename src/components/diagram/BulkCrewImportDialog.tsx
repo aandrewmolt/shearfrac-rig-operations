@@ -233,7 +233,7 @@ export function BulkCrewImportDialog({
           {/* Import Mode Selection */}
           <div className="space-y-2">
             <Label>Import Type</Label>
-            <Select value={importMode} onValueChange={(v: any) => setImportMode(v)}>
+            <Select value={importMode} onValueChange={(v) => setImportMode(v as 'clear' | 'merge')}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -265,7 +265,7 @@ export function BulkCrewImportDialog({
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label>Template Type</Label>
-                <Select value={templateType} onValueChange={(v: any) => setTemplateType(v)}>
+                <Select value={templateType} onValueChange={(v) => setTemplateType(v as 'drilling' | 'completions' | 'workover' | 'coil-tubing')}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

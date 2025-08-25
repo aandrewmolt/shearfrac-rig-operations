@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card } from '@/components/ui/card';
 import { 
   AlertTriangle, Package, Home, Info 
 } from 'lucide-react';
@@ -74,9 +75,9 @@ export const EquipmentRemovalDialog: React.FC<EquipmentRemovalDialogProps> = ({
 
           <RadioGroup value={action} onValueChange={(v: 'return' | 'redtag') => setAction(v)}>
             <div className="space-y-3">
-              <div 
-                className={`flex items-start space-x-3 p-3 rounded-lg border ${
-                  action === 'return' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+              <Card 
+                className={`flex items-start space-x-3 p-3 ${
+                  action === 'return' ? 'border-blue-500 bg-blue-50' : ''
                 }`}
               >
                 <RadioGroupItem value="return" id="return" className="mt-1" />
@@ -89,11 +90,11 @@ export const EquipmentRemovalDialog: React.FC<EquipmentRemovalDialogProps> = ({
                     Equipment is working fine, just removing from this job
                   </p>
                 </label>
-              </div>
+              </Card>
 
-              <div 
-                className={`flex items-start space-x-3 p-3 rounded-lg border ${
-                  action === 'redtag' ? 'border-red-500 bg-red-50' : 'border-gray-200'
+              <Card 
+                className={`flex items-start space-x-3 p-3 ${
+                  action === 'redtag' ? 'border-red-500 bg-red-50' : ''
                 }`}
               >
                 <RadioGroupItem value="redtag" id="redtag" className="mt-1" />
@@ -106,12 +107,14 @@ export const EquipmentRemovalDialog: React.FC<EquipmentRemovalDialogProps> = ({
                     Equipment needs repair or maintenance
                   </p>
                 </label>
-              </div>
+              </Card>
             </div>
           </RadioGroup>
 
           {action === 'redtag' && (
-            <div className="space-y-3 p-3 bg-red-50 rounded-lg border border-red-200">
+            <Alert className="space-y-3 bg-red-50 border-red-200">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription className="space-y-3">
               <div>
                 <Label htmlFor="reason">Reason for Red Tag *</Label>
                 <Textarea
@@ -127,7 +130,7 @@ export const EquipmentRemovalDialog: React.FC<EquipmentRemovalDialogProps> = ({
               
               <div>
                 <Label htmlFor="severity">Severity</Label>
-                <Select value={redTagSeverity} onValueChange={(v: any) => setRedTagSeverity(v)}>
+                <Select value={redTagSeverity} onValueChange={(v) => setRedTagSeverity(v as 'low' | 'medium' | 'high' | 'critical')}>
                   <SelectTrigger id="severity" className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
@@ -159,7 +162,8 @@ export const EquipmentRemovalDialog: React.FC<EquipmentRemovalDialogProps> = ({
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+              </AlertDescription>
+            </Alert>
           )}
         </div>
 

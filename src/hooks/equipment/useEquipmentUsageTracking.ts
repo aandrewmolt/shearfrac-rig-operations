@@ -33,13 +33,13 @@ export const useEquipmentUsageTracking = () => {
     if (stored) {
       try {
         const sessions = JSON.parse(stored);
-        setUsageSessions(sessions.map((s: any) => ({
+        setUsageSessions(sessions.map((s: Omit<EquipmentUsageSession, 'startTime' | 'endTime'> & { startTime: string; endTime?: string }) => ({
           ...s,
           startTime: new Date(s.startTime),
           endTime: s.endTime ? new Date(s.endTime) : undefined
         })));
       } catch (error) {
-        console.error('Failed to load usage sessions:', error);
+        console.error('Failed to parse stored usage sessions:', error);
       }
     }
   }, []);
@@ -179,7 +179,13 @@ export const useEquipmentUsageTracking = () => {
     if (!job) return null;
 
     const jobSessions = usageSessions.filter(s => s.jobId === jobId);
-    const equipmentMap = new Map<string, any>();
+    const equipmentMap = new Map<string, { 
+      equipmentId: string; 
+      equipmentName: string; 
+      type: string; 
+      hoursUsed: number; 
+      status: string; 
+    }>();
 
     jobSessions.forEach(session => {
       const equipment = inventoryData.individualEquipment.find(e => e.id === session.equipmentId);
@@ -339,7 +345,7 @@ export const useEquipmentUsageTracking = () => {
     if (!stored) return [];
     
     try {
-      return JSON.parse(stored).map((e: any) => ({
+      return JSON.parse(stored).map((e: unknown) => ({
         ...e,
         taggedDate: new Date(e.taggedDate),
         resolvedDate: e.resolvedDate ? new Date(e.resolvedDate) : undefined

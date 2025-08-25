@@ -23,11 +23,17 @@ export const useEquipmentUsageAnalyzer = (nodes: Node[], edges: Edge[]) => {
       totalConnections: 0,
     };
 
+    // Ensure data is loaded before analyzing
+    if (!data || !data.equipmentTypes) {
+      console.warn('Equipment types not loaded yet, skipping analysis');
+      return usage;
+    }
+
     // Analyze edges for cable usage
-    analyzeEdges(edges, data.equipmentTypes, usage);
+    analyzeEdges(edges || [], data.equipmentTypes || [], usage);
 
     // Analyze nodes for equipment usage
-    analyzeNodes(nodes, usage);
+    analyzeNodes(nodes || [], usage);
 
     return usage;
   };

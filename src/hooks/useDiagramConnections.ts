@@ -1,16 +1,16 @@
 
 import { useCallback } from 'react';
-import { Connection, addEdge, Node } from '@xyflow/react';
+import { Connection, addEdge, Node, Edge } from '@xyflow/react';
 import { useInventoryData } from './useInventoryData';
 import { useCableTypeService } from './cables/useCableTypeService';
 import { useCableConnectionValidator } from './equipment/useCableConnectionValidator';
-import { migrateCableTypeId } from '@/utils/cableTypeMigration';
+import { migrateCableTypeId } from '@/utils/consolidated/migrationUtils';
 import { toast } from 'sonner';
 
 export const useDiagramConnections = (
   selectedCableType: string,
   nodes: Node[],
-  setEdges: (updater: (edges: any[]) => any[]) => void
+  setEdges: (updater: (edges: Edge[]) => Edge[]) => void
 ) => {
   const { data } = useInventoryData();
   const { getCableColor, getCableDisplayName } = useCableTypeService(data.equipmentTypes);

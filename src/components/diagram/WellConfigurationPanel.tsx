@@ -5,17 +5,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Gauge, Droplets, Palette, Plus, X } from 'lucide-react';
+import { Gauge, Droplets, Palette } from 'lucide-react';
 import { Node } from '@xyflow/react';
 import { useEquipmentQueries } from '@/hooks/useEquipmentQueries';
-import { Button } from '@/components/ui/button';
 
 interface NodeData {
   label?: string;
   color?: string;
   wellNumber?: number;
-  gaugeTypes?: string[];
+  gaugeType?: string;
 }
 
 interface WellConfigurationPanelProps {
@@ -25,7 +23,7 @@ interface WellConfigurationPanelProps {
   updateWellColor: (wellId: string, newColor: string) => void;
   updateWellsideGaugeName: (newName: string) => void;
   updateWellsideGaugeColor: (newColor: string) => void;
-  updateWellGaugeTypes: (wellId: string, gaugeTypes: string[]) => void;
+  updateWellGaugeType: (wellId: string, gaugeType: string) => void;
 }
 
 const colorOptions = [
@@ -54,7 +52,7 @@ const WellConfigurationPanel: React.FC<WellConfigurationPanelProps> = ({
   updateWellColor,
   updateWellsideGaugeName,
   updateWellsideGaugeColor,
-  updateWellGaugeTypes,
+  updateWellGaugeType,
 }) => {
   const { equipmentTypes } = useEquipmentQueries();
   
@@ -208,36 +206,26 @@ const WellConfigurationPanel: React.FC<WellConfigurationPanelProps> = ({
                         <Gauge className="h-2.5 w-2.5" />
                         Gauge Types
                       </Label>
-                      <div className="space-y-1">
-                        {gaugeTypes.map(gauge => {
-                          const isSelected = nodeData.gaugeTypes?.includes(gauge.value) || false;
-                          return (
-                            <div key={gauge.value} className="flex items-center gap-1.5">
-                              <Checkbox
-                                id={`${wellNode.id}-${gauge.value}`}
-                                checked={isSelected}
-                                onCheckedChange={(checked) => {
-                                  const currentTypes = nodeData.gaugeTypes || [];
-                                  const newTypes = checked
-                                    ? [...currentTypes, gauge.value]
-                                    : currentTypes.filter(t => t !== gauge.value);
-                                  updateWellGaugeTypes(wellNode.id, newTypes);
-                                }}
-                                className="h-3 w-3"
-                              />
-                              <Label 
-                                htmlFor={`${wellNode.id}-${gauge.value}`}
-                                className="text-xs cursor-pointer text-nowrap"
-                              >
-                                {gauge.name}
-                              </Label>
-                            </div>
-                          );
-                        })}
-                        {gaugeTypes.length === 0 && (
-                          <p className="text-xs text-gray-500 italic">No gauge types available</p>
-                        )}
-                      </div>
+                      <Select
+                        value={nodeData.gaugeType || ''}
+                        onValueChange={(gaugeType) => updateWellGaugeType(wellNode.id, gaugeType)}
+                      >
+                        <SelectTrigger className="h-6 text-xs border border-blue-200 focus:border-blue-400">
+                          <SelectValue placeholder="Select gauge type..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-gray-200 shadow-lg max-h-40 z-50">
+                          {gaugeTypes.map(gauge => (
+                            <SelectItem key={gauge.value} value={gauge.value} className="hover:bg-gray-50 text-xs">
+                              {gauge.name}
+                            </SelectItem>
+                          ))}
+                          {gaugeTypes.length === 0 && (
+                            <SelectItem value="" disabled className="text-xs text-gray-500 italic">
+                              No gauge types available
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>

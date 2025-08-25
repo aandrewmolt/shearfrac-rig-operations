@@ -40,13 +40,6 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
     eq => eq.equipmentId === equipmentId
   );
   
-  console.log('SimpleRedTagMenu debug:', {
-    equipmentId,
-    nodeId,
-    nodeType,
-    equipmentFound: !!equipment,
-    inventoryCount: inventoryData.individualEquipment.length
-  });
   
   // If equipment not found in inventory, still show menu for removal
   // This handles cases where equipment IDs are assigned but not in database

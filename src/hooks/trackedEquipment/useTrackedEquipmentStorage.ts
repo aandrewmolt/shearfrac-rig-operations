@@ -8,7 +8,7 @@ export const useTrackedEquipmentStorage = () => {
       
       if (historyData) {
         const parsed = JSON.parse(historyData);
-        return parsed.map((item: any) => ({
+        return parsed.map((item: unknown) => ({
           ...item,
           deploymentDate: new Date(item.deploymentDate),
           returnDate: item.returnDate ? new Date(item.returnDate) : undefined,
@@ -37,7 +37,7 @@ export const useTrackedEquipmentStorage = () => {
     if (existingData) {
       try {
         const parsed = JSON.parse(existingData);
-        existingEquipment = parsed.map((item: any) => ({
+        existingEquipment = parsed.map((item: unknown) => ({
           ...item,
           lastUpdated: new Date(item.lastUpdated),
           purchaseDate: item.purchaseDate ? new Date(item.purchaseDate) : undefined,

@@ -58,20 +58,18 @@ export function validateAndNormalizeStatus(status: unknown, defaultStatus: Valid
   const validation = validateEquipmentStatus(status);
   
   if (!validation.isValid) {
-    console.warn(`Equipment status validation failed: ${validation.error}. Using default: ${defaultStatus}`);
     return defaultStatus;
   }
-  
+
   return validation.status!;
 }
 
-export function validateStatusUpdate(
-  currentStatus: ValidEquipmentStatus | null | undefined,
-  newStatus: unknown,
-  equipmentId?: string
+export function validateStatusTransition(
+  currentStatus: ValidEquipmentStatus,
+  newStatus: unknown
 ): StatusValidationResult {
-  // First validate the new status
   const validation = validateEquipmentStatus(newStatus);
+  
   if (!validation.isValid) {
     return validation;
   }

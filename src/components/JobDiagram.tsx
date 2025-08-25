@@ -18,7 +18,6 @@ import { useEquipmentUsageAnalyzer } from '@/hooks/equipment/useEquipmentUsageAn
 import { useEdgeMigration } from '@/hooks/useEdgeMigration';
 import { useNodeDeletion } from '@/hooks/useNodeDeletion';
 import { useAllocatedEquipment } from '@/hooks/equipment/useAllocatedEquipment';
-import { useAutoEquipmentAllocation } from '@/hooks/equipment/useAutoEquipmentAllocation';
 import { JobDiagram as JobDiagramType } from '@/hooks/useJobs';
 import { useInventory } from '@/contexts/InventoryContext';
 
@@ -33,7 +32,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from '@/hooks/use-toast';
 import JobPhotoPanel from '@/components/diagram/JobPhotoPanel';
 import CompactJobEquipmentPanel from '@/components/diagram/CompactJobEquipmentPanel';
-import EquipmentAllocationPanel from '@/components/diagram/EquipmentAllocationPanel';
 import CableAllocationDialog from '@/components/diagram/CableAllocationDialog';
 import NodeEquipmentAllocationDialog from '@/components/diagram/NodeEquipmentAllocationDialog';
 import { YAdapterAllocationDialog } from '@/components/diagram/YAdapterAllocationDialog';
@@ -49,7 +47,6 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
   const [isPhotosPanelOpen, setIsPhotosPanelOpen] = useState(false);
   const [isEquipmentPanelOpen, setIsEquipmentPanelOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isAllocationPanelOpen, setIsAllocationPanelOpen] = useState(false);
   const [cableAllocationDialog, setCableAllocationDialog] = useState<{ isOpen: boolean; edge: Edge | null }>({ isOpen: false, edge: null });
   const [nodeAllocationDialog, setNodeAllocationDialog] = useState<{ isOpen: boolean; node: Node | null; nodeType?: string; position?: { x: number; y: number } }>({ isOpen: false, node: null });
   const [yAdapterDialogOpen, setYAdapterDialogOpen] = useState(false);
@@ -98,7 +95,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     updateCustomerComputerName,
     updateSatelliteName,
     updateWellsideGaugeName,
-  } = useJobDiagramCore(job);
+  } = useJobDiagramCore(job, inventoryData?.individualEquipment);
 
   // Initialize individual equipment allocation tracking - AFTER nodes and edges are defined
   const {
@@ -112,13 +109,13 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     getAvailableEquipmentForType
   } = useAllocatedEquipment(job.id, nodes, edges);
   
-  // Initialize auto-allocation for equipment
-  useAutoEquipmentAllocation({
-    nodes,
-    setNodes,
-    jobId: job.id,
-    jobName: job.name
-  });
+  // Disabled auto-allocation to prevent conflicts with manual allocation
+  // useAutoEquipmentAllocation({
+  //   nodes,
+  //   setNodes,
+  //   jobId: job.id,
+  //   jobName: job.name
+  // });
 
   const {
     extrasOnLocation,
@@ -190,7 +187,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
       // Store the connection params for later use
       setCableAllocationDialog({ isOpen: true, edge: tempEdge });
     }
-  }, [nodes, onConnect, immediateSave, selectedCableType]);
+  }, [nodes, onConnect, immediateSave, selectedCableType, setCableAllocationDialog]);
 
   // Enhanced edges change handler to detect Y→Well toggles
   const enhancedOnEdgesChange = useCallback((changes: EdgeChange[]) => {
@@ -313,7 +310,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
         setTimeout(() => immediateSave(), 500);
       }
     }
-  }, [isInitialized]); // Only run once when initialized
+  }, [isInitialized, edges, migrateEdges, setEdges, immediateSave]);
   
   // Get equipment status for UI indicators
   const usage = getEquipmentUsage();
@@ -486,59 +483,6 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     <div className="w-full h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
       {/* Action Buttons */}
       <div className="absolute top-2 left-2 md:top-4 md:left-4 z-20 flex flex-wrap gap-2 max-w-[calc(100%-1rem)]">
-        {/* Debug: Test equipment assignment */}
-        <Button
-          variant="outline"
-          size="sm"
-          className="bg-yellow-100 hover:bg-yellow-200 border-yellow-400"
-          onClick={() => {
-            // Debug: Assign real equipment from inventory to all nodes for testing
-            const availableEquipment = inventoryData.individualEquipment.filter(
-              eq => eq.status === 'available'
-            );
-            
-            if (availableEquipment.length === 0) {
-              toast({
-                title: "No Available Equipment",
-                description: "No equipment available in inventory for testing",
-                variant: "destructive"
-              });
-              return;
-            }
-            
-            setNodes((nodes) => 
-              nodes.map((node, index) => {
-                // Skip if already has equipment
-                if (node.data?.equipmentId) return node;
-                
-                // Only assign to equipment-capable nodes
-                const equipmentNodeTypes = ['mainBox', 'satellite', 'customerComputer', 'yAdapter', 'wellsideGauge', 'well'];
-                if (!node.type || !equipmentNodeTypes.includes(node.type)) return node;
-                
-                // Use real equipment from inventory, cycling through available items
-                const equipmentIndex = index % availableEquipment.length;
-                const equipment = availableEquipment[equipmentIndex];
-                
-                console.log(`Assigning equipment ${equipment.equipmentId} to ${node.type} node ${node.id}`);
-                
-                return {
-                  ...node,
-                  data: {
-                    ...node.data,
-                    equipmentId: equipment.equipmentId,
-                    equipmentName: equipment.name || equipment.equipmentId
-                  }
-                };
-              })
-            );
-            toast({
-              title: "Real Equipment Assigned",
-              description: `Debug: Assigned ${availableEquipment.length} available equipment items to nodes`
-            });
-          }}
-        >
-          Debug Assign
-        </Button>
         
         <Sheet open={isPhotosPanelOpen} onOpenChange={setIsPhotosPanelOpen}>
           <SheetTrigger asChild>
@@ -590,25 +534,6 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
           </SheetContent>
         </Sheet>
 
-        <Sheet open={isAllocationPanelOpen} onOpenChange={setIsAllocationPanelOpen}>
-          <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-white/95 backdrop-blur-sm shadow-md hover:bg-gray-50 border-gray-300"
-            >
-              <Package className="h-4 w-4 md:mr-2" />
-              <span className="hidden md:inline">Allocation</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-full md:w-96 p-0">
-            <EquipmentAllocationPanel
-              nodes={nodes}
-              edges={edges}
-              jobId={job.id}
-            />
-          </SheetContent>
-        </Sheet>
       </div>
       
       <div className="flex-1 flex gap-4 overflow-hidden">
@@ -654,33 +579,33 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
         </Sheet>
         
         {/* Desktop sidebar */}
-        <div className="hidden md:block">
+        <div className="hidden md:block h-full overflow-hidden">
           <JobDiagramSidebar
-          nodes={nodes}
-          edges={edges}
-          selectedShearstreamBoxes={selectedShearstreamBoxes}
-          selectedStarlink={selectedStarlink}
-          selectedCustomerComputers={selectedCustomerComputers}
-          updateWellName={updateWellName}
-          updateWellColor={updateWellColor}
-          updateWellsideGaugeName={updateWellsideGaugeName}
-          updateWellsideGaugeColor={updateWellsideGaugeColor}
-          updateWellGaugeType={updateWellGaugeType}
-          extrasOnLocation={extrasOnLocation}
-          onAddExtra={handleAddExtra}
-          onRemoveExtra={handleRemoveExtra}
-          onEquipmentSelect={handleEquipmentSelect}
-          onAddShearstreamBox={handleAddShearstreamBox}
-          onRemoveShearstreamBox={handleRemoveShearstreamBox}
-          onAddStarlink={handleAddStarlink}
-          onRemoveStarlink={handleRemoveStarlink}
-          onAddCustomerComputer={handleAddCustomerComputerWrapper}
-          onRemoveCustomerComputer={handleRemoveCustomerComputer}
-          // Pass sync data
-          getEquipmentStatus={getEquipmentStatus}
-          conflicts={conflicts}
-          resolveConflict={resolveConflict}
-        />
+            nodes={nodes}
+            edges={edges}
+            selectedShearstreamBoxes={selectedShearstreamBoxes}
+            selectedStarlink={selectedStarlink}
+            selectedCustomerComputers={selectedCustomerComputers}
+            updateWellName={updateWellName}
+            updateWellColor={updateWellColor}
+            updateWellsideGaugeName={updateWellsideGaugeName}
+            updateWellsideGaugeColor={updateWellsideGaugeColor}
+            updateWellGaugeType={updateWellGaugeType}
+            extrasOnLocation={extrasOnLocation}
+            onAddExtra={handleAddExtra}
+            onRemoveExtra={handleRemoveExtra}
+            onEquipmentSelect={handleEquipmentSelect}
+            onAddShearstreamBox={handleAddShearstreamBox}
+            onRemoveShearstreamBox={handleRemoveShearstreamBox}
+            onAddStarlink={handleAddStarlink}
+            onRemoveStarlink={handleRemoveStarlink}
+            onAddCustomerComputer={handleAddCustomerComputerWrapper}
+            onRemoveCustomerComputer={handleRemoveCustomerComputer}
+            // Pass sync data
+            getEquipmentStatus={getEquipmentStatus}
+            conflicts={conflicts}
+            resolveConflict={resolveConflict}
+          />
         </div>
 
         <div className="flex-1 relative overflow-auto">

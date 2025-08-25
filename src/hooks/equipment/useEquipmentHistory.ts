@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { turso } from '@/lib/turso/client';
+import { turso } from '@/utils/consolidated/databaseUtils';
 import { IndividualEquipment } from '@/types/inventory';
 
 export interface EquipmentHistoryEntry {
@@ -32,11 +32,9 @@ export const useEquipmentHistory = (equipmentId?: string) => {
       // First check if the table exists
       try {
         await turso.execute({ sql: 'SELECT 1 FROM equipment_history LIMIT 1', args: [] });
-      } catch (tableError: any) {
-        if (tableError.message?.includes('no such table')) {
+      } catch (tableError) {
+        if (tableError instanceof Error && tableError.message?.includes('no such table')) {
           // Table doesn't exist, return empty history
-          console.warn('Equipment history table does not exist yet');
-          setHistory([]);
           return;
         }
         throw tableError;
@@ -68,7 +66,6 @@ export const useEquipmentHistory = (equipmentId?: string) => {
       setHistory(entries);
     } catch (err) {
       console.error('Error fetching equipment history:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch history');
     } finally {
       setIsLoading(false);
     }
@@ -108,8 +105,6 @@ export const useEquipmentHistory = (equipmentId?: string) => {
       
       return true;
     } catch (err) {
-      console.error('Error adding history entry:', err);
-      setError(err instanceof Error ? err.message : 'Failed to add history entry');
       return false;
     }
   }, [fetchHistory]);

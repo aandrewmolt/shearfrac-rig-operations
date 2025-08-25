@@ -95,7 +95,7 @@ export function EnhancedSearch({
           } else {
             suggestionMap.set(key, {
               value,
-              type: field as any,
+              type: field as 'name' | 'company' | 'job' | 'email' | 'phone',
               count: 1,
             });
           }

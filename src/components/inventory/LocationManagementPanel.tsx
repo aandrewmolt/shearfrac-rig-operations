@@ -6,15 +6,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { MapPin, Plus, Edit2, Trash2, Building } from 'lucide-react';
 import { useInventory } from '@/contexts/InventoryContext';
 import { toast } from 'sonner';
+import { StorageLocation } from '@/types/types';
 
 const LocationManagementPanel = () => {
   const { data, createStorageLocation, updateStorageLocations } = useInventory();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingLocation, setEditingLocation] = useState<any>(null);
+  const [editingLocation, setEditingLocation] = useState<StorageLocation | null>(null);
   const [newLocationName, setNewLocationName] = useState('');
   const [newLocationAddress, setNewLocationAddress] = useState('');
   const [isDefault, setIsDefault] = useState(false);
@@ -42,7 +44,7 @@ const LocationManagementPanel = () => {
     }
   };
 
-  const handleEditLocation = (location: any) => {
+  const handleEditLocation = (location: StorageLocation) => {
     setEditingLocation(location);
     setNewLocationName(location.name);
     setNewLocationAddress(location.address || '');
@@ -117,11 +119,10 @@ const LocationManagementPanel = () => {
                   />
                 </div>
                 <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     id="isDefault"
                     checked={isDefault}
-                    onChange={(e) => setIsDefault(e.target.checked)}
+                    onCheckedChange={(checked) => setIsDefault(checked as boolean)}
                   />
                   <Label htmlFor="isDefault">Set as default location</Label>
                 </div>
@@ -196,11 +197,10 @@ const LocationManagementPanel = () => {
                 />
               </div>
               <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
+                <Checkbox
                   id="editIsDefault"
                   checked={isDefault}
-                  onChange={(e) => setIsDefault(e.target.checked)}
+                  onCheckedChange={(checked) => setIsDefault(checked as boolean)}
                 />
                 <Label htmlFor="editIsDefault">Set as default location</Label>
               </div>

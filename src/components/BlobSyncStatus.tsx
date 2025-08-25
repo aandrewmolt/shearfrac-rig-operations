@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Cloud, CloudOff, RefreshCw } from 'lucide-react';
-import { DATABASE_MODE } from '@/config/database.config';
+import { DATABASE_MODE } from '@/utils/consolidated/databaseUtils';
 import { blobStorage } from '@/integrations/blob/client';
 // Turso syncs automatically, no manual sync needed
 
@@ -71,14 +72,16 @@ export const BlobSyncStatus = () => {
           <span className="text-xs text-muted-foreground">
             Last sync: {getTimeSinceSync()}
           </span>
-          <button
+          <Button
             onClick={handleManualSync}
             disabled={syncing}
-            className="p-1 hover:bg-accent rounded"
+            variant="ghost"
+            size="sm"
+            className="p-1 h-auto w-auto hover:bg-accent rounded"
             title="Sync now"
           >
             <RefreshCw className={`h-3 w-3 ${syncing ? 'animate-spin' : ''}`} />
-          </button>
+          </Button>
         </>
       )}
     </div>

@@ -6,12 +6,13 @@ import { useEquipmentDeletion } from '@/hooks/inventory/useEquipmentDeletion';
 import { toast } from 'sonner';
 import EquipmentTypeManagerHeader from './EquipmentTypeManagerHeader';
 import EquipmentTypeGrid from './EquipmentTypeGrid';
+import { EquipmentType, CreateEquipmentTypeInput } from '@/types/types';
 
 const EquipmentTypeManager = () => {
   const { data, addEquipmentType, updateEquipmentType, deleteEquipmentType } = useInventory();
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingType, setEditingType] = useState<any>(null);
+  const [editingType, setEditingType] = useState<EquipmentType | null>(null);
 
   const { handleDeleteEquipmentType, canDeleteEquipmentType } = useEquipmentDeletion({
     equipmentItems: data.equipmentItems,
@@ -47,7 +48,7 @@ const EquipmentTypeManager = () => {
     };
   };
 
-  const handleEdit = (type: any) => {
+  const handleEdit = (type: EquipmentType) => {
     setEditingType(type);
     setIsDialogOpen(true);
   };
@@ -56,7 +57,7 @@ const EquipmentTypeManager = () => {
     await handleDeleteEquipmentType(typeId, typeName);
   };
 
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: CreateEquipmentTypeInput) => {
     try {
       if (editingType) {
         await updateEquipmentType(editingType.id, formData);

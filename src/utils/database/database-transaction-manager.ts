@@ -97,10 +97,11 @@ export class DatabaseTransactionManager {
 
           // Handle critical operations
           if (operation.critical) {
-            console.error(`Critical operation failed: ${operation.id}`, err);
-            
-            // Rollback all completed operations
-            const rollbackResult = await this.rollbackOperations(completedOperations);
+            // Attempt rollback for critical operation failure
+            const rollbackResult = await this.rollbackOperations(
+              completedOperations,
+              transactionId
+            );
             
             return {
               success: false,
@@ -141,10 +142,11 @@ export class DatabaseTransactionManager {
         duration: Date.now() - startTime,
       };
     } catch (error) {
-      console.error('Transaction failed:', error);
-      
-      // Attempt rollback
-      const rollbackResult = await this.rollbackOperations(completedOperations);
+      // Attempt rollback on transaction failure
+      const rollbackResult = await this.rollbackOperations(
+        completedOperations,
+        transactionId
+      );
       
       return {
         success: false,
@@ -193,37 +195,39 @@ export class DatabaseTransactionManager {
         return { success: true, result };
       } catch (error) {
         lastError = error as Error;
-        console.warn(`Retry ${attempt}/${maxRetries} failed for ${operation.id}:`, error);
       }
     }
     
-    return { success: false };
+    throw lastError || new Error('Max retries exceeded');
   }
 
   /**
    * Rollback completed operations
    */
   private async rollbackOperations<T>(
-    operations: DatabaseOperation<T>[]
+    operations: DatabaseOperation<T>[],
+    transactionId: string
   ): Promise<boolean> {
-    console.log('Starting rollback for', operations.length, 'operations');
-    
-    // Rollback in reverse order
-    for (let i = operations.length - 1; i >= 0; i--) {
-      const operation = operations[i];
-      
-      if (operation.rollback) {
-        try {
-          await operation.rollback();
-          console.log(`Rolled back operation: ${operation.id}`);
-        } catch (error) {
-          console.error(`Failed to rollback operation ${operation.id}:`, error);
-          return false;
+    try {
+      // Rollback in reverse order
+      for (let i = operations.length - 1; i >= 0; i--) {
+        const operation = operations[i];
+        
+        if (operation.rollback) {
+          try {
+            await operation.rollback();
+          } catch (rollbackError) {
+            console.error(`Rollback failed for operation ${operation.id}:`, rollbackError);
+            return false;
+          }
         }
       }
+      
+      return true;
+    } catch (error) {
+      console.error('Rollback process failed:', error);
+      return false;
     }
-    
-    return true;
   }
 
   /**
@@ -438,10 +442,8 @@ export async function transferEquipmentBatch(
     timeout: 60000,
     retries: 3,
     onProgress: (completed, total) => {
-      console.log(`Transfer progress: ${completed}/${total}`);
-    },
-    onError: (error, operation) => {
-      toast.error(`Failed to transfer equipment: ${error.message}`);
+      const percentage = Math.round((completed / total) * 100);
+      console.log(`Transfer progress: ${percentage}%`);
     },
   });
 }

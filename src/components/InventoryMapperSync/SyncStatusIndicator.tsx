@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useInventoryMapperContext } from '@/contexts/InventoryMapperContext';
 import { RefreshCw, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export const SyncStatusIndicator: React.FC = () => {
   const { syncStatus, lastSyncTime } = useInventoryMapperContext();
@@ -68,7 +69,7 @@ export const SyncStatusIndicator: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-md">
+    <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1.5">
       {getStatusIcon()}
       <div className="flex flex-col">
         <span className={`text-xs font-medium ${getStatusColor()}`}>
@@ -79,6 +80,6 @@ export const SyncStatusIndicator: React.FC = () => {
           {timeSinceSync}
         </span>
       </div>
-    </div>
+    </Badge>
   );
 };

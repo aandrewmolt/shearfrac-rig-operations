@@ -1,6 +1,14 @@
 
 import { InventoryData, IndividualEquipment } from '@/types/inventory';
 import { EquipmentLocation } from '@/utils/equipmentLocation';
+import { 
+  CreateEquipmentTypeInput, 
+  UpdateEquipmentTypeInput,
+  CreateStorageLocationInput, 
+  UpdateStorageLocationInput,
+  CreateIndividualEquipmentInput,
+  UpdateIndividualEquipmentInput
+} from '@/types/types';
 
 export interface InventoryContextType {
   data: InventoryData;
@@ -13,33 +21,33 @@ export interface InventoryContextType {
   getEquipmentDisplayLocation: (item: IndividualEquipment) => EquipmentLocation;
   
   // CRUD operations
-  deleteEquipmentType: (id: string) => Promise<any>;
-  deleteStorageLocation: (id: string) => Promise<any>;
-  deleteIndividualEquipment: (id: string) => Promise<any>;
+  deleteEquipmentType: (id: string) => Promise<unknown>;
+  deleteStorageLocation: (id: string) => Promise<unknown>;
+  deleteIndividualEquipment: (id: string) => Promise<unknown>;
   
   // All mutation operations
-  addEquipmentType: (data: any) => Promise<void>;
-  updateEquipmentType: (id: string, data: any) => Promise<void>;
-  addStorageLocation: (data: any) => Promise<void>;
-  updateStorageLocation: (id: string, data: any) => Promise<void>;
-  addIndividualEquipment: (data: any) => Promise<void>;
-  updateIndividualEquipment: (id: string, data: any) => Promise<void>;
+  addEquipmentType: (data: CreateEquipmentTypeInput) => Promise<void>;
+  updateEquipmentType: (id: string, data: UpdateEquipmentTypeInput) => Promise<void>;
+  addStorageLocation: (data: CreateStorageLocationInput) => Promise<void>;
+  updateStorageLocation: (id: string, data: UpdateStorageLocationInput) => Promise<void>;
+  addIndividualEquipment: (data: CreateIndividualEquipmentInput) => Promise<void>;
+  updateIndividualEquipment: (id: string, data: UpdateIndividualEquipmentInput) => Promise<void>;
   
   // Bulk operations
-  addBulkIndividualEquipment: (equipment: any[]) => Promise<any[]>;
+  addBulkIndividualEquipment: (equipment: CreateIndividualEquipmentInput[]) => Promise<IndividualEquipment[]>;
   
   // Utilities and other methods
   refreshData?: () => void;
   getEquipmentTypeName: (typeId: string) => string;
   getLocationName: (locationId: string) => string;
-  getIndividualEquipmentByLocation: (locationId: string) => any[];
+  getIndividualEquipmentByLocation: (locationId: string) => IndividualEquipment[];
   
   // Legacy compatibility
-  createEquipmentType: (data: any) => Promise<void>;
-  createStorageLocation: (data: any) => Promise<void>;
-  updateSingleIndividualEquipment: (id: string, data: any) => Promise<void>;
-  updateEquipmentTypes: (id: string, data: any) => Promise<void>;
-  updateStorageLocations: (id: string, data: any) => Promise<void>;
+  createEquipmentType: (data: CreateEquipmentTypeInput) => Promise<void>;
+  createStorageLocation: (data: CreateStorageLocationInput) => Promise<void>;
+  updateSingleIndividualEquipment: (id: string, data: UpdateIndividualEquipmentInput) => Promise<void>;
+  updateEquipmentTypes: (id: string, data: UpdateEquipmentTypeInput) => Promise<void>;
+  updateStorageLocations: (id: string, data: UpdateStorageLocationInput) => Promise<void>;
   syncData: () => Promise<InventoryData>;
   resetToDefaultInventory: () => void;
 }

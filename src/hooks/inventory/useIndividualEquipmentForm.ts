@@ -7,7 +7,7 @@ import { useEquipmentIdGenerator } from './useEquipmentIdGenerator';
 export const useIndividualEquipmentForm = (
   equipmentType: EquipmentType,
   allEquipment: IndividualEquipment[],
-  onAddDraft: (equipment: any) => void,
+  onAddDraft: (equipment: Omit<IndividualEquipment, 'id'>) => void,
   onUpdateEquipment: (equipment: IndividualEquipment[]) => void,
   existingEquipment: IndividualEquipment[]
 ) => {
@@ -143,8 +143,6 @@ export const useIndividualEquipmentForm = (
 
       resetForm();
     } catch (error) {
-      console.error('Error saving equipment:', error);
-      toast.error('Failed to save equipment');
     }
   }, [formData, editingEquipment, allEquipment, equipmentType.id, existingEquipment, onUpdateEquipment, onAddDraft, resetForm]);
 

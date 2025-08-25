@@ -227,7 +227,7 @@ const EnhancedEquipmentReports: React.FC = () => {
     document.body.removeChild(link);
   };
 
-  const exportToJSON = (data: any, filename: string) => {
+  const exportToJSON = (data: unknown, filename: string) => {
     const jsonContent = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonContent], { type: 'application/json' });
     const link = document.createElement('a');
@@ -249,7 +249,7 @@ const EnhancedEquipmentReports: React.FC = () => {
     setIsExporting(true);
     try {
       let reportData: string[][];
-      let jsonData: any;
+      let jsonData: unknown;
       let filename: string;
       const timestamp = new Date().toISOString().split('T')[0];
       
@@ -562,7 +562,7 @@ const EnhancedEquipmentReports: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">Export Format</label>
-                  <Select value={exportFormat} onValueChange={(value: any) => setExportFormat(value)}>
+                  <Select value={exportFormat} onValueChange={(value: unknown) => setExportFormat(value)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

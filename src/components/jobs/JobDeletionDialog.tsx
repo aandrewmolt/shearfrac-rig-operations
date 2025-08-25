@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -34,9 +34,24 @@ export const JobDeletionDialog: React.FC<JobDeletionDialogProps> = ({
   deployedEquipment = [],
 }) => {
   const { data } = useUnifiedInventory();
-  const [selectedLocationId, setSelectedLocationId] = useState<string>('');
   const dialogOpen = open !== undefined ? open : isOpen || false;
   const handleClose = onOpenChange ? () => onOpenChange(false) : onClose || (() => {});
+  
+  // Find "Midland Office" or default location
+  const defaultLocation = data.storageLocations.find(loc => 
+    loc.name.toLowerCase().includes('midland') || loc.isDefault
+  ) || data.storageLocations[0];
+  
+  const [selectedLocationId, setSelectedLocationId] = useState<string>(
+    defaultLocation?.id || ''
+  );
+
+  // Reset to default location when dialog opens
+  useEffect(() => {
+    if (dialogOpen && defaultLocation) {
+      setSelectedLocationId(defaultLocation.id);
+    }
+  }, [dialogOpen, defaultLocation]);
 
   const handleConfirm = () => {
     if (deployedEquipment.length > 0 && !selectedLocationId) {

@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 interface EnhancedRedTagManagerProps {
   isOpen: boolean;
   onClose: () => void;
-  equipmentItem?: any;
+  equipmentItem?: { id: string; equipmentId: string; name: string; status: string; };
   onRedTag: (itemId: string, reason: string, photos: string[], location?: string) => void;
 }
 

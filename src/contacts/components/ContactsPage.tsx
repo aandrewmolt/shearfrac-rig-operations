@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Plus, ChevronDown, Table, Network, Users2, LayoutGrid, Filter, RefreshCw } from 'lucide-react';
+import { Plus, ChevronDown, Table, Network, Users2, LayoutGrid, Filter, RefreshCw, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AppHeader from '@/components/AppHeader';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -20,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Dialog,
   DialogContent,
@@ -440,7 +441,7 @@ export function ContactsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen p-4">
-        <div className="animate-spin rounded-full h-16 w-16 sm:h-32 sm:w-32 border-b-2 border-gray-900"></div>
+        <Loader2 className="h-16 w-16 sm:h-32 sm:w-32 animate-spin" />
       </div>
     );
   }
@@ -460,13 +461,14 @@ export function ContactsPage() {
         
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-6 space-y-3 sm:space-y-6">
           {/* Cloud sync notification */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-2 sm:p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-xs sm:text-sm text-green-800">
-                {isMobile ? 'Synced to cloud' : 'Contacts are now synced to the cloud and available across all your devices'}
-              </span>
-            </div>
+          <Alert className="bg-green-50 border-green-200">
+            <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-xs sm:text-sm text-green-800">
+                  {isMobile ? 'Synced to cloud' : 'Contacts are now synced to the cloud and available across all your devices'}
+                </span>
+              </div>
             <Button 
               size="sm" 
               variant="ghost" 
@@ -476,7 +478,8 @@ export function ContactsPage() {
               <RefreshCw className={cn("h-4 w-4", isSyncing && "animate-spin")} />
               <span className="ml-2">{isSyncing ? 'Syncing...' : 'Refresh'}</span>
             </Button>
-          </div>
+            </AlertDescription>
+          </Alert>
           
           {/* Header Section */}
           <div className="space-y-3">

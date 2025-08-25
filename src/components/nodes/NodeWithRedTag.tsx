@@ -199,7 +199,7 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
         description: `${equipment.equipmentId} is now in maintenance`,
       });
     } catch (error) {
-      console.error('Failed to mark maintenance:', error);
+      console.error('Failed to mark for maintenance:', error);
       toast({
         title: "Error",
         description: "Failed to mark for maintenance",
@@ -350,7 +350,7 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
             
             <div>
               <Label>Severity</Label>
-              <Select value={redTagSeverity} onValueChange={(v: any) => setRedTagSeverity(v)}>
+              <Select value={redTagSeverity} onValueChange={(v) => setRedTagSeverity(v as 'low' | 'medium' | 'high' | 'critical')}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

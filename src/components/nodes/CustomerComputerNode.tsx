@@ -5,13 +5,12 @@ import { Monitor, Tablet } from 'lucide-react';
 import NodeDeleteButton from './NodeDeleteButton';
 import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
-const CustomerComputerNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
+const CustomerComputerNode = ({ id, data, selected }: { id: string; data: { label?: string; equipmentId?: string; color?: string; wellNumber?: number; jobId?: string; assigned?: boolean; customName?: string; fracComPort?: string; gaugeComPort?: string; fracBaudRate?: string; gaugeBaudRate?: string; [key: string]: unknown }; selected?: boolean }) => {
   const { deleteElements, setNodes } = useReactFlow();
   const isTablet = data.isTablet || data.equipmentId?.startsWith('CT');
   const isAssigned = !!data.equipmentId;
   
   // Debug logging
-  console.log('CustomerComputerNode data:', { id, data, isAssigned });
 
   const handleDelete = () => {
     deleteElements({ nodes: [{ id }] });

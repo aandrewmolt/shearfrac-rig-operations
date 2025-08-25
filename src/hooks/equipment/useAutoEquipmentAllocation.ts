@@ -54,15 +54,13 @@ export const useAutoEquipmentAllocation = ({
 
       // Check if already allocated
       if (equipment.status === 'deployed' && equipment.jobId === jobId) {
-        console.log('Equipment already allocated to this job');
-        return true;
+        return true; // Already allocated to this job
       }
 
       // Update equipment status to deployed
       await tursoDb.updateIndividualEquipment(equipment.id, {
         status: 'deployed',
-        jobId: jobId,
-        notes: `Auto-allocated to ${jobName}`
+        jobId: jobId
       });
 
       // Start usage tracking
@@ -97,12 +95,6 @@ export const useAutoEquipmentAllocation = ({
 
       return true;
     } catch (error) {
-      console.error('Failed to auto-allocate equipment:', error);
-      toast({
-        title: "Error",
-        description: "Failed to allocate equipment",
-        variant: "destructive"
-      });
       return false;
     } finally {
       setIsProcessing(false);
@@ -194,12 +186,6 @@ export const useAutoEquipmentAllocation = ({
 
       return true;
     } catch (error) {
-      console.error('Failed to handle equipment removal:', error);
-      toast({
-        title: "Error",
-        description: "Failed to process equipment removal",
-        variant: "destructive"
-      });
       return false;
     } finally {
       setIsProcessing(false);

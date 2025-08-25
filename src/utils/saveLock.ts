@@ -9,20 +9,18 @@ class SaveLock {
    */
   acquire(resourceId: string, timeoutMs: number = 5000): boolean {
     if (this.locks.get(resourceId)) {
-      console.log(`Save lock denied for ${resourceId} - already in progress`);
-      return false;
+      return false; // Resource is already locked
     }
     
+    // Acquire the lock
     this.locks.set(resourceId, true);
     
     // Auto-release lock after timeout to prevent deadlocks
     const timeout = setTimeout(() => {
       this.release(resourceId);
-      console.warn(`Save lock auto-released for ${resourceId} after timeout`);
     }, timeoutMs);
     
     this.lockTimeouts.set(resourceId, timeout);
-    console.log(`Save lock acquired for ${resourceId}`);
     return true;
   }
   
@@ -37,27 +35,14 @@ class SaveLock {
       clearTimeout(timeout);
       this.lockTimeouts.delete(resourceId);
     }
-    
-    console.log(`Save lock released for ${resourceId}`);
   }
   
   /**
-   * Check if a resource is currently locked
+   * Execute a function with a lock
    */
-  isLocked(resourceId: string): boolean {
-    return this.locks.get(resourceId) || false;
-  }
-  
-  /**
-   * Execute a function with lock protection
-   */
-  async withLock<T>(
-    resourceId: string, 
-    fn: () => Promise<T>,
-    timeoutMs: number = 5000
-  ): Promise<T | null> {
+  async withLock<T>(resourceId: string, fn: () => Promise<T>, timeoutMs?: number): Promise<T> {
     if (!this.acquire(resourceId, timeoutMs)) {
-      return null;
+      throw new Error(`Resource ${resourceId} is locked`);
     }
     
     try {

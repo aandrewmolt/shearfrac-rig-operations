@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { DATABASE_MODE } from '@/config/database.config';
-import { turso } from '@/lib/turso/client';
+import { DATABASE_MODE } from '@/utils/consolidated/databaseUtils';
+import { turso } from '@/utils/consolidated/databaseUtils';
 
 export const RealtimeConnectionMonitor = () => {
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting');
@@ -13,7 +13,6 @@ export const RealtimeConnectionMonitor = () => {
     if (DATABASE_MODE !== 'turso') return;
 
     let mounted = true;
-    let intervalId: NodeJS.Timeout;
 
     const testConnection = async () => {
       try {
@@ -45,7 +44,7 @@ export const RealtimeConnectionMonitor = () => {
     testConnection();
 
     // Poll every 30 seconds
-    intervalId = setInterval(testConnection, 30000);
+    const intervalId = setInterval(testConnection, 30000);
 
     return () => {
       mounted = false;

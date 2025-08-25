@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { MoreHorizontal, RotateCcw, Trash2 } from 'lucide-react';
 
 interface EdgeContextMenuProps {
@@ -27,7 +28,7 @@ const EdgeContextMenu: React.FC<EdgeContextMenuProps> = ({
         transform: `translate(-50%, -50%) translate(${labelX + 80}px,${labelY}px)`,
       }}
     >
-      <div className="flex items-center gap-1 bg-white/95 backdrop-blur-sm border border-gray-300 rounded-md shadow-lg p-1">
+      <Card className="flex items-center gap-1 bg-white/95 backdrop-blur-sm border-gray-300 shadow-lg p-1">
         <Button
           size="sm"
           variant="ghost"
@@ -58,7 +59,7 @@ const EdgeContextMenu: React.FC<EdgeContextMenuProps> = ({
         >
           <Trash2 className="h-3 w-3" />
         </Button>
-      </div>
+      </Card>
     </div>
   );
 };

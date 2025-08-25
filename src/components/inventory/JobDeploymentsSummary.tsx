@@ -2,6 +2,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
 import { MapPin, Package, Briefcase, Calendar } from 'lucide-react';
 import { useUnifiedInventory } from '@/hooks/useUnifiedInventory';
 import { useJobStorage } from '@/hooks/useJobStorage';
@@ -92,7 +94,8 @@ const JobDeploymentsSummary = () => {
             const sourceLocations = new Set(jobEquipment.map(item => item.locationId));
 
             return (
-              <div key={jobId} className="border rounded-lg p-4 bg-blue-50 border-blue-200">
+              <Alert key={jobId} className="bg-blue-50 border-blue-200">
+                <AlertDescription>
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <h3 className="font-semibold text-lg text-blue-900">{jobDetails.name}</h3>
@@ -137,15 +140,17 @@ const JobDeploymentsSummary = () => {
                 </div>
 
                 {sourceLocations.size > 1 && (
-                  <div className="mt-3 pt-3 border-t border-blue-200">
+                  <>
+                    <Separator className="my-3" />
                     <div className="text-sm text-blue-700">
                       <span className="font-medium">Sources:</span> {
                         sourceLocations ? Array.from(sourceLocations).map(locId => getLocationName(locId)).join(', ') : ''
                       }
                     </div>
-                  </div>
+                  </>
                 )}
-              </div>
+                </AlertDescription>
+              </Alert>
             );
           })}
         </div>

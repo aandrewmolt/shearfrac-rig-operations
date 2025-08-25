@@ -134,7 +134,7 @@ export const useInventoryValidation = () => {
     };
   }, []);
 
-  const validateBeforeSave = useCallback((data: any) => {
+  const validateBeforeSave = useCallback((data: unknown) => {
     const validation = validateEquipmentConsistency(
       data.equipmentItems,
       data.individualEquipment,

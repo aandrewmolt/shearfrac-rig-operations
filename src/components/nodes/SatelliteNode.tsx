@@ -5,7 +5,29 @@ import { Satellite } from 'lucide-react';
 import NodeDeleteButton from './NodeDeleteButton';
 import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
-const SatelliteNode = ({ id, data, selected }: { id: string; data: any; selected?: boolean }) => {
+// Extended node data interface for component-specific properties
+interface SatelliteNodeData {
+  label?: string;
+  equipmentId?: string;
+  color?: string;
+  wellNumber?: number;
+  jobId?: string;
+  assigned?: boolean;
+  customName?: string;
+  fracComPort?: string;
+  gaugeComPort?: string;
+  fracBaudRate?: string;
+  gaugeBaudRate?: string;
+  equipmentName?: string | null;
+}
+
+interface SatelliteNodeProps {
+  id: string;
+  data: SatelliteNodeData;
+  selected?: boolean;
+}
+
+const SatelliteNode: React.FC<SatelliteNodeProps> = ({ id, data, selected }) => {
   const { deleteElements, setNodes } = useReactFlow();
   const isAssigned = !!data.equipmentId;
 

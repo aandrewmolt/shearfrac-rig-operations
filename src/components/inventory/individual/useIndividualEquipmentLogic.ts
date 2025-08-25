@@ -1,15 +1,15 @@
 
 import { useState } from 'react';
-import { EquipmentType, StorageLocation } from '@/types/inventory';
+import { EquipmentType, StorageLocation, IndividualEquipment } from '@/types/inventory';
 
 export const useIndividualEquipmentLogic = (
   equipmentType: EquipmentType | undefined,
   storageLocations: StorageLocation[],
-  addIndividualEquipment: (equipment: any) => Promise<void>,
+  addIndividualEquipment: (equipment: Omit<IndividualEquipment, 'id' | 'lastUpdatedDate'>) => Promise<void>,
   onDraftCountChange: (count: number) => void
 ) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [draftItems, setDraftItems] = useState<any[]>([]);
+  const [draftItems, setDraftItems] = useState<Array<Omit<IndividualEquipment, 'id' | 'lastUpdatedDate'>>>([]);
   const [formData, setFormData] = useState({
     equipmentId: '',
     name: '',
@@ -19,7 +19,7 @@ export const useIndividualEquipmentLogic = (
     selectedPrefix: 'CC'
   });
 
-  const generateNextId = (prefix: string = equipmentType?.defaultIdPrefix || 'EQ', existingEquipment: any[] = []) => {
+  const generateNextId = (prefix: string = equipmentType?.defaultIdPrefix || 'EQ', existingEquipment: unknown[] = []) => {
     const allEquipment = [...existingEquipment, ...draftItems];
     const existingIds = allEquipment
       .map(eq => eq.equipmentId || eq.equipment_id)

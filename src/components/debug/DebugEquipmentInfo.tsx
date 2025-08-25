@@ -2,6 +2,7 @@ import React from 'react';
 import { useInventory } from '@/contexts/InventoryContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { safeForEach, safeFind } from '@/utils/safeDataAccess';
 
 export function DebugEquipmentInfo() {
@@ -65,7 +66,7 @@ export function DebugEquipmentInfo() {
             return (
               <div key={typeId} className="flex items-center justify-between p-2 border rounded">
                 <div className="flex items-center gap-2">
-                  <code className="text-xs bg-gray-100 px-2 py-1 rounded">{typeId}</code>
+                  <Badge variant="secondary" className="text-xs font-mono">{typeId}</Badge>
                   <span className="text-sm font-medium">{typeName}</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -87,11 +88,11 @@ export function DebugEquipmentInfo() {
             );
           })}
         </div>
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
-          <p className="text-xs text-yellow-800">
+        <Alert className="mt-4 bg-yellow-50 border-yellow-200">
+          <AlertDescription className="text-xs">
             <strong>Note:</strong> Equipment must have status "available" and be in the selected location to be allocatable.
-          </p>
-        </div>
+          </AlertDescription>
+        </Alert>
       </CardContent>
     </Card>
   );

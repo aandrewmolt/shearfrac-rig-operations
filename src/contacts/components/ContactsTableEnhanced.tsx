@@ -14,6 +14,8 @@ import {
   RowSelectionState,
   ExpandedState,
   getExpandedRowModel,
+  HeaderContext,
+  CellContext,
 } from '@tanstack/react-table';
 import { 
   ArrowUpDown, 
@@ -180,7 +182,7 @@ export function ContactsTableEnhanced({
       .map((col) => ({
         id: col.id,
         accessorKey: col.key,
-        header: ({ column }: any) => {
+        header: ({ column }: HeaderContext<Contact, unknown>) => {
           if (!col.sortable) return col.label;
           return (
             <Button
@@ -193,7 +195,7 @@ export function ContactsTableEnhanced({
             </Button>
           );
         },
-        cell: ({ row }: any) => {
+        cell: ({ row }: CellContext<Contact, unknown>) => {
           const value = row.getValue(col.id);
           
           // Special rendering for different fields

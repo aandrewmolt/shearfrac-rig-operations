@@ -48,7 +48,7 @@ const EnhancedEquipmentSelector: React.FC<EnhancedEquipmentSelectorProps> = ({
     return conflicts.find(c => c.equipmentId === equipmentId);
   };
 
-  const handleSelect = async (equipment: any) => {
+  const handleSelect = async (equipment: { equipmentId: string; id: string; name: string; status: string; }) => {
     const equipmentId = equipment.equipmentId;
     
     // Check if already selected

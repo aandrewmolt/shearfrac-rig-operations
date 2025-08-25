@@ -7,10 +7,9 @@ export const useEquipmentReturnerV2 = (jobId: string) => {
   const { data, updateIndividualEquipment } = useInventory();
 
   const returnAllJobEquipment = useCallback(async () => {
-    console.log(`Returning all equipment for job ${jobId}`);
-    
-    const deployedEquipment = data.individualEquipment.filter(
-      item => item.status === 'deployed' && item.jobId === jobId
+    // Get deployed equipment for this job
+    const deployedEquipment = data.individualEquipment.filter(eq => 
+      eq.status === 'deployed' && eq.jobId === jobId
     );
 
     // Get default storage location (Midland Office)

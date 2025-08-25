@@ -8,23 +8,18 @@ export const useDataConsistencyFixer = () => {
   const { data, updateEquipmentItems, updateIndividualEquipment } = useInventoryData();
 
   const fixDataConsistency = useCallback(() => {
-    console.log('Starting data consistency fix...');
-    let fixesMade = 0;
-    const fixes: string[] = [];
-
-    // Get equipment types that require individual tracking
     const individualTrackingTypes = data.equipmentTypes.filter(type => type.requiresIndividualTracking);
     const bulkTrackingTypes = data.equipmentTypes.filter(type => !type.requiresIndividualTracking);
+    const fixes: string[] = [];
+    let fixesMade = 0;
 
-    let updatedEquipmentItems = [...data.equipmentItems];
+    const updatedEquipmentItems = [...data.equipmentItems];
     const updatedIndividualEquipment = [...data.individualEquipment];
 
     // Fix 1: Remove bulk quantities for equipment types that require individual tracking
     individualTrackingTypes.forEach(type => {
       const bulkItems = updatedEquipmentItems.filter(item => item.typeId === type.id);
       if (bulkItems.length > 0) {
-        console.log(`Removing bulk quantities for ${type.name} (requires individual tracking)`);
-        updatedEquipmentItems = updatedEquipmentItems.filter(item => item.typeId !== type.id);
         fixes.push(`Removed bulk quantities for ${type.name}`);
         fixesMade++;
       }
@@ -92,13 +87,9 @@ export const useDataConsistencyFixer = () => {
       updateIndividualEquipment(updatedIndividualEquipment);
       
       toast.success(`Fixed ${fixesMade} data consistency issues: ${fixes.join(', ')}`);
-      console.log('Data consistency fixes applied:', fixes);
     } else {
-      toast.success('No data consistency issues found');
-      console.log('No data consistency issues found');
+      toast.info('No data consistency issues found');
     }
-
-    return { fixesMade, fixes };
   }, [data, updateEquipmentItems, updateIndividualEquipment]);
 
   const validateDataConsistency = useCallback(() => {

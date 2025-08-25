@@ -3,7 +3,9 @@ import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
 import { EquipmentConflict } from '@/types/equipment-allocation';
 import { AlertTriangle, CheckCircle, XCircle, Loader2, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card } from '@/components/ui/card';
 
 export const ConflictResolver: React.FC = () => {
   const { conflicts, resolveConflict } = useInventoryMapperSync();
@@ -98,21 +100,22 @@ export const ConflictResolver: React.FC = () => {
             </div>
             
             <div className="grid grid-cols-2 gap-3 mb-3">
-              <div className="p-2 bg-gray-50 rounded">
+              <Card className="p-2 bg-gray-50">
                 <div className="text-xs font-medium text-gray-600 mb-1">Currently Assigned To:</div>
                 <div className="text-sm font-semibold text-gray-900">{conflict.currentJobName}</div>
-              </div>
-              <div className="p-2 bg-blue-50 rounded">
+              </Card>
+              <Card className="p-2 bg-blue-50">
                 <div className="text-xs font-medium text-blue-600 mb-1">Requested By:</div>
                 <div className="text-sm font-semibold text-blue-900">{conflict.requestedJobName}</div>
-              </div>
+              </Card>
             </div>
             
             <div className="flex gap-2">
-              <button
+              <Button
                 onClick={() => handleResolve(conflict, 'current')}
                 disabled={isResolving || isResolved}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 text-gray-700 disabled:text-gray-400 rounded-md transition-colors"
+                variant="secondary"
+                className="flex-1 flex items-center justify-center gap-2"
               >
                 {isResolving && resolvingResolution === 'current' ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -120,12 +123,12 @@ export const ConflictResolver: React.FC = () => {
                   <XCircle className="h-4 w-4" />
                 )}
                 Keep in {conflict.currentJobName}
-              </button>
+              </Button>
               
-              <button
+              <Button
                 onClick={() => handleResolve(conflict, 'requested')}
                 disabled={isResolving || isResolved}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white rounded-md transition-colors"
+                className="flex-1 flex items-center justify-center gap-2"
               >
                 {isResolving && resolvingResolution === 'requested' ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -133,19 +136,19 @@ export const ConflictResolver: React.FC = () => {
                   <CheckCircle className="h-4 w-4" />
                 )}
                 Move to {conflict.requestedJobName}
-              </button>
+              </Button>
             </div>
           </div>
           );
         })}
       </div>
       
-      <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-lg">
-        <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-        <p className="text-xs text-blue-800">
+      <Alert className="bg-blue-50 border-blue-200">
+        <Info className="h-4 w-4" />
+        <AlertDescription className="text-xs">
           <strong>Tip:</strong> Resolving conflicts will automatically update the equipment status in both the inventory and job assignments. Changes are synced in real-time.
-        </p>
-      </div>
+        </AlertDescription>
+      </Alert>
     </div>
   );
 };

@@ -2,17 +2,17 @@
 import React from 'react';
 import { Node } from '@xyflow/react';
 import WellConfigurationPanel from './WellConfigurationPanel';
-import EquipmentSelectionPanel from './EquipmentSelectionPanel';
+import { UnifiedEquipmentSelectionPanel } from '@/components/shared';
 import ExtrasOnLocationPanel from './ExtrasOnLocationPanel';
 import EquipmentSummaryPanel from './EquipmentSummaryPanel';
-import RedTagPanel from './RedTagPanel';
+import { UnifiedRedTagPanel } from '@/components/shared';
 import ConflictIndicator from './ConflictIndicator';
 import CableConfigurationPanel from './CableConfigurationPanel';
 import { ExtrasOnLocationItem } from '@/hooks/useExtrasOnLocation';
 
 interface JobDiagramSidebarProps {
   nodes: Node[];
-  edges: any[];
+  edges: unknown[];
   selectedShearstreamBoxes: string[];
   selectedStarlink: string;
   selectedCustomerComputers: string[];
@@ -32,8 +32,8 @@ interface JobDiagramSidebarProps {
   onAddCustomerComputer: () => void;
   onRemoveCustomerComputer: (index: number) => void;
   getEquipmentStatus?: (equipmentId: string) => 'available' | 'allocated' | 'deployed' | 'unavailable';
-  conflicts?: any[];
-  resolveConflict?: (conflict: any, resolution: 'current' | 'requested') => Promise<void>;
+  conflicts?: unknown[];
+  resolveConflict?: (conflict: { id: string; equipmentId: string }, resolution: 'current' | 'requested') => Promise<void>;
 }
 
 const JobDiagramSidebar: React.FC<JobDiagramSidebarProps> = ({
@@ -71,7 +71,7 @@ const JobDiagramSidebar: React.FC<JobDiagramSidebarProps> = ({
   const hasWellsideGauge = !!wellsideGaugeNode;
 
   return (
-    <div className="w-full md:w-80 space-y-4 p-3 md:p-4 bg-gray-50 overflow-y-auto">
+    <div className="w-full md:w-80 h-full space-y-4 p-3 md:p-4 bg-gray-50 overflow-y-auto">
       {/* Conflict Indicator at the top if there are conflicts */}
       {conflicts && conflicts.length > 0 && (
         <div className="flex justify-center">
@@ -83,7 +83,7 @@ const JobDiagramSidebar: React.FC<JobDiagramSidebarProps> = ({
         </div>
       )}
       
-      <EquipmentSelectionPanel
+      <UnifiedEquipmentSelectionPanel
         selectedShearstreamBoxes={selectedShearstreamBoxes}
         selectedStarlink={selectedStarlink}
         selectedCustomerComputers={selectedCustomerComputers}
@@ -125,7 +125,7 @@ const JobDiagramSidebar: React.FC<JobDiagramSidebarProps> = ({
         onRemoveExtra={onRemoveExtra}
       />
 
-      <RedTagPanel />
+      <UnifiedRedTagPanel variant="location" />
     </div>
   );
 };

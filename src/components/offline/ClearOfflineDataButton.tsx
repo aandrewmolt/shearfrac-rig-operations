@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { resetOfflineDatabase } from '@/lib/offline/clearOfflineData';
+import { resetOfflineDatabase } from '@/utils/consolidated/storageUtils';
 
 export function ClearOfflineDataButton() {
   const [showConfirm, setShowConfirm] = useState(false);

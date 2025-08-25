@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Filter, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import AppHeader from '@/components/AppHeader';
@@ -15,6 +16,9 @@ import { JobStatusControl } from '@/components/jobs/JobStatusControl';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { useJobEquipmentTracking } from '@/hooks/equipment/useJobEquipmentTracking';
+import { useInventory } from '@/contexts/InventoryContext';
+import { JobDeletionDialog } from '@/components/jobs/JobDeletionDialog';
 
 const CableJobs = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -25,10 +29,14 @@ const CableJobs = () => {
   const [filterClient, setFilterClient] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'active' | 'completed'>('all');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [showDeletionDialog, setShowDeletionDialog] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState<any>(null);
   
   const { jobs, isLoading, saveJob, deleteJob, getJobById } = useJobs();
   // const inventoryData = useUnifiedInventory();
   const { ensureJobLocationExists } = useJobStorageIntegration();
+  const { endAllJobUsageSessions } = useJobEquipmentTracking();
+  const { data: inventoryData, updateIndividualEquipment } = useInventory();
   const isMobile = useIsMobile();
   
   type JobLike = {
@@ -53,7 +61,7 @@ const CableJobs = () => {
     }
   }, [searchParams, jobs]);
 
-  const handleCreateJob = async (jobData: { name: string; client: string; wellCount: number; hasWellsideGauge: boolean }) => {
+  const handleCreateJob = async (jobData: { name: string; client: string; pad: string; wellCount: number; hasWellsideGauge: boolean }) => {
     // First save the job
     saveJob({
       ...jobData,
@@ -87,9 +95,12 @@ const CableJobs = () => {
     }
   };
 
-  const handleCompleteJob = (job: JobLike, endDate: string) => {
+  const handleCompleteJob = async (job: JobLike, endDate: string) => {
     // If job doesn't have a start date, set it to now
     const startDate = job.start_date || new Date().toISOString();
+    
+    // Automatically end all equipment usage sessions for this job
+    await endAllJobUsageSessions(job.id);
     
     saveJob({
       ...job,
@@ -97,6 +108,41 @@ const CableJobs = () => {
       start_date: startDate,
       end_date: endDate,
     });
+  };
+
+  const handleDeleteJobRequest = (job: JobLike) => {
+    setJobToDelete(job);
+    setShowDeletionDialog(true);
+  };
+
+  const handleConfirmDelete = async (returnLocationId?: string) => {
+    if (!jobToDelete) return;
+
+    // Find all equipment currently deployed to this job
+    const deployedEquipment = inventoryData.individualEquipment.filter(
+      equipment => equipment.jobId === jobToDelete.id && equipment.status === 'deployed'
+    );
+
+    // If there's deployed equipment, return it to the selected location
+    if (deployedEquipment.length > 0 && returnLocationId) {
+      for (const equipment of deployedEquipment) {
+        await updateIndividualEquipment(equipment.id, {
+          status: 'available',
+          jobId: null,
+          locationId: returnLocationId
+        });
+      }
+    }
+
+    // End all equipment usage sessions for this job
+    await endAllJobUsageSessions(jobToDelete.id);
+    
+    // Delete the job
+    deleteJob(jobToDelete.id);
+    
+    // Reset state
+    setJobToDelete(null);
+    setShowDeletionDialog(false);
   };
 
   const selectedJob = selectedJobId ? getJobById(selectedJobId) : null;
@@ -145,15 +191,17 @@ const CableJobs = () => {
           return a.name.localeCompare(b.name);
         case 'client':
           return (a.client || '').localeCompare(b.client || '');
-        case 'date':
+        case 'date': {
           const dateA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt || 0);
           const dateB = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt || 0);
           return dateB.getTime() - dateA.getTime(); // Newest first
-        case 'status':
+        }
+        case 'status': {
           const statusOrder = { 'pending': 0, 'active': 1, 'completed': 2 };
           const aStatus = a.status || 'pending';
           const bStatus = b.status || 'pending';
           return statusOrder[aStatus] - statusOrder[bStatus];
+        }
         default:
           return 0;
       }
@@ -261,7 +309,7 @@ const CableJobs = () => {
                     <div className="space-y-4 mt-6">
                       {/* Client Filter */}
                       <div>
-                        <label className="text-sm font-medium mb-2 block">Client</label>
+                        <Label className="text-sm font-medium mb-2 block">Client</Label>
                         <Select value={filterClient} onValueChange={setFilterClient}>
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Filter by client" />
@@ -277,7 +325,7 @@ const CableJobs = () => {
 
                       {/* Status Filter */}
                       <div>
-                        <label className="text-sm font-medium mb-2 block">Status</label>
+                        <Label className="text-sm font-medium mb-2 block">Status</Label>
                         <Select value={filterStatus} onValueChange={(value: 'all' | 'pending' | 'active' | 'completed') => setFilterStatus(value)}>
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Filter by status" />
@@ -293,7 +341,7 @@ const CableJobs = () => {
 
                       {/* Sort By */}
                       <div>
-                        <label className="text-sm font-medium mb-2 block">Sort By</label>
+                        <Label className="text-sm font-medium mb-2 block">Sort By</Label>
                         <Select value={sortBy} onValueChange={(value: 'name' | 'client' | 'date' | 'status') => setSortBy(value)}>
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Sort by" />
@@ -336,25 +384,29 @@ const CableJobs = () => {
                   {filterClient !== 'all' && (
                     <Badge variant="secondary" className="text-xs">
                       {filterClient}
-                      <button
+                      <Button
                         onClick={() => setFilterClient('all')}
-                                className="ml-1"
-                                aria-label="Clear client filter"
+                        variant="ghost" 
+                        size="sm"
+                        className="ml-1 h-auto p-0 hover:bg-transparent"
+                        aria-label="Clear client filter"
                       >
-                                <X className="h-3 w-3" aria-hidden="true" />
-                      </button>
+                        <X className="h-3 w-3" aria-hidden="true" />
+                      </Button>
                     </Badge>
                   )}
                   {filterStatus !== 'all' && (
                     <Badge variant="secondary" className="text-xs">
                       {filterStatus}
-                      <button
+                      <Button
                         onClick={() => setFilterStatus('all')}
-                                className="ml-1"
-                                aria-label="Clear status filter"
+                        variant="ghost"
+                        size="sm"
+                        className="ml-1 h-auto p-0 hover:bg-transparent"
+                        aria-label="Clear status filter"
                       >
-                                <X className="h-3 w-3" aria-hidden="true" />
-                      </button>
+                        <X className="h-3 w-3" aria-hidden="true" />
+                      </Button>
                     </Badge>
                   )}
                 </div>
@@ -441,7 +493,7 @@ const CableJobs = () => {
             jobs={filteredAndSortedJobs}
             isLoading={isLoading}
             onSelectJob={(job) => handleEditJob(job.id)}
-            onDeleteJob={(job) => deleteJob(job.id)}
+            onDeleteJob={handleDeleteJobRequest}
             onCompleteJob={handleCompleteJob}
             onUpdateJobName={handleUpdateJobName}
           />
@@ -450,6 +502,21 @@ const CableJobs = () => {
             open={showCreateDialog}
             onOpenChange={setShowCreateDialog}
             onCreateJob={handleCreateJob}
+          />
+
+          <JobDeletionDialog
+            open={showDeletionDialog}
+            onOpenChange={setShowDeletionDialog}
+            onConfirm={handleConfirmDelete}
+            jobName={jobToDelete?.name || ''}
+            deployedEquipment={jobToDelete ? inventoryData.individualEquipment
+              .filter(equipment => equipment.jobId === jobToDelete.id && equipment.status === 'deployed')
+              .map(equipment => ({
+                id: equipment.id,
+                typeId: equipment.typeId,
+                quantity: 1,
+                typeName: equipment.name || equipment.equipmentId || 'Unknown Equipment'
+              })) : []}
           />
         </div>
       </div>

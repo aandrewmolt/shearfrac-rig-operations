@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Filter, Users, Building2, HardHat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -27,7 +28,7 @@ export function ContactFilterChips({
   onClearAll,
   customTypes,
 }: ContactFilterChipsProps) {
-  const allTypes = ['client', 'frac', ...customTypes];
+  const allTypes = ['client', 'frac', ...new Set(customTypes)];
   const totalContacts = Object.values(typeCounts).reduce((sum, count) => sum + count, 0);
   const filteredCount = selectedTypes.length > 0 
     ? selectedTypes.reduce((sum, type) => sum + (typeCounts[type] || 0), 0)
@@ -56,7 +57,7 @@ export function ContactFilterChips({
   };
 
   return (
-    <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+    <Card className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-900">
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Showing {filteredCount} of {totalContacts} contacts
@@ -146,12 +147,14 @@ export function ContactFilterChips({
                 className={cn("gap-1 pr-1", getTypeColor(type))}
               >
                 <span className="capitalize">{type}</span>
-                <button
+                <Button
                   onClick={() => onTypeToggle(type)}
-                  className="ml-1 hover:bg-black/10 rounded p-0.5"
+                  variant="ghost"
+                  size="sm"
+                  className="ml-1 h-auto p-0.5 hover:bg-black/10 rounded"
                 >
                   <X className="h-3 w-3" />
-                </button>
+                </Button>
               </Badge>
             ))}
           </div>
@@ -165,6 +168,6 @@ export function ContactFilterChips({
           </Button>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

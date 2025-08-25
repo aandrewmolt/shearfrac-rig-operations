@@ -25,7 +25,7 @@ export const useEquipmentAllocationValidator = () => {
     const deployedEquipment = data.equipmentItems.filter(item => item.status === 'deployed');
     
     // Group deployed equipment by type and job
-    const deploymentMap = new Map<string, { jobIds: Set<string>; items: any[] }>();
+    const deploymentMap = new Map<string, { jobIds: Set<string>; items: unknown[] }>();
     
     deployedEquipment.forEach(item => {
       if (!item.jobId) return;
@@ -120,7 +120,7 @@ export const useEquipmentAllocationValidator = () => {
             return null; // Mark for removal
           }
           return item;
-        }).filter(Boolean) as any[];
+        }).filter((item): item is NonNullable<typeof item> => Boolean(item));
       }
 
       if (issue.type === 'insufficient_stock') {

@@ -40,7 +40,7 @@ export const useInventoryData = () => {
     resetToDefaultInventory: () => {
       toast.info('Reset functionality moved to inventory management interface');
     },
-    cleanupDuplicateDeployments: (items: any[]) => items, // No-op, handled automatically
+    cleanupDuplicateDeployments: (items: unknown[]) => items, // No-op, handled automatically
     
     // Legacy query functions mapped to unified equivalents
     getEquipmentByType: (typeId: string) => {

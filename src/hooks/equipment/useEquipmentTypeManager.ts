@@ -30,7 +30,7 @@ export const useEquipmentTypeManager = () => {
         missingTypes.push({
           id: typeInfo.id,
           name: typeInfo.name,
-          category: typeInfo.category as any,
+          category: typeInfo.category as 'cables' | 'gauges' | 'adapters' | 'communication' | 'power' | 'control-units' | 'it-equipment' | 'other',
           requiresIndividualTracking: typeInfo.requiresIndividualTracking,
           defaultIdPrefix: typeInfo.defaultIdPrefix,
         });
@@ -52,7 +52,7 @@ export const useEquipmentTypeManager = () => {
           missingTypes.push({
             id: typeInfo.id,
             name: typeInfo.name,
-            category: typeInfo.category as any,
+            category: typeInfo.category as 'cables' | 'gauges' | 'adapters' | 'communication' | 'power' | 'control-units' | 'it-equipment' | 'other',
             requiresIndividualTracking: typeInfo.requiresIndividualTracking,
             defaultIdPrefix: typeInfo.defaultIdPrefix,
           });

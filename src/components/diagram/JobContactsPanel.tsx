@@ -34,7 +34,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useContacts } from '@/contacts/hooks/useContacts';
+import { useTursoContacts } from '@/contacts/hooks/useTursoContacts';
 import { Contact, ContactType, JobAssignment } from '@/contacts/types';
 import { ContactFormEnhanced } from '@/contacts/components/ContactFormEnhanced';
 import { BulkCrewImportDialog } from './BulkCrewImportDialog';
@@ -68,7 +68,7 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
     addContact,
     updateContact,
     deleteContact,
-  } = useContacts();
+  } = useTursoContacts();
 
   // Get all unique crews from frac and custom contacts
   const uniqueCrews = useMemo(() => {

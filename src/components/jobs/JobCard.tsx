@@ -63,8 +63,8 @@ const JobCard: React.FC<JobCardProps> = ({
                 value={editedName}
                 onChange={(e) => setEditedName(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSaveName(e as any);
-                  if (e.key === 'Escape') handleCancelEdit(e as any);
+                  if (e.key === 'Enter') handleSaveName(e as React.KeyboardEvent<HTMLInputElement>);
+                  if (e.key === 'Escape') handleCancelEdit(e as React.KeyboardEvent<HTMLInputElement>);
                 }}
                 className="h-8 text-lg font-semibold"
                 autoFocus

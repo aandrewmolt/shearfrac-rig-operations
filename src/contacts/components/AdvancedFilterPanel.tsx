@@ -251,12 +251,14 @@ export function AdvancedFilterPanel({
                 {filters.companies.map(company => (
                   <Badge key={company} variant="secondary" className="text-xs">
                     {company}
-                    <button
+                    <Button
                       onClick={() => handleCompanyToggle(company)}
-                      className="ml-1 hover:bg-gray-300 rounded"
+                      variant="ghost"
+                      size="sm"
+                      className="ml-1 h-auto p-0 hover:bg-gray-300 rounded"
                     >
                       <X className="h-3 w-3" />
-                    </button>
+                    </Button>
                   </Badge>
                 ))}
               </div>

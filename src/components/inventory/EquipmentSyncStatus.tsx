@@ -23,7 +23,7 @@ const EquipmentSyncStatus: React.FC = () => {
   useEffect(() => {
     // Auto-sync on mount
     syncInventoryStatus();
-  }, []);
+  }, [syncInventoryStatus]);
 
   const handleResolveAllConflicts = async () => {
     // Resolve all conflicts in favor of the most recent request

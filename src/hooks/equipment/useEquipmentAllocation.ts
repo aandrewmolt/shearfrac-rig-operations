@@ -2,10 +2,11 @@
 import { useInventory } from '@/contexts/InventoryContext';
 import { useComprehensiveEquipmentTracking } from './useComprehensiveEquipmentTracking';
 import { toast } from 'sonner';
+import { JobNode, JobEdge } from '@/types/types';
 
-export const useEquipmentAllocation = (jobId: string) => {
+export const useEquipmentAllocation = (jobId: string, nodes: JobNode[] = [], edges: JobEdge[] = []) => {
   const { data, updateIndividualEquipment } = useInventory();
-  const { analyzeEquipmentUsage, validateEquipmentAvailability, generateEquipmentReport } = useComprehensiveEquipmentTracking([], []);
+  const { analyzeEquipmentUsage, validateEquipmentAvailability, generateEquipmentReport } = useComprehensiveEquipmentTracking(nodes, edges);
 
   const allocateEquipmentType = async (
     typeId: string, 
@@ -50,7 +51,7 @@ export const useEquipmentAllocation = (jobId: string) => {
     return allocatedIds;
   };
 
-  const performComprehensiveAllocation = async (locationId: string, nodes: any[], edges: any[], jobName: string = 'Current Job') => {
+  const performComprehensiveAllocation = async (locationId: string, nodes: JobNode[], edges: JobEdge[], jobName: string = 'Current Job') => {
     if (!locationId) {
       toast.error('Please select a location before allocating equipment');
       return;
@@ -58,7 +59,6 @@ export const useEquipmentAllocation = (jobId: string) => {
 
     console.log(`Starting comprehensive equipment allocation for job ${jobId}`);
     
-    const { analyzeEquipmentUsage, validateEquipmentAvailability, generateEquipmentReport } = useComprehensiveEquipmentTracking(nodes, edges);
     const usage = analyzeEquipmentUsage();
     const report = generateEquipmentReport(usage);
     const validation = validateEquipmentAvailability(usage, locationId);

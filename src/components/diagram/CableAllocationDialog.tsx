@@ -28,7 +28,13 @@ const CableAllocationDialog: React.FC<CableAllocationDialogProps> = ({
 }) => {
   const { data: inventoryData } = useInventory();
   const [selectedCableId, setSelectedCableId] = useState<string>('');
-  const [availableCables, setAvailableCables] = useState<any[]>([]);
+  const [availableCables, setAvailableCables] = useState<Array<{
+    id: string;
+    equipmentId: string;
+    name: string;
+    locationId: string;
+    status: string;
+  }>>([]);
 
   useEffect(() => {
     if (isOpen && cableTypeId) {

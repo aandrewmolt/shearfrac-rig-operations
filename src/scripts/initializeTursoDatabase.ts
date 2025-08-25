@@ -205,7 +205,7 @@ export async function initializeTursoDatabase() {
       try {
         await tursoDb.createEquipmentType(type);
         console.log(`✅ Created equipment type: ${type.name}`);
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error?.message?.includes('UNIQUE')) {
           console.log(`⚠️ Equipment type already exists: ${type.name}`);
         } else {
@@ -220,7 +220,7 @@ export async function initializeTursoDatabase() {
       try {
         await tursoDb.createStorageLocation(location);
         console.log(`✅ Created location: ${location.name}`);
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error?.message?.includes('UNIQUE')) {
           console.log(`⚠️ Location already exists: ${location.name}`);
         } else {
@@ -240,7 +240,7 @@ export async function initializeTursoDatabase() {
           notes: 'Initial inventory setup'
         });
         console.log(`✅ Created: ${item.equipment_id}`);
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error?.message?.includes('UNIQUE')) {
           console.log(`⚠️ Equipment already exists: ${item.equipment_id}`);
         } else {

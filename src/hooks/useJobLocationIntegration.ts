@@ -62,7 +62,7 @@ export const useJobLocationIntegration = () => {
     );
     
     // Bulk equipment is deprecated - keeping empty for backward compatibility
-    const bulkEquipment: any[] = [];
+    const bulkEquipment: unknown[] = [];
     
     return {
       bulkEquipment,

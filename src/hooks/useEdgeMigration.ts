@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { Edge } from '@xyflow/react';
-import { migrateCableTypeId } from '@/utils/cableTypeMigration';
+import { migrateCableTypeId } from '@/utils/consolidated/migrationUtils';
 import { toast } from 'sonner';
 
 export const useEdgeMigration = () => {

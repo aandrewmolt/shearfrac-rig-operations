@@ -1,6 +1,12 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { X } from 'lucide-react';
 
 interface EdgeLabelProps {
@@ -43,14 +49,16 @@ const EdgeLabel: React.FC<EdgeLabelProps> = ({
         }
       `}>
         {isInteractive && onToggle ? (
-          <button
+          <Button
             onClick={(e) => {
               e.stopPropagation();
               console.log('EdgeLabel button clicked for toggle');
               onToggle();
             }}
+            variant="ghost"
+            size="sm"
             className={`
-              text-xs font-medium cursor-pointer transition-colors duration-200
+              text-xs font-medium cursor-pointer transition-colors duration-200 h-auto p-0
               ${selected
                 ? 'text-blue-800 hover:text-blue-900'
                 : isHovered 
@@ -61,7 +69,7 @@ const EdgeLabel: React.FC<EdgeLabelProps> = ({
             title={isInteractive ? "Click to toggle connection type (T)" : undefined}
           >
             {label}
-          </button>
+          </Button>
         ) : (
           <span className={`
             text-xs font-medium transition-colors duration-200
@@ -95,9 +103,16 @@ const EdgeLabel: React.FC<EdgeLabelProps> = ({
       
       {/* Keyboard shortcut hint for selected edges */}
       {selected && isInteractive && (
-        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg whitespace-nowrap">
-          Press T to toggle • Del to delete
-        </div>
+        <TooltipProvider>
+          <Tooltip open={true}>
+            <TooltipTrigger asChild>
+              <div className="absolute inset-0" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">Press T to toggle • Del to delete</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       )}
     </div>
   );

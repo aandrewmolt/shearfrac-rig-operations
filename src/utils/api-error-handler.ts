@@ -67,37 +67,39 @@ const DEFAULT_RETRY_CONFIG: Required<RetryConfig> = {
     return false;
   },
   onRetry: (error, attempt) => {
-    console.log(`Retry attempt ${attempt}:`, error);
-  },
+    console.log(`Retrying request (attempt ${attempt}):`, error);
+  }
 };
 
-// Circuit breaker for preventing cascading failures
+// Circuit breaker class
 export class CircuitBreaker {
+  private state: 'closed' | 'open' | 'half-open' = 'closed';
   private failureCount = 0;
   private lastFailureTime = 0;
-  private state: 'closed' | 'open' | 'half-open' = 'closed';
-  
-  constructor(
-    private threshold = 5,
-    private timeout = 60000,
-    private halfOpenRequests = 2
-  ) {}
+  private threshold = 5;
+  private timeout = 60000; // 1 minute
 
-  async execute<T>(
-    fn: () => Promise<T>,
-    fallback?: () => T | Promise<T>
-  ): Promise<T> {
-    // Check if circuit should be half-open
+  getState(): string {
+    return this.state;
+  }
+
+  reset(): void {
+    this.state = 'closed';
+    this.failureCount = 0;
+    this.lastFailureTime = 0;
+  }
+
+  async execute<T>(fn: () => Promise<T>, fallback?: () => T | Promise<T>): Promise<T> {
     if (this.state === 'open') {
-      const timeSinceLastFailure = Date.now() - this.lastFailureTime;
-      if (timeSinceLastFailure > this.timeout) {
+      // Check if enough time has passed to try again
+      if (Date.now() - this.lastFailureTime > this.timeout) {
         this.state = 'half-open';
-        this.failureCount = 0;
-      } else if (fallback) {
-        console.log('Circuit breaker open, using fallback');
-        return fallback();
       } else {
-        throw new ApiError('Service temporarily unavailable', 503, 'CIRCUIT_OPEN');
+        if (fallback) {
+          return fallback();
+        } else {
+          throw new ApiError('Service temporarily unavailable', 503, 'CIRCUIT_OPEN');
+        }
       }
     }
 
@@ -118,25 +120,14 @@ export class CircuitBreaker {
       // Open circuit if threshold reached
       if (this.failureCount >= this.threshold) {
         this.state = 'open';
-        console.error(`Circuit breaker opened after ${this.failureCount} failures`);
       }
       
       throw error;
     }
   }
-
-  reset(): void {
-    this.state = 'closed';
-    this.failureCount = 0;
-    this.lastFailureTime = 0;
-  }
-
-  getState(): string {
-    return this.state;
-  }
 }
 
-// API client with retry and error handling
+// Enhanced API client with retry logic and circuit breaker
 export class ApiClient {
   private circuitBreakers = new Map<string, CircuitBreaker>();
   private requestQueue: Array<() => Promise<void>> = [];
@@ -439,8 +430,6 @@ export class GlobalErrorHandler {
     
     // Check if error threshold exceeded
     if (count > this.errorThreshold) {
-      console.error(`Error threshold exceeded for ${errorKey}`);
-      toast.error('Multiple errors detected. Please refresh the page.');
       return;
     }
     
@@ -459,10 +448,8 @@ export class GlobalErrorHandler {
    * Default error handler
    */
   private defaultHandler(error: Error): void {
-    console.error('Unhandled error:', error);
-    
     if (error instanceof ValidationError) {
-      toast.error('Validation failed: ' + error.message);
+      toast.error(`Validation error: ${error.message}`);
     } else if (error instanceof NetworkError) {
       toast.error('Network error. Please check your connection.');
     } else if (error instanceof TimeoutError) {

@@ -19,7 +19,7 @@ const EquipmentStatusDebug: React.FC = () => {
 
   // Find problematic equipment
   const problematicEquipment = data.individualEquipment.filter(eq => 
-    !eq.status || eq.status === '' || (eq.status as any) === null
+    !eq.status || eq.status === '' || eq.status === null
   );
 
   // Equipment that should be available but isn't

@@ -33,10 +33,10 @@ export const useIndividualEquipmentManager = (
     } else {
       await addIndividualEquipment(equipment);
     }
+    // Refresh after adding equipment
     setTimeout(() => {
-      console.log('Individual equipment saved, triggering sync check');
-    }, 200);
-  });
+      console.log('Equipment added successfully');
+    }, 100);
 
   useEffect(() => {
     if (onDraftCountChange) {
@@ -69,8 +69,6 @@ export const useIndividualEquipmentManager = (
     },
     data.individualEquipment
   );
-
-
   const operationsHook = useIndividualEquipmentOperations(
     individualEquipment,
     async (equipment: IndividualEquipment[]) => {

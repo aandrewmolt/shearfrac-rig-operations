@@ -1,10 +1,10 @@
 
 import { useCallback } from 'react';
-import { useUnifiedInventory } from './useUnifiedInventory';
+import { useInventory } from '@/contexts/InventoryContext';
 import { toast } from 'sonner';
 
 export const useJobStorageIntegration = () => {
-  const { data, addStorageLocation } = useUnifiedInventory();
+  const { data, addStorageLocation } = useInventory();
 
   const createStorageLocationFromJob = useCallback(async (jobName: string) => {
     // Check if location already exists

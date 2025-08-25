@@ -17,10 +17,10 @@ interface UseJobDiagramEquipmentHandlersProps {
   setSelectedShearstreamBoxes: (boxes: string[]) => void;
   setSelectedStarlink: (starlink: string) => void;
   setSelectedCustomerComputers: (computers: string[]) => void;
-  setNodes: (updater: (nodes: any[]) => any[]) => void;
-  updateMainBoxName: (nodeId: string, name: string, setNodes: (updater: (nodes: any[]) => any[]) => void) => void;
-  updateSatelliteName: (name: string, setNodes: (updater: (nodes: any[]) => any[]) => void) => void;
-  updateCustomerComputerName: (nodeId: string, name: string, setNodes: (updater: (nodes: any[]) => any[]) => void) => void;
+  setNodes: (updater: (nodes: unknown[]) => any[]) => void;
+  updateMainBoxName: (nodeId: string, name: string, setNodes: (updater: (nodes: unknown[]) => any[]) => void) => void;
+  updateSatelliteName: (name: string, setNodes: (updater: (nodes: unknown[]) => any[]) => void) => void;
+  updateCustomerComputerName: (nodeId: string, name: string, setNodes: (updater: (nodes: unknown[]) => any[]) => void) => void;
   addShearstreamBox: () => void;
   removeShearstreamBox: (boxId: string) => void;
   validateEquipmentAvailability?: (equipmentId: string, jobId: string) => Promise<boolean>;

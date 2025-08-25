@@ -65,7 +65,7 @@ const EquipmentTypeForm: React.FC<EquipmentTypeFormProps> = ({
       </div>
       <div>
         <Label htmlFor="category">Category</Label>
-        <Select value={formData.category} onValueChange={(value: any) => setFormData({ ...formData, category: value })}>
+        <Select value={formData.category} onValueChange={(value: unknown) => setFormData({ ...formData, category: value })}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>

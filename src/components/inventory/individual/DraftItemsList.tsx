@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface DraftItemsListProps {
-  draftItems: any[];
+  draftItems: unknown[];
 }
 
 const DraftItemsList: React.FC<DraftItemsListProps> = ({ draftItems }) => {

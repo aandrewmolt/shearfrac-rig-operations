@@ -1,7 +1,7 @@
 
 import { useJobs } from '@/hooks/useJobs';
 
-export const useInventoryUtils = (equipmentTypes: any[], storageLocations: any[]) => {
+export const useInventoryUtils = (equipmentTypes: unknown[], storageLocations: unknown[]) => {
   const { jobs } = useJobs();
   
   // Utility functions

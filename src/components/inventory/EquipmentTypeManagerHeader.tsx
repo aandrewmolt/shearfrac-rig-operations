@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Settings } from 'lucide-react';
 import EquipmentTypeForm from './EquipmentTypeForm';
+import { EquipmentType, CreateEquipmentTypeInput } from '@/types/types';
 
 interface EquipmentTypeManagerHeaderProps {
   filteredTypesCount: number;
@@ -13,9 +14,9 @@ interface EquipmentTypeManagerHeaderProps {
   onSearchChange: (value: string) => void;
   isDialogOpen: boolean;
   onDialogOpenChange: (open: boolean) => void;
-  editingType: any;
-  onEditingTypeChange: (type: any) => void;
-  onSubmit: (formData: any) => void;
+  editingType: EquipmentType | null;
+  onEditingTypeChange: (type: EquipmentType | null) => void;
+  onSubmit: (formData: CreateEquipmentTypeInput) => void;
   onCancel: () => void;
 }
 

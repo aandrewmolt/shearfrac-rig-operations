@@ -22,7 +22,7 @@ class SimpleBlobClient {
     return [];
   }
 
-  async setEquipmentTypes(types: any[]): Promise<void> {
+  async setEquipmentTypes(types: unknown[]): Promise<void> {
     // In development, this is a no-op
     // In production, this would save to Blob
     await this.checkProduction();
@@ -34,7 +34,7 @@ class SimpleBlobClient {
     return [];
   }
 
-  async setStorageLocations(locations: any[]): Promise<void> {
+  async setStorageLocations(locations: unknown[]): Promise<void> {
     console.log('Blob sync will work when deployed to Vercel');
   }
 
@@ -43,7 +43,7 @@ class SimpleBlobClient {
     return [];
   }
 
-  async setJobs(jobs: any[]): Promise<void> {
+  async setJobs(jobs: unknown[]): Promise<void> {
     console.log('Blob sync will work when deployed to Vercel');
   }
 
@@ -52,7 +52,7 @@ class SimpleBlobClient {
     return [];
   }
 
-  async setEquipment(equipment: any[]): Promise<void> {
+  async setEquipment(equipment: unknown[]): Promise<void> {
     console.log('Blob sync will work when deployed to Vercel');
   }
 

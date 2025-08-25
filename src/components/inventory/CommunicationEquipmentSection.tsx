@@ -13,7 +13,7 @@ interface CommunicationEquipmentSectionProps {
   equipmentType: EquipmentType;
   equipment: IndividualEquipment[];
   storageLocations: StorageLocation[];
-  onAddEquipment: (equipment: any) => void;
+  onAddEquipment: (equipment: IndividualEquipment) => void;
 }
 
 const CommunicationEquipmentSection: React.FC<CommunicationEquipmentSectionProps> = ({

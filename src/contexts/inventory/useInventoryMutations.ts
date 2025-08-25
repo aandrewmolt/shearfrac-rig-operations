@@ -1,7 +1,8 @@
 
 import { useTursoEquipmentMutations } from '@/hooks/equipment/useTursoEquipmentMutations';
+import { StorageLocation, EquipmentType, IndividualEquipment } from '@/types/inventory';
 
-export const useInventoryMutations = (storageLocations: any[]) => {
+export const useInventoryMutations = (storageLocations: StorageLocation[]) => {
   const mutations = useTursoEquipmentMutations();
 
   // Enhanced mutation wrappers
@@ -33,7 +34,7 @@ export const useInventoryMutations = (storageLocations: any[]) => {
     }
   };
 
-  const addBulkIndividualEquipment = async (equipment: any[]) => {
+  const addBulkIndividualEquipment = async (equipment: Omit<IndividualEquipment, 'id'>[]) => {
     try {
       const results = await Promise.all(
         equipment.map(eq => mutations.addIndividualEquipment(eq))
@@ -46,7 +47,7 @@ export const useInventoryMutations = (storageLocations: any[]) => {
   };
 
   // Enhanced storage location update that handles default location constraint
-  const updateStorageLocationWithDefault = async (id: string, data: any): Promise<void> => {
+  const updateStorageLocationWithDefault = async (id: string, data: Partial<StorageLocation>): Promise<void> => {
     try {
       // If setting this location as default, first clear all other defaults
       if (data.isDefault) {
@@ -54,7 +55,7 @@ export const useInventoryMutations = (storageLocations: any[]) => {
         // First, clear all existing defaults
         await Promise.all(
           storageLocations
-            .filter(loc => loc.id !== id && loc.isDefault)
+            .filter((loc: StorageLocation) => loc.id !== id && loc.isDefault)
             .map(loc => mutations.updateStorageLocation(loc.id, { ...loc, isDefault: false }))
         );
       }
@@ -68,23 +69,23 @@ export const useInventoryMutations = (storageLocations: any[]) => {
   };
 
   // Wrapper functions to ensure Promise<void> return type
-  const addEquipmentTypeWrapper = async (data: any): Promise<void> => {
+  const addEquipmentTypeWrapper = async (data: Omit<EquipmentType, 'id'>): Promise<void> => {
     await mutations.addEquipmentType(data);
   };
 
-  const updateEquipmentTypeWrapper = async (id: string, data: any): Promise<void> => {
+  const updateEquipmentTypeWrapper = async (id: string, data: Partial<EquipmentType>): Promise<void> => {
     await mutations.updateEquipmentType(id, data);
   };
 
-  const addStorageLocationWrapper = async (data: any): Promise<void> => {
+  const addStorageLocationWrapper = async (data: Omit<StorageLocation, 'id'>): Promise<void> => {
     await mutations.addStorageLocation(data);
   };
 
-  const addIndividualEquipmentWrapper = async (data: any): Promise<void> => {
+  const addIndividualEquipmentWrapper = async (data: Omit<IndividualEquipment, 'id'>): Promise<void> => {
     await mutations.addIndividualEquipment(data);
   };
 
-  const updateIndividualEquipmentWrapper = async (id: string, data: any): Promise<void> => {
+  const updateIndividualEquipmentWrapper = async (id: string, data: Partial<IndividualEquipment>): Promise<void> => {
     await mutations.updateIndividualEquipment(id, data);
   };
 

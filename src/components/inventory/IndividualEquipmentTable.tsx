@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -42,11 +42,15 @@ const IndividualEquipmentTable: React.FC<IndividualEquipmentTableProps> = ({
     return conflicts.find(c => c.equipmentId === equipmentId);
   };
   
-  const getJobName = (jobId: string | null): string => {
+  const getJobName = useCallback((jobId: string | null): string => {
     if (!jobId) return '';
     const job = jobs.find(j => j.id === jobId);
-    return job?.name || `Job #${jobId}`;
-  };
+    if (!job) return `Job #${jobId.substring(0, 8)}`;
+    
+    // Format as "Client - JobName"
+    const clientName = job.clientName || 'Unknown Client';
+    return `${clientName} - ${job.name}`;
+  }, [jobs]);
   
   // Group equipment by deployment status and job
   const groupedEquipment = React.useMemo(() => {
@@ -79,7 +83,7 @@ const IndividualEquipmentTable: React.FC<IndividualEquipmentTableProps> = ({
     });
 
     return groups;
-  }, [filteredEquipment, jobs]);
+  }, [filteredEquipment, getJobName]);
 
   if (filteredEquipment.length === 0) {
     return (
