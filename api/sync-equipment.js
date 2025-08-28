@@ -2,13 +2,23 @@ import { createClient } from '@libsql/client/web';
 
 // Initialize Turso client with error handling
 let turso;
-try {
-  turso = createClient({
-    url: process.env.TURSO_DATABASE_URL || '',
-    authToken: process.env.TURSO_AUTH_TOKEN || undefined,
+const TURSO_URL = process.env.TURSO_DATABASE_URL;
+const TURSO_TOKEN = process.env.TURSO_AUTH_TOKEN;
+
+if (!TURSO_URL || !TURSO_TOKEN) {
+  console.error('Missing Turso credentials:', {
+    hasUrl: !!TURSO_URL,
+    hasToken: !!TURSO_TOKEN
   });
-} catch (error) {
-  console.error('Failed to initialize Turso client:', error);
+} else {
+  try {
+    turso = createClient({
+      url: TURSO_URL,
+      authToken: TURSO_TOKEN,
+    });
+  } catch (error) {
+    console.error('Failed to initialize Turso client:', error);
+  }
 }
 
 export default async function handler(req, res) {
@@ -24,9 +34,13 @@ export default async function handler(req, res) {
 
   // Check if Turso is initialized
   if (!turso) {
-    return res.status(500).json({ 
+    return res.status(503).json({ 
       error: 'Database connection not configured',
-      message: 'Turso client initialization failed'
+      message: 'Turso credentials are missing. Please set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN environment variables.',
+      debug: {
+        hasUrl: !!TURSO_URL,
+        hasToken: !!TURSO_TOKEN
+      }
     });
   }
 
