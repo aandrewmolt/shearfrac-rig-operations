@@ -42,17 +42,17 @@ async function apiRequest(
 export const equipmentSync = {
   // Get all equipment
   async getAll() {
-    return apiRequest('/sync-equipment');
+    return apiRequest('/sync-equipment-v2');
   },
 
   // Get equipment by ID
   async getById(id: string) {
-    return apiRequest(`/sync-equipment?id=${id}`);
+    return apiRequest(`/sync-equipment-v2?id=${id}`);
   },
 
   // Get deployed equipment for a job
   async getDeployedForJob(jobId: string) {
-    return apiRequest(`/sync-equipment?type=deployed&jobId=${jobId}`);
+    return apiRequest(`/sync-equipment-v2?type=deployed&jobId=${jobId}`);
   },
 
   // Create new equipment
@@ -63,7 +63,7 @@ export const equipmentSync = {
     locationId: string;
     status?: string;
   }) {
-    return apiRequest('/sync-equipment', {
+    return apiRequest('/sync-equipment-v2', {
       method: 'POST',
       body: JSON.stringify(equipment),
     });
@@ -71,7 +71,7 @@ export const equipmentSync = {
 
   // Update equipment
   async update(id: string, updates: Record<string, any>) {
-    return apiRequest(`/sync-equipment?id=${id}`, {
+    return apiRequest(`/sync-equipment-v2?id=${id}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
     });
@@ -79,7 +79,7 @@ export const equipmentSync = {
 
   // Allocate equipment to job
   async allocate(equipmentId: string, jobId: string, nodeId?: string) {
-    return apiRequest('/sync-equipment?action=allocate', {
+    return apiRequest('/sync-equipment-v2?action=allocate', {
       method: 'POST',
       body: JSON.stringify({ equipmentId, jobId, nodeId }),
     });
@@ -87,7 +87,7 @@ export const equipmentSync = {
 
   // Deallocate equipment from job
   async deallocate(equipmentId: string) {
-    return apiRequest('/sync-equipment?action=deallocate', {
+    return apiRequest('/sync-equipment-v2?action=deallocate', {
       method: 'POST',
       body: JSON.stringify({ equipmentId }),
     });
@@ -95,7 +95,7 @@ export const equipmentSync = {
 
   // Batch update equipment status
   async batchUpdateStatus(equipmentIds: string[], status: string, jobId?: string) {
-    return apiRequest('/sync-equipment?action=sync-status', {
+    return apiRequest('/sync-equipment-v2?action=sync-status', {
       method: 'POST',
       body: JSON.stringify({ equipmentIds, status, jobId }),
     });
@@ -103,7 +103,7 @@ export const equipmentSync = {
 
   // Delete equipment (soft delete)
   async delete(id: string) {
-    return apiRequest(`/sync-equipment?id=${id}`, {
+    return apiRequest(`/sync-equipment-v2?id=${id}`, {
       method: 'DELETE',
     });
   },
