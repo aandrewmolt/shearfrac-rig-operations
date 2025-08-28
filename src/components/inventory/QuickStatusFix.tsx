@@ -61,14 +61,14 @@ const QuickStatusFix: React.FC<QuickStatusFixProps> = ({ onFixed }) => {
   }
 
   return (
-    <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-4">
+    <div className="bg-status-warning/20 border border-border rounded-md p-3 mb-4">
       <div className="flex items-start gap-2">
-        <AlertCircle className="h-4 w-4 text-yellow-600 mt-0.5" />
+        <AlertCircle className="h-4 w-4 text-status-warning mt-0.5" />
         <div className="flex-1">
-          <p className="text-sm font-medium text-yellow-800">
+          <p className="text-sm font-medium text-corporate-light">
             Equipment Status Issue Detected
           </p>
-          <p className="text-xs text-yellow-600 mt-1">
+          <p className="text-xs text-status-warning mt-1">
             Some equipment items don't have proper status values, which prevents them from appearing as available.
           </p>
           <Button

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Package, MapPin, AlertTriangle, Briefcase } from 'lucide-react';
 import { EquipmentType } from '@/types/inventory';
-import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
+import { useUnifiedEquipmentSync } from '@/hooks/useUnifiedEquipmentSync';
 
 interface EquipmentDetailCardProps {
   equipmentType: EquipmentType;
@@ -20,7 +20,7 @@ const EquipmentDetailCard: React.FC<EquipmentDetailCardProps> = ({
   onMoveEquipment,
   onRedTag,
 }) => {
-  const { getEquipmentStatus, allocations } = useInventoryMapperSync();
+  const { getEquipmentStatus, allocations } = useUnifiedEquipmentSync();
   const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
   const availableQuantity = items
     .filter(item => item.status === 'available')
@@ -34,11 +34,11 @@ const EquipmentDetailCard: React.FC<EquipmentDetailCardProps> = ({
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'cables': return 'bg-blue-100 text-blue-800';
-      case 'gauges': return 'bg-green-100 text-green-800';
-      case 'adapters': return 'bg-purple-100 text-purple-800';
-      case 'communication': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'cables': return 'bg-muted text-foreground';
+      case 'gauges': return 'bg-muted text-foreground';
+      case 'adapters': return 'bg-muted text-purple-800';
+      case 'communication': return 'bg-muted text-foreground';
+      default: return 'bg-muted text-foreground';
     }
   };
 
@@ -52,26 +52,26 @@ const EquipmentDetailCard: React.FC<EquipmentDetailCardProps> = ({
           </Badge>
         </div>
         {equipmentType.description && (
-          <p className="text-sm text-gray-600">{equipmentType.description}</p>
+          <p className="text-sm text-muted-foreground">{equipmentType.description}</p>
         )}
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <Package className="h-4 w-4 text-blue-600" />
+            <Package className="h-4 w-4 text-foreground" />
             <span>Total: {totalQuantity}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-green-500"></div>
+            <div className="h-3 w-3 rounded-full bg-muted0"></div>
             <span>Available: {availableQuantity}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
+            <div className="h-3 w-3 rounded-full bg-muted0"></div>
             <span>Deployed: {deployedQuantity}</span>
           </div>
           {redTaggedQuantity > 0 && (
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-red-600" />
+              <AlertTriangle className="h-4 w-4 text-destructive" />
               <span>Red Tagged: {redTaggedQuantity}</span>
             </div>
           )}
@@ -85,9 +85,9 @@ const EquipmentDetailCard: React.FC<EquipmentDetailCardProps> = ({
               const syncStatus = getEquipmentStatus(item.id);
               
               return (
-                <div key={item.id} className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
+                <div key={item.id} className="flex items-center justify-between p-2 bg-muted rounded text-sm">
                   <div className="flex items-center gap-2">
-                    <MapPin className="h-3 w-3 text-gray-500" />
+                    <MapPin className="h-3 w-3 text-muted-foreground" />
                     <span>{item.quantity}x</span>
                     <Badge 
                       variant={syncStatus === 'available' ? 'default' : 
@@ -97,7 +97,7 @@ const EquipmentDetailCard: React.FC<EquipmentDetailCardProps> = ({
                       {syncStatus}
                     </Badge>
                     {allocation && (
-                      <div className="flex items-center gap-1 text-xs text-gray-600">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Briefcase className="h-3 w-3" />
                         <span>{allocation.jobName}</span>
                       </div>

@@ -39,7 +39,7 @@ export function ClearOfflineDataButton() {
       size="sm"
       onClick={handleClearOfflineData}
       disabled={isClearing}
-      className="gap-2 text-red-600 hover:text-red-700"
+      className="gap-2 text-destructive hover:text-destructive"
     >
       {isClearing ? (
         <>

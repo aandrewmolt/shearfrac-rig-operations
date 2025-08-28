@@ -7,6 +7,7 @@ import { LogOut, Home, Cable, Package, Users, Menu, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BlobSyncStatus } from './BlobSyncStatus';
+import { SyncStatusIndicator } from './sync/SyncStatusIndicator';
 import { cn } from '@/lib/utils';
 
 const AppHeader = () => {
@@ -44,7 +45,7 @@ const AppHeader = () => {
   ];
 
   return (
-    <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-50 safe-top">
+    <header className="header-corporate px-4 sm:px-6 py-3 sm:py-4 safe-top">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3 sm:space-x-6">
           {/* Mobile Menu Button */}
@@ -59,28 +60,28 @@ const AppHeader = () => {
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[280px] sm:w-[320px] p-0">
-              <SheetHeader className="border-b p-4">
-                <SheetTitle className="text-left">Navigation</SheetTitle>
+            <SheetContent side="left" className="w-[280px] sm:w-[320px] p-0 bg-card border-border">
+              <SheetHeader className="border-b border-border p-4">
+                <SheetTitle className="text-left text-corporate-light">Navigation</SheetTitle>
               </SheetHeader>
               
               {/* Mobile User Info */}
-              <div className="p-4 border-b">
+              <div className="p-4 border-b border-border">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-blue-100 text-blue-800 text-sm">
+                    <AvatarFallback className="bg-accent-gold text-corporate-dark text-sm">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-corporate-light truncate">
                       {user?.user_metadata?.first_name && user?.user_metadata?.last_name
                         ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
                         : user?.email
                       }
                     </p>
                     {user?.user_metadata?.company && (
-                      <p className="text-xs text-gray-500 truncate">{user.user_metadata.company}</p>
+                      <p className="text-xs text-corporate-silver truncate">{user.user_metadata.company}</p>
                     )}
                   </div>
                 </div>
@@ -96,7 +97,7 @@ const AppHeader = () => {
                       variant={isActive(item.path) ? 'default' : 'ghost'}
                       className={cn(
                         "w-full justify-start h-12",
-                        isActive(item.path) && "bg-blue-600 text-white"
+                        isActive(item.path) && "bg-accent-gold text-corporate-dark hover:bg-accent-gold-dark"
                       )}
                       onClick={() => handleNavigation(item.path)}
                     >
@@ -108,10 +109,10 @@ const AppHeader = () => {
               </nav>
 
               {/* Mobile Sign Out */}
-              <div className="p-4 border-t mt-auto">
+              <div className="p-4 border-t border-border mt-auto">
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start h-12 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="w-full justify-start h-12 text-status-danger hover:text-status-danger hover:bg-status-danger/10"
                   onClick={handleSignOut}
                 >
                   <LogOut className="h-5 w-5 mr-3" />
@@ -121,7 +122,7 @@ const AppHeader = () => {
             </SheetContent>
           </Sheet>
 
-          <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
+          <h1 className="text-lg sm:text-xl font-semibold text-corporate-light uppercase tracking-wider truncate">
             Rig-Up Management
           </h1>
           
@@ -135,7 +136,10 @@ const AppHeader = () => {
                   variant={isActive(item.path) ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => navigate(item.path)}
-                  className="flex items-center gap-2"
+                  className={cn(
+                    "flex items-center gap-2",
+                    isActive(item.path) && "bg-accent-gold text-corporate-dark hover:bg-accent-gold-dark"
+                  )}
                 >
                   <Icon className="h-4 w-4" />
                   <span className="hidden lg:inline">{item.label}</span>
@@ -147,24 +151,25 @@ const AppHeader = () => {
         
         {/* Right side - Desktop only user info */}
         <div className="flex items-center space-x-2 sm:space-x-4">
+          <SyncStatusIndicator />
           <BlobSyncStatus className="hidden sm:block" />
           
           {/* Desktop User Info */}
           <div className="hidden md:flex items-center space-x-2">
             <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-blue-100 text-blue-800">
+              <AvatarFallback className="bg-accent-gold text-corporate-dark">
                 {initials}
               </AvatarFallback>
             </Avatar>
             <div className="hidden lg:block max-w-[150px] xl:max-w-[200px]">
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium text-corporate-light truncate">
                 {user?.user_metadata?.first_name && user?.user_metadata?.last_name
                   ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
                   : user?.email
                 }
               </p>
               {user?.user_metadata?.company && (
-                <p className="text-xs text-gray-500 truncate">{user.user_metadata.company}</p>
+                <p className="text-xs text-corporate-silver truncate">{user.user_metadata.company}</p>
               )}
             </div>
           </div>
@@ -174,7 +179,7 @@ const AppHeader = () => {
             variant="ghost" 
             size="icon"
             onClick={handleSignOut}
-            className="hidden md:flex h-9 w-9 text-gray-600 hover:text-gray-900"
+            className="hidden md:flex h-9 w-9 text-corporate-silver hover:text-accent-gold"
             aria-label="Sign out"
           >
             <LogOut className="h-5 w-5" />
@@ -184,7 +189,7 @@ const AppHeader = () => {
           <div className="flex md:hidden items-center space-x-2">
             <BlobSyncStatus />
             <Avatar className="h-9 w-9">
-              <AvatarFallback className="bg-blue-100 text-blue-800 text-sm">
+              <AvatarFallback className="bg-accent-gold text-corporate-dark text-sm">
                 {initials}
               </AvatarFallback>
             </Avatar>

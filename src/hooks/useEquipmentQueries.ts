@@ -4,6 +4,13 @@ import { EquipmentType, StorageLocation, IndividualEquipment } from '@/types/inv
 import { safeArray } from '@/utils/safeDataAccess';
 import { ensureSchemaInitialized } from '@/lib/turso/initializeSchema';
 
+/**
+ * Direct database queries for equipment data
+ * Used by InventoryProvider to fetch initial data
+ * 
+ * IMPORTANT: This hook MUST NOT use useInventory() or any context
+ * as it's used by the InventoryProvider itself
+ */
 export const useEquipmentQueries = () => {
   // Equipment Types Query
   const { data: equipmentTypes = [], isLoading: typesLoading, refetch: refetchTypes } = useQuery({

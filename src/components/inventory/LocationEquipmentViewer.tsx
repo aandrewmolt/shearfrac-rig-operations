@@ -41,12 +41,12 @@ const LocationEquipmentViewer: React.FC = () => {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'cables': return 'bg-blue-100 text-blue-800';
-      case 'gauges': return 'bg-green-100 text-green-800';
-      case 'adapters': return 'bg-yellow-100 text-yellow-800';
-      case 'communication': return 'bg-purple-100 text-purple-800';
-      case 'power': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'cables': return 'bg-muted text-foreground';
+      case 'gauges': return 'bg-muted text-foreground';
+      case 'adapters': return 'bg-muted text-foreground';
+      case 'communication': return 'bg-muted text-accent';
+      case 'power': return 'bg-muted text-foreground';
+      default: return 'bg-card text-corporate-light';
     }
   };
 
@@ -55,7 +55,7 @@ const LocationEquipmentViewer: React.FC = () => {
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search locations..."
               value={searchTerm}
@@ -95,9 +95,9 @@ const LocationEquipmentViewer: React.FC = () => {
                 <CardTitle className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     {locationIsJob ? (
-                      <Briefcase className="h-4 w-4 text-blue-600" />
+                      <Briefcase className="h-4 w-4 text-foreground" />
                     ) : (
-                      <MapPin className="h-4 w-4 text-green-600" />
+                      <MapPin className="h-4 w-4 text-foreground" />
                     )}
                     <span className="truncate">{location.name}</span>
                   </div>
@@ -109,8 +109,8 @@ const LocationEquipmentViewer: React.FC = () => {
               <CardContent className="pt-0">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <Package className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">
+                    <Package className="h-4 w-4 text-corporate-silver" />
+                    <span className="text-sm text-corporate-silver">
                       {totalItems} item{totalItems !== 1 ? 's' : ''}
                     </span>
                   </div>
@@ -143,13 +143,13 @@ const LocationEquipmentViewer: React.FC = () => {
                 )}
 
                 {!isExpanded && equipmentSummary.length > 0 && (
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-corporate-silver">
                     {equipmentSummary.length} equipment type{equipmentSummary.length !== 1 ? 's' : ''}
                   </div>
                 )}
 
                 {equipmentSummary.length === 0 && (
-                  <div className="text-xs text-gray-400 italic">
+                  <div className="text-xs text-muted-foreground italic">
                     No equipment at this location
                   </div>
                 )}
@@ -161,7 +161,7 @@ const LocationEquipmentViewer: React.FC = () => {
 
       {filteredLocations.length === 0 && (
         <div className="text-center py-8">
-          <p className="text-gray-500">No locations found matching your criteria.</p>
+          <p className="text-corporate-silver">No locations found matching your criteria.</p>
         </div>
       )}
     </div>

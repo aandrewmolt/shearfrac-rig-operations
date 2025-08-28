@@ -68,13 +68,13 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
           {hasIssues && (
             <div className="flex items-center gap-2 ml-auto">
               {errorCount > 0 && (
-                <div className="flex items-center gap-1 text-red-600">
+                <div className="flex items-center gap-1 text-destructive">
                   <AlertTriangle className="h-4 w-4" />
                   <span className="text-sm font-medium">{errorCount} errors</span>
                 </div>
               )}
               {warningCount > 0 && (
-                <div className="flex items-center gap-1 text-yellow-600">
+                <div className="flex items-center gap-1 text-foreground">
                   <AlertTriangle className="h-4 w-4" />
                   <span className="text-sm font-medium">{warningCount} warnings</span>
                 </div>
@@ -84,7 +84,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         </div>
 
         {hasIssues && (
-          <Alert className="mt-3 bg-yellow-50 border-yellow-200">
+          <Alert className="mt-3 bg-muted border-border">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
               <h4 className="text-sm font-medium mb-2">Validation Issues:</h4>

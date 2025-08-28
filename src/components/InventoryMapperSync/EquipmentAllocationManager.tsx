@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
+import { useUnifiedEquipmentSync } from '@/hooks/useUnifiedEquipmentSync';
 import { useInventory } from '@/contexts/InventoryContext';
 import { Package, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface EquipmentAllocationManagerProps {
@@ -22,7 +23,7 @@ export const EquipmentAllocationManager: React.FC<EquipmentAllocationManagerProp
     getEquipmentStatus,
     getJobEquipment,
     isValidating
-  } = useInventoryMapperSync();
+  } = useUnifiedEquipmentSync({ jobId });
   
   const { data: inventoryData } = useInventory();
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<string>('');
@@ -121,7 +122,7 @@ export const EquipmentAllocationManager: React.FC<EquipmentAllocationManagerProp
 
       {/* Allocation Form */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-muted-foreground mb-2">
           Allocate Equipment
         </label>
         <div className="flex gap-2">
@@ -160,12 +161,12 @@ export const EquipmentAllocationManager: React.FC<EquipmentAllocationManagerProp
 
       {/* Allocated Equipment List */}
       <div>
-        <h4 className="text-sm font-medium text-gray-700 mb-2">
+        <h4 className="text-sm font-medium text-muted-foreground mb-2">
           Allocated Equipment ({jobEquipment.length})
         </h4>
         
         {jobEquipment.length === 0 ? (
-          <p className="text-sm text-gray-500 italic">No equipment allocated to this job</p>
+          <p className="text-sm text-muted-foreground italic">No equipment allocated to this job</p>
         ) : (
           <div className="space-y-2">
             {jobEquipment.map((equipmentId) => {
@@ -175,15 +176,15 @@ export const EquipmentAllocationManager: React.FC<EquipmentAllocationManagerProp
               return (
                 <div
                   key={equipmentId}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-md"
+                  className="flex items-center justify-between p-3 bg-muted rounded-md"
                 >
                   <div className="flex items-center gap-3">
-                    <Package className="h-4 w-4 text-gray-400" />
+                    <Package className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-foreground">
                         {equipment.name}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-muted-foreground">
                         ID: {equipment.id} | Type: {equipment.type}
                       </div>
                     </div>
@@ -200,9 +201,9 @@ export const EquipmentAllocationManager: React.FC<EquipmentAllocationManagerProp
                       }
                       className={`text-xs ${
                         status === 'deployed' 
-                          ? 'bg-green-100 text-green-700 hover:bg-green-100' 
+                          ? 'bg-muted text-foreground hover:bg-muted' 
                           : status === 'allocated' 
-                          ? 'bg-blue-100 text-blue-700 hover:bg-blue-100'
+                          ? 'bg-muted text-foreground hover:bg-muted'
                           : ''
                       }`}
                     >
@@ -214,7 +215,7 @@ export const EquipmentAllocationManager: React.FC<EquipmentAllocationManagerProp
                       disabled={isLoading}
                       variant="ghost"
                       size="sm"
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
+                      className="text-destructive hover:text-destructive hover:bg-muted h-8 w-8 p-0"
                       title="Release equipment"
                     >
                       <XCircle className="h-4 w-4" />

@@ -87,7 +87,7 @@ const ExtraEquipmentForm: React.FC<ExtraEquipmentFormProps> = ({
           <SelectTrigger>
             <SelectValue placeholder="Select equipment type" />
           </SelectTrigger>
-          <SelectContent className="bg-white">
+          <SelectContent className="bg-card">
             {data.equipmentTypes.map(type => (
               <SelectItem key={type.id} value={type.id}>
                 <div className="flex items-center gap-2">
@@ -113,20 +113,20 @@ const ExtraEquipmentForm: React.FC<ExtraEquipmentFormProps> = ({
               <SelectTrigger>
                 <SelectValue placeholder="Select specific equipment" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-card">
                 {availableIndividualEquipment.map(equipment => (
                   <SelectItem key={equipment.id} value={equipment.id}>
                     <div className="flex flex-col">
                       <span className="font-medium">{equipment.equipmentId}</span>
-                      <span className="text-sm text-gray-500">{equipment.name}</span>
+                      <span className="text-sm text-muted-foreground">{equipment.name}</span>
                     </div>
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           ) : (
-            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
-              <p className="text-sm text-yellow-700">
+            <div className="p-3 bg-muted border border-border rounded">
+              <p className="text-sm text-foreground">
                 No available equipment of this type found. Please ensure equipment is available in inventory.
               </p>
             </div>
@@ -150,7 +150,7 @@ const ExtraEquipmentForm: React.FC<ExtraEquipmentFormProps> = ({
           <SelectTrigger>
             <SelectValue placeholder="Select reason or type custom" />
           </SelectTrigger>
-          <SelectContent className="bg-white">
+          <SelectContent className="bg-card">
             {commonReasons.map(reasonOption => (
               <SelectItem key={reasonOption} value={reasonOption}>
                 {reasonOption}

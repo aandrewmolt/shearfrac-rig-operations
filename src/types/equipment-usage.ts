@@ -7,27 +7,21 @@ export interface EquipmentUsageSession {
   jobName: string;
   startTime: Date;
   endTime?: Date;
-  hoursUsed: number;
-  status: 'active' | 'completed' | 'interrupted';
+  totalHours: number;
+  sessionType: 'deployment' | 'maintenance' | 'testing';
   notes?: string;
+  endNotes?: string;
 }
 
 export interface EquipmentLifecycle {
   equipmentId: string;
   equipmentName: string;
-  typeId: string;
-  purchaseDate?: Date;
-  firstUseDate?: Date;
-  lastUseDate?: Date;
-  totalHoursUsed: number;
-  totalJobsUsed: number;
+  totalHours: number;
+  deploymentCount: number;
+  maintenanceCount: number;
   currentStatus: 'available' | 'deployed' | 'maintenance' | 'red-tagged' | 'retired';
-  redTaggedDate?: Date;
-  redTaggedReason?: string;
-  retiredDate?: Date;
-  retiredReason?: string;
-  maintenanceHistory: MaintenanceRecord[];
-  usageSessions: EquipmentUsageSession[];
+  createdDate: Date;
+  lastUsed: number | null;
 }
 
 export interface MaintenanceRecord {
@@ -44,49 +38,42 @@ export interface MaintenanceRecord {
 
 export interface EquipmentUsageStats {
   equipmentId: string;
-  dailyAverage: number;
-  weeklyAverage: number;
-  monthlyAverage: number;
-  peakUsagePeriod: {
-    start: Date;
-    end: Date;
-    hours: number;
-  };
-  utilizationRate: number; // Percentage of time in use vs available
-  mtbf?: number; // Mean Time Between Failures
-  availability: number; // Percentage of time available for use
+  equipmentName: string;
+  totalHours: number;
+  totalSessions: number;
+  deploymentHours: number;
+  maintenanceHours: number;
+  averageSessionHours: number;
+  jobUsage: Record<string, { jobName: string; hours: number; sessions: number }>;
+  currentStatus: string;
+  isCurrentlyInUse: boolean;
+  lastUsed: number;
+  utilizationRate: number;
 }
 
 export interface JobEquipmentUsage {
   jobId: string;
   jobName: string;
-  startDate: Date;
-  endDate?: Date;
+  equipmentCount: number;
   totalHours: number;
-  equipment: {
-    equipmentId: string;
-    equipmentName: string;
-    type: string;
-    hoursUsed: number;
-    status: 'active' | 'returned' | 'replaced';
-    replacedBy?: string;
-    replacedDate?: Date;
-    replacementReason?: string;
-  }[];
+  activeSessions: number;
+  completedSessions: number;
+  equipmentBreakdown: Record<string, number>;
+  startDate: number;
+  endDate: number | null;
 }
 
 export interface RedTagEvent {
   id: string;
   equipmentId: string;
-  taggedDate: Date;
-  taggedBy: string;
+  equipmentName: string;
+  eventDate: Date;
+  reportedBy: string;
   reason: string;
+  description: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
-  hoursAtFailure: number;
-  jobIdAtFailure?: string;
-  estimatedRepairTime?: number;
-  actualRepairTime?: number;
-  repairCost?: number;
+  status: 'active' | 'resolved';
+  resolved: boolean;
   resolvedDate?: Date;
   resolvedBy?: string;
   resolutionNotes?: string;

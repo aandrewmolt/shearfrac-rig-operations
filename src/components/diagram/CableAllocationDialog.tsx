@@ -50,8 +50,8 @@ const CableAllocationDialog: React.FC<CableAllocationDialogProps> = ({
       setAvailableCables(cables);
       
       // If edge already has an allocated cable, pre-select it
-      if (edge?.data?.allocatedEquipmentId) {
-        setSelectedCableId(edge.data.allocatedEquipmentId);
+      if (edge?.data?.equipmentId) {
+        setSelectedCableId(edge.data.equipmentId);
       }
     }
   }, [isOpen, cableTypeId, inventoryData, edge, jobId]);
@@ -85,9 +85,9 @@ const CableAllocationDialog: React.FC<CableAllocationDialogProps> = ({
         <div className="space-y-4">
           {/* Connection Info */}
           {edge && (
-            <div className="bg-gray-50 p-3 rounded-lg text-sm">
+            <div className="bg-card p-3 rounded-lg text-sm">
               <p className="font-medium">Connection Details:</p>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 {edge.source} → {edge.target}
               </p>
             </div>
@@ -108,10 +108,10 @@ const CableAllocationDialog: React.FC<CableAllocationDialogProps> = ({
                 <SelectTrigger>
                   <SelectValue placeholder="Select a cable" />
                 </SelectTrigger>
-                <SelectContent className="bg-white z-50 max-h-[300px]">
+                <SelectContent className="bg-card z-50 max-h-[300px]">
                   {availableCables.map(cable => {
                     const location = getLocation(cable.locationId);
-                    const isCurrentlyAllocated = cable.id === edge?.data?.allocatedEquipmentId;
+                    const isCurrentlyAllocated = cable.id === edge?.data?.equipmentId;
                     
                     return (
                       <SelectItem key={cable.id} value={cable.id}>
@@ -119,12 +119,12 @@ const CableAllocationDialog: React.FC<CableAllocationDialogProps> = ({
                           <div className="flex items-center gap-2">
                             <span className="font-medium">{cable.equipmentId}</span>
                             {cable.name && cable.name !== cable.equipmentId && (
-                              <span className="text-gray-500">({cable.name})</span>
+                              <span className="text-muted-foreground">({cable.name})</span>
                             )}
                           </div>
                           <div className="flex items-center gap-2">
                             {isCurrentlyAllocated && (
-                              <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                              <Badge variant="outline" className="text-xs bg-card text-foreground border-border">
                                 Current
                               </Badge>
                             )}
@@ -132,8 +132,8 @@ const CableAllocationDialog: React.FC<CableAllocationDialogProps> = ({
                               variant="outline" 
                               className={`text-xs ${
                                 cable.status === 'available' 
-                                  ? 'bg-green-50 text-green-700 border-green-200' 
-                                  : 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                                  ? 'bg-card text-success border-border' 
+                                  : 'bg-card text-warning border-border'
                               }`}
                             >
                               {cable.status === 'available' ? (
@@ -157,7 +157,7 @@ const CableAllocationDialog: React.FC<CableAllocationDialogProps> = ({
                           </div>
                         </div>
                         {cable.notes && (
-                          <div className="text-xs text-gray-500 mt-1">{cable.notes}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{cable.notes}</div>
                         )}
                       </SelectItem>
                     );
@@ -167,12 +167,12 @@ const CableAllocationDialog: React.FC<CableAllocationDialogProps> = ({
             )}
             
             {selectedCableId && (
-              <div className="mt-2 p-3 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-800">
+              <div className="mt-2 p-3 bg-card rounded-lg">
+                <p className="text-sm text-foreground">
                   <strong>Selected:</strong> {availableCables.find(c => c.id === selectedCableId)?.equipmentId}
                 </p>
                 {availableCables.find(c => c.id === selectedCableId)?.serialNumber && (
-                  <p className="text-xs text-blue-600 mt-1">
+                  <p className="text-xs text-foreground mt-1">
                     Serial: {availableCables.find(c => c.id === selectedCableId)?.serialNumber}
                   </p>
                 )}
@@ -180,8 +180,8 @@ const CableAllocationDialog: React.FC<CableAllocationDialogProps> = ({
             )}
           </div>
 
-          <div className="bg-amber-50 p-3 rounded-lg">
-            <p className="text-sm text-amber-800">
+          <div className="bg-muted p-3 rounded-lg">
+            <p className="text-sm text-muted-foreground">
               <strong>Note:</strong> This cable will be allocated specifically to this connection. 
               It will be marked as deployed for this job.
             </p>

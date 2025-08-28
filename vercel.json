@@ -22,5 +22,21 @@
   ],
   "github": {
     "silent": false
+  },
+  "crons": [
+    {
+      "path": "/api/cron/sync",
+      "schedule": "0 */5 * * *"
+    }
+  ],
+  "functions": {
+    "api/sync/*.ts": {
+      "runtime": "edge",
+      "maxDuration": 30
+    },
+    "api/cron/*.ts": {
+      "runtime": "edge",
+      "maxDuration": 60
+    }
   }
 }

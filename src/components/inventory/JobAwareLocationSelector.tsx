@@ -35,7 +35,7 @@ const JobAwareLocationSelector: React.FC<JobAwareLocationSelectorProps> = ({
         {/* Storage Locations */}
         {showStorageLocations && storageLocations.length > 0 && (
           <>
-            <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 flex items-center gap-1">
+            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground flex items-center gap-1">
               <MapPin className="h-3 w-3" />
               Storage Locations
             </div>
@@ -60,14 +60,14 @@ const JobAwareLocationSelector: React.FC<JobAwareLocationSelectorProps> = ({
             {showStorageLocations && storageLocations.length > 0 && (
               <div className="border-t my-1" />
             )}
-            <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 flex items-center gap-1">
+            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground flex items-center gap-1">
               <Briefcase className="h-3 w-3" />
               Job Sites ({jobLocations.length} active)
             </div>
             {jobLocations.map((job) => (
               <SelectItem key={`job-${job.id}`} value={job.id}>
                 <div className="flex items-center gap-2">
-                  <Briefcase className="h-3 w-3 text-blue-600" />
+                  <Briefcase className="h-3 w-3 text-foreground" />
                   <span>{job.name}</span>
                   <Badge variant="secondary" className="text-xs">
                     Job Site

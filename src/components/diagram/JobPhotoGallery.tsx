@@ -41,7 +41,7 @@ const JobPhotoGallery: React.FC<JobPhotoGalleryProps> = ({
 
   if (photos.length === 0) {
     return (
-      <div className="text-center py-4 text-gray-500 text-sm">
+      <div className="text-center py-4 text-muted-foreground text-sm">
         No photos in this section yet
       </div>
     );
@@ -54,7 +54,7 @@ const JobPhotoGallery: React.FC<JobPhotoGalleryProps> = ({
           <Card key={photo.id} className="overflow-hidden hover:shadow-lg transition-shadow">
             <CardContent className="p-2">
               <div className="relative group">
-                <div className="aspect-square w-full bg-gray-100 rounded overflow-hidden">
+                <div className="aspect-square w-full bg-card rounded overflow-hidden">
                   <img
                     src={photo.photoUrl}
                     alt={photo.caption || 'Job photo'}
@@ -63,7 +63,7 @@ const JobPhotoGallery: React.FC<JobPhotoGalleryProps> = ({
                     loading="lazy"
                   />
                 </div>
-                <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 rounded-full p-1">
+                <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-card/80 rounded-full p-1">
                   <Button
                     size="sm"
                     variant="destructive"
@@ -107,7 +107,7 @@ const JobPhotoGallery: React.FC<JobPhotoGalleryProps> = ({
                 </div>
               ) : (
                 <div className="mt-2 flex items-start justify-between">
-                  <p className="text-xs text-gray-600 flex-1 pr-1">
+                  <p className="text-xs text-muted-foreground flex-1 pr-1">
                     {photo.caption || 'No caption'}
                   </p>
                   <Button

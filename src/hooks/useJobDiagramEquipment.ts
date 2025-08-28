@@ -27,8 +27,8 @@ interface UseJobDiagramEquipmentProps {
   addShearstreamBox: () => void;
   removeShearstreamBox: (boxId: string) => void;
   validateEquipmentAvailability?: (equipmentId: string, jobId: string) => Promise<boolean>;
-  allocateEquipment?: (equipmentId: string, jobId: string, jobName: string) => Promise<void>;
-  releaseEquipment?: (equipmentId: string, jobId: string) => Promise<void>;
+  allocateEquipment?: (equipmentId: string, allocation: string | Record<string, unknown>) => Promise<void>;
+  releaseEquipment?: (equipmentId: string, jobId?: string) => Promise<void>;
   onSave?: () => void;
 }
 
@@ -51,7 +51,7 @@ export const useJobDiagramEquipment = ({
   releaseEquipment,
   onSave,
 }: UseJobDiagramEquipmentProps) => {
-  const { deployEquipment, returnEquipment } = useEquipmentDeployment();
+  const { deployEquipment, returnEquipment } = useEquipmentDeployment(job?.id);
 
   const {
     handleEquipmentSelect,
@@ -65,6 +65,9 @@ export const useJobDiagramEquipment = ({
     setSelectedStarlink,
     setSelectedCustomerComputers,
     setNodes,
+    updateMainBoxName,
+    updateSatelliteName,
+    updateCustomerComputerName,
     validateEquipmentAvailability,
     allocateEquipment,
     releaseEquipment,

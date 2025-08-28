@@ -36,7 +36,7 @@ const CustomerComputerNode = ({ id, data, selected }: { id: string; data: { labe
   };
 
   return (
-    <div className="bg-gray-700 text-white rounded-lg p-3 border-2 border-gray-500 min-w-[120px] text-center relative">
+    <div className="bg-muted-foreground text-white rounded-lg p-3 border-2 border-border min-w-[120px] text-center relative">
       {selected && <NodeDeleteButton onDelete={handleDelete} />}
       {isAssigned && data.equipmentId && (
         <SimpleRedTagMenu 
@@ -50,8 +50,8 @@ const CustomerComputerNode = ({ id, data, selected }: { id: string; data: { labe
         position={Position.Right}
         style={{
           right: -8,
-          backgroundColor: '#374151',
-          border: '2px solid white',
+          backgroundColor: 'hsl(var(--muted-foreground))',
+          border: '2px solid hsl(var(--background))',
           width: 12,
           height: 12,
         }}
@@ -66,9 +66,9 @@ const CustomerComputerNode = ({ id, data, selected }: { id: string; data: { labe
         <div>
           <h3 className="font-bold text-sm">Customer Computer</h3>
           {isAssigned && data.equipmentId && (
-            <p className="text-xs text-green-300">{data.equipmentId}</p>
+            <p className="text-xs text-success">{data.equipmentId}</p>
           )}
-          <p className="text-xs text-gray-300">{isTablet ? 'Tablet' : 'Computer'}</p>
+          <p className="text-xs text-white/70">{isTablet ? 'Tablet' : 'Computer'}</p>
         </div>
       </div>
     </div>

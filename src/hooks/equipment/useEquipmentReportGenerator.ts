@@ -1,5 +1,5 @@
 
-import { useInventoryData } from '@/hooks/useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 import { DetailedEquipmentUsage } from './useEquipmentUsageAnalyzer';
 
 interface EquipmentReport {
@@ -17,7 +17,7 @@ interface EquipmentReport {
 }
 
 export const useEquipmentReportGenerator = () => {
-  const { data } = useInventoryData();
+  const { data } = useInventory();
 
   const generateEquipmentReport = (usage?: DetailedEquipmentUsage): EquipmentReport => {
     if (!usage) {

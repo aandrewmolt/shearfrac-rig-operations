@@ -223,7 +223,7 @@ const ConnectionEditorDialog: React.FC<ConnectionEditorDialogProps> = ({
           )}
 
           {connectionType === 'cable' && validCables.length === 0 && (
-            <div className="text-sm text-red-600 p-2 bg-red-50 rounded">
+            <div className="text-sm text-destructive p-2 bg-muted rounded">
               No valid cable types available for this connection.
             </div>
           )}
@@ -246,11 +246,11 @@ const ConnectionEditorDialog: React.FC<ConnectionEditorDialogProps> = ({
             </div>
           )}
 
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-muted-foreground">
             <p>Current: {getNodeLabel(nodes.find(n => n.id === currentEdge.source))} → {getNodeLabel(nodes.find(n => n.id === currentEdge.target))}</p>
             <p>Type: {currentEdge.data?.connectionType === 'direct' ? 'Direct' : currentEdge.data?.label || 'Cable'}</p>
             {validCables.length > 0 && (
-              <p className="text-green-600 mt-1">
+              <p className="text-foreground mt-1">
                 Valid cables: {validCables.map(c => c.cableName).join(', ')}
               </p>
             )}

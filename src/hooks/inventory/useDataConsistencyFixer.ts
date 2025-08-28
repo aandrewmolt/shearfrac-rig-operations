@@ -1,11 +1,11 @@
 
 import { useCallback } from 'react';
 import { EquipmentItem, IndividualEquipment, EquipmentType } from '@/types/inventory';
-import { useInventoryData } from '@/hooks/useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 import { toast } from 'sonner';
 
 export const useDataConsistencyFixer = () => {
-  const { data, updateEquipmentItems, updateIndividualEquipment } = useInventoryData();
+  const { data, updateEquipmentItems, updateIndividualEquipment } = useInventory();
 
   const fixDataConsistency = useCallback(() => {
     const individualTrackingTypes = data.equipmentTypes.filter(type => type.requiresIndividualTracking);

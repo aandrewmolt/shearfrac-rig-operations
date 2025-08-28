@@ -12,7 +12,7 @@ export const ConflictIndicator: React.FC<ConflictIndicatorProps> = ({
 }) => {
   if (!hasConflict) {
     return (
-      <div className="flex items-center gap-2 text-green-600">
+      <div className="flex items-center gap-2 text-foreground">
         <CheckCircle className="h-4 w-4" />
         <span className="text-sm">Available</span>
       </div>

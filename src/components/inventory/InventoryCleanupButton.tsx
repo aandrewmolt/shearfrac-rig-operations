@@ -94,7 +94,7 @@ const InventoryCleanupButton: React.FC = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-corporate-silver">
           This tool will merge duplicate equipment items at the same location and ensure all required cable types exist in your inventory. No duplicates will be created.
         </div>
         
@@ -117,13 +117,13 @@ const InventoryCleanupButton: React.FC = () => {
         </Button>
 
         {cleanupResults && (
-          <Alert className={cleanupResults.totalCleaned > 0 ? "border-green-200 bg-green-50" : "border-blue-200 bg-blue-50"}>
+          <Alert className={cleanupResults.totalCleaned > 0 ? "border-border bg-status-success/20" : "border-border bg-status-info/20"}>
             {cleanupResults.totalCleaned > 0 ? (
-              <CheckCircle className="h-4 w-4 text-green-600" />
+              <CheckCircle className="h-4 w-4 text-foreground" />
             ) : (
-              <AlertTriangle className="h-4 w-4 text-blue-600" />
+              <AlertTriangle className="h-4 w-4 text-foreground" />
             )}
-            <AlertDescription className={cleanupResults.totalCleaned > 0 ? "text-green-800" : "text-blue-800"}>
+            <AlertDescription className={cleanupResults.totalCleaned > 0 ? "text-foreground" : "text-foreground"}>
               <div className="font-medium mb-1">Cleanup Results:</div>
               <ul className="text-sm space-y-1">
                 <li>• Duplicates merged: {cleanupResults.duplicatesFound}</li>

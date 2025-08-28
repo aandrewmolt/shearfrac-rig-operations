@@ -48,7 +48,7 @@ const ConflictIndicator: React.FC<ConflictIndicatorProps> = ({
             <div key={index} className="border rounded-lg p-3 space-y-2">
               <div className="text-sm">
                 <span className="font-medium">{conflict.equipmentName}</span> is currently assigned to{' '}
-                <span className="font-medium text-blue-600">{conflict.currentJobName}</span>
+                <span className="font-medium text-foreground">{conflict.currentJobName}</span>
               </div>
               
               {onResolveConflict && (
@@ -74,7 +74,7 @@ const ConflictIndicator: React.FC<ConflictIndicatorProps> = ({
             </div>
           ))}
           
-          <div className="text-xs text-gray-500 flex items-start gap-1">
+          <div className="text-xs text-muted-foreground flex items-start gap-1">
             <Info className="w-3 h-3 mt-0.5" />
             <span>Resolve conflicts to ensure equipment is properly allocated to the correct job.</span>
           </div>

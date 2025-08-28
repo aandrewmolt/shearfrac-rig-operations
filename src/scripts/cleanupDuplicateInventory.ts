@@ -1,4 +1,5 @@
 import { tursoDb } from '@/services/tursoDb';
+import { DatabaseEquipmentItem } from '@/types/types';
 
 async function cleanupDuplicateInventory() {
   console.log('🧹 Starting duplicate inventory cleanup...');
@@ -9,7 +10,7 @@ async function cleanupDuplicateInventory() {
     console.log(`📦 Found ${allItems.length} total equipment items`);
     
     // Group items by type_id and location_id (ignoring notes to catch duplicates)
-    const itemGroups = new Map<string, any[]>();
+    const itemGroups = new Map<string, DatabaseEquipmentItem[]>();
     
     allItems.forEach(item => {
       const key = `${item.type_id}-${item.location_id}-${item.status}`;

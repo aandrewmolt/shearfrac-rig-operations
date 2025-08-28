@@ -48,18 +48,18 @@ export function ContactFilterChips({
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'client':
-        return 'bg-green-100 text-green-800 hover:bg-green-200 border-green-300';
+        return 'bg-muted text-foreground hover:bg-success/20 border-border';
       case 'frac':
-        return 'bg-purple-100 text-purple-800 hover:bg-purple-200 border-purple-300';
+        return 'bg-muted text-accent hover:bg-accent/20 border-accent';
       default:
-        return 'bg-orange-100 text-orange-800 hover:bg-orange-200 border-orange-300';
+        return 'bg-muted text-foreground hover:bg-warning/20 border-border';
     }
   };
 
   return (
-    <Card className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-900">
+    <Card className="flex items-center gap-4 p-4 bg-muted">
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <span className="text-sm font-medium text-muted-foreground">
           Showing {filteredCount} of {totalContacts} contacts
         </span>
       </div>
@@ -79,7 +79,7 @@ export function ContactFilterChips({
                 onClick={() => onTypeToggle(type)}
                 className={cn(
                   "h-8 px-3 gap-2 transition-all",
-                  isSelected ? getTypeColor(type) : "hover:bg-gray-100"
+                  isSelected ? getTypeColor(type) : "hover:bg-muted"
                 )}
               >
                 {getTypeIcon(type)}
@@ -88,7 +88,7 @@ export function ContactFilterChips({
                   variant="secondary" 
                   className={cn(
                     "ml-1 h-5 px-1.5 text-xs",
-                    isSelected ? "bg-white/20" : ""
+                    isSelected ? "bg-card/20" : ""
                   )}
                 >
                   {count}
@@ -138,7 +138,7 @@ export function ContactFilterChips({
       {/* Active filters */}
       {selectedTypes.length > 0 && (
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">Active:</span>
+          <span className="text-sm text-muted-foreground">Active:</span>
           <div className="flex gap-1">
             {selectedTypes.map(type => (
               <Badge
@@ -151,7 +151,7 @@ export function ContactFilterChips({
                   onClick={() => onTypeToggle(type)}
                   variant="ghost"
                   size="sm"
-                  className="ml-1 h-auto p-0.5 hover:bg-black/10 rounded"
+                  className="ml-1 h-auto p-0.5 hover:bg-foreground/10 rounded"
                 >
                   <X className="h-3 w-3" />
                 </Button>

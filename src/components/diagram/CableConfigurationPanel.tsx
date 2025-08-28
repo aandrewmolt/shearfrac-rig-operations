@@ -57,7 +57,7 @@ const CableConfigurationPanel: React.FC<CableConfigurationPanelProps> = ({
             </SelectContent>
           </Select>
           {selectedCable && (
-            <p className="text-xs text-gray-600 mt-1">{selectedCable.description}</p>
+            <p className="text-xs text-muted-foreground mt-1">{selectedCable.description}</p>
           )}
         </div>
 

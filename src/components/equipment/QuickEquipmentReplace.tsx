@@ -132,8 +132,8 @@ export const QuickEquipmentReplace: React.FC<QuickEquipmentReplaceProps> = ({
                         return (
                           <Card
                             key={eq.id}
-                            className={`flex items-center space-x-3 p-3 hover:bg-gray-50 cursor-pointer ${
-                              selectedEquipment === eq.id ? 'border-blue-500 bg-blue-50' : ''
+                            className={`flex items-center space-x-3 p-3 hover:bg-muted cursor-pointer ${
+                              selectedEquipment === eq.id ? 'border-blue-500 bg-muted' : ''
                             }`}
                             onClick={() => setSelectedEquipment(eq.id)}
                           >
@@ -152,13 +152,13 @@ export const QuickEquipmentReplace: React.FC<QuickEquipmentReplaceProps> = ({
                                 </span>
                               </div>
                               {eq.serialNumber && (
-                                <div className="text-xs text-gray-500 mt-1">
+                                <div className="text-xs text-muted-foreground mt-1">
                                   Serial: {eq.serialNumber}
                                 </div>
                               )}
                             </div>
                             <div className="text-right">
-                              <Badge variant="default" className="bg-green-500">
+                              <Badge variant="default" className="bg-muted0">
                                 <CheckCircle className="h-3 w-3 mr-1" />
                                 Available
                               </Badge>
@@ -172,7 +172,7 @@ export const QuickEquipmentReplace: React.FC<QuickEquipmentReplaceProps> = ({
               </div>
 
               {selectedEquipment && (
-                <Alert className="bg-blue-50 border-blue-200">
+                <Alert className="bg-muted border-border">
                   <AlertDescription>
                     <p className="text-sm font-medium mb-1">Replacement Summary</p>
                     <p className="text-xs">

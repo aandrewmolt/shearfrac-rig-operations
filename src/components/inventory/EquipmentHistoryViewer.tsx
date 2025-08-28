@@ -74,17 +74,17 @@ const EquipmentHistoryViewer: React.FC = () => {
       case 'created':
         return <Package className="h-4 w-4" />;
       case 'deployed':
-        return <TrendingUp className="h-4 w-4 text-blue-500" />;
+        return <TrendingUp className="h-4 w-4 text-primary" />;
       case 'returned':
-        return <TrendingDown className="h-4 w-4 text-green-500" />;
+        return <TrendingDown className="h-4 w-4 text-success" />;
       case 'maintenance':
-        return <Wrench className="h-4 w-4 text-orange-500" />;
+        return <Wrench className="h-4 w-4 text-warning" />;
       case 'red-tagged':
-        return <AlertTriangle className="h-4 w-4 text-red-500" />;
+        return <AlertTriangle className="h-4 w-4 text-destructive" />;
       case 'status-change':
-        return <CheckCircle className="h-4 w-4 text-purple-500" />;
+        return <CheckCircle className="h-4 w-4 text-accent" />;
       case 'location-change':
-        return <MapPin className="h-4 w-4 text-indigo-500" />;
+        return <MapPin className="h-4 w-4 text-primary" />;
       default:
         return <Clock className="h-4 w-4" />;
     }
@@ -93,21 +93,21 @@ const EquipmentHistoryViewer: React.FC = () => {
   const getActionColor = (action: string) => {
     switch (action) {
       case 'deployed':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-status-info/20 text-status-info';
       case 'returned':
-        return 'bg-green-100 text-green-800';
+        return 'bg-status-success/20 text-status-success';
       case 'maintenance':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-status-warning/20 text-status-warning';
       case 'red-tagged':
-        return 'bg-red-100 text-red-800';
+        return 'bg-status-danger/20 text-status-danger';
       case 'status-change':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-card text-corporate-light';
       case 'location-change':
-        return 'bg-indigo-100 text-indigo-800';
+        return 'bg-card text-corporate-light';
       case 'created':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-card text-corporate-light';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-card text-corporate-light';
     }
   };
 
@@ -138,7 +138,7 @@ const EquipmentHistoryViewer: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -147,7 +147,7 @@ const EquipmentHistoryViewer: React.FC = () => {
     return (
       <Card>
         <CardContent className="pt-6">
-          <div className="text-center text-red-500">
+          <div className="text-center text-destructive">
             <AlertTriangle className="h-8 w-8 mx-auto mb-2" />
             <p>Error loading history: {error}</p>
           </div>
@@ -177,7 +177,7 @@ const EquipmentHistoryViewer: React.FC = () => {
             <div className="flex gap-4 mb-6">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input
                     type="text"
                     placeholder="Search equipment ID, job name, or notes..."
@@ -206,8 +206,8 @@ const EquipmentHistoryViewer: React.FC = () => {
 
             {/* History Table */}
             {filteredHistory.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Package className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+              <div className="text-center py-8 text-corporate-silver">
+                <Package className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                 <p>No history found</p>
               </div>
             ) : (
@@ -230,10 +230,10 @@ const EquipmentHistoryViewer: React.FC = () => {
                       <TableRow key={record.id}>
                         <TableCell className="whitespace-nowrap">
                           <div className="flex items-center gap-1 text-sm">
-                            <Calendar className="h-3 w-3 text-gray-400" />
+                            <Calendar className="h-3 w-3 text-muted-foreground" />
                             {format(new Date(record.timestamp), 'MMM d, yyyy')}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-muted-foreground">
                             {format(new Date(record.timestamp), 'h:mm a')}
                           </div>
                         </TableCell>
@@ -243,10 +243,10 @@ const EquipmentHistoryViewer: React.FC = () => {
                               const displayInfo = getEquipmentDisplayInfo(record.equipmentId);
                               return (
                                 <div>
-                                  <div className={`font-semibold ${displayInfo.found ? 'text-black' : 'text-orange-600'}`}>
+                                  <div className={`font-semibold ${displayInfo.found ? 'text-foreground' : 'text-foreground'}`}>
                                     {displayInfo.id}
                                   </div>
-                                  <div className={`text-xs ${displayInfo.found ? 'text-gray-500' : 'text-orange-500'}`}>
+                                  <div className={`text-xs ${displayInfo.found ? 'text-muted-foreground' : 'text-warning'}`}>
                                     {displayInfo.name}
                                   </div>
                                 </div>
@@ -303,7 +303,7 @@ const EquipmentHistoryViewer: React.FC = () => {
                           )}
                         </TableCell>
                         <TableCell className="max-w-xs">
-                          <div className="text-sm text-gray-600 truncate">
+                          <div className="text-sm text-muted-foreground truncate">
                             {record.notes || '-'}
                           </div>
                         </TableCell>

@@ -5,12 +5,12 @@ export interface LocalJob {
   cloudId?: string;
   name: string;
   wellCount: number;
-  nodes: any;
-  edges: any;
-  equipmentAllocations: any;
+  nodes: unknown;
+  edges: unknown;
+  equipmentAllocations: unknown;
   hasWellsideGauge?: boolean;
   companyComputerNames?: Record<string, string>;
-  equipmentAssignment?: any;
+  equipmentAssignment?: unknown;
   equipmentAllocated?: boolean;
   mainBoxName?: string;
   satelliteName?: string;
@@ -20,7 +20,7 @@ export interface LocalJob {
   gaugeBaudRate?: string;
   fracComPort?: string;
   gaugeComPort?: string;
-  enhancedConfig?: any;
+  enhancedConfig?: unknown;
   createdAt?: string | Date;
   updatedAt: number;
   syncStatus: 'synced' | 'pending' | 'conflict';
@@ -82,7 +82,7 @@ export interface SyncOperation {
   operation: 'create' | 'update' | 'delete';
   tableName: string;
   recordId: string;
-  data: any;
+  data: unknown;
   timestamp: number;
   retryCount: number;
 }
@@ -90,8 +90,8 @@ export interface SyncOperation {
 export class RigUpOfflineDatabase extends Dexie {
   jobs!: Table<LocalJob>;
   equipment!: Table<LocalEquipment>;
-  equipment_types!: Table<any>;
-  storage_locations!: Table<any>;
+  equipment_types!: Table<unknown>;
+  storage_locations!: Table<unknown>;
   equipment_items!: Table<LocalEquipmentItem>;
   individual_equipment!: Table<LocalIndividualEquipment>;
   syncQueue!: Table<SyncOperation>;
@@ -133,7 +133,7 @@ export class RigUpOfflineDatabase extends Dexie {
   }
   
   async markAsSynced(tableName: string, localId: number, cloudId: string) {
-    const table = this[tableName as keyof RigUpOfflineDatabase] as Table<any>;
+    const table = this[tableName as keyof RigUpOfflineDatabase] as Table<unknown>;
     await table.update(localId, { 
       cloudId, 
       syncStatus: 'synced',
@@ -141,7 +141,7 @@ export class RigUpOfflineDatabase extends Dexie {
     });
   }
   
-  async addToSyncQueue(operation: SyncOperation['operation'], tableName: string, recordId: string, data: any) {
+  async addToSyncQueue(operation: SyncOperation['operation'], tableName: string, recordId: string, data: unknown) {
     await this.syncQueue.add({
       operation,
       tableName,
@@ -167,6 +167,6 @@ export const getOfflineDb = (): RigUpOfflineDatabase => {
 export const offlineDb = new Proxy({} as RigUpOfflineDatabase, {
   get(target, prop) {
     const db = getOfflineDb();
-    return (db as any)[prop];
+    return (db as Record<string, unknown>)[prop as string];
   }
 });

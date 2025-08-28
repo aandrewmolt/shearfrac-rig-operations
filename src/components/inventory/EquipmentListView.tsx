@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Package, Plus, WifiOff, Wifi, RefreshCw, Search, Filter, AlertTriangle } from 'lucide-react';
 import { useInventory } from '@/contexts/InventoryContext';
-import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
+import { useUnifiedEquipmentSync } from '@/hooks/useUnifiedEquipmentSync';
 import { useJobs } from '@/hooks/useJobs';
 import { useAdvancedEquipmentSearch } from '@/hooks/useAdvancedEquipmentSearch';
 import { toast } from 'sonner';
@@ -16,15 +16,14 @@ import EquipmentTable from './EquipmentTable';
 import IndividualEquipmentTable from './IndividualEquipmentTable';
 import ConflictIndicator from './ConflictIndicator';
 import { SyncStatusIndicator } from '@/components/InventoryMapperSync/SyncStatusIndicator';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import AdvancedSearchPanel from './AdvancedSearchPanel';
 
 const EquipmentListView = () => {
   const { data, updateSingleEquipmentItem, addEquipmentItem, deleteEquipmentItem, updateIndividualEquipment, refreshData } = useInventory();
-  const { conflicts, getEquipmentStatus, syncInventoryStatus, isValidating } = useInventoryMapperSync();
+  const { conflicts, syncStatus } = useUnifiedEquipmentSync({ 
+    jobId: 'inventory-view' 
+  });
+  const isValidating = syncStatus === 'syncing';
   // Offline functionality removed - hook doesn't exist
   const isOnline = navigator.onLine;
   const isSyncing = false;
@@ -65,30 +64,30 @@ const EquipmentListView = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'available':
-        return 'bg-green-100 text-green-800';
+        return 'bg-muted text-foreground';
       case 'deployed':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-muted text-foreground';
       case 'red-tagged':
-        return 'bg-red-100 text-red-800';
+        return 'bg-muted text-destructive';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-foreground';
     }
   };
 
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'cables':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-muted text-foreground';
       case 'gauges':
-        return 'bg-green-100 text-green-800';
+        return 'bg-muted text-foreground';
       case 'adapters':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-muted text-foreground';
       case 'communication':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-muted text-purple-800';
       case 'power':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-muted text-foreground';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-foreground';
     }
   };
 
@@ -212,7 +211,7 @@ const EquipmentListView = () => {
   const redTaggedCount = data.individualEquipment.filter(eq => eq.status === 'red-tagged').length;
 
   return (
-    <Card className="bg-white shadow-lg">
+    <Card className="bg-card shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -306,16 +305,23 @@ const EquipmentListView = () => {
       </CardHeader>
       
       <CardContent>
+        {/* Advanced Search Panel */}
+        {showAdvancedSearch && (
+          <div className="mb-4">
+            <AdvancedSearchPanel />
+          </div>
+        )}
+        
         {/* Equipment Summary */}
-        <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+        <div className="mb-4 p-4 bg-muted rounded-lg">
           <div className="grid grid-cols-2 md:grid-cols-2 gap-4 text-sm">
             <div>
-              <div className="text-gray-600">Total Equipment</div>
+              <div className="text-muted-foreground">Total Equipment</div>
               <div className="text-xl font-semibold">{totalItems}</div>
             </div>
             <div>
-              <div className="text-gray-600">Deployed</div>
-              <div className="text-xl font-semibold text-blue-600">{deployedCount}</div>
+              <div className="text-muted-foreground">Deployed</div>
+              <div className="text-xl font-semibold text-foreground">{deployedCount}</div>
             </div>
           </div>
         </div>
@@ -330,7 +336,6 @@ const EquipmentListView = () => {
           getStatusColor={getStatusColor}
           getCategoryColor={getCategoryColor}
           conflicts={conflicts}
-          getEquipmentStatus={getEquipmentStatus}
         />
         
         <EquipmentFormDialog

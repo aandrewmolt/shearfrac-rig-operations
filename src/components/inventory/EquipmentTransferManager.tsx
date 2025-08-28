@@ -91,7 +91,7 @@ const EquipmentTransferManager = () => {
   };
 
   return (
-    <Card className="bg-white shadow-lg">
+    <Card className="bg-card shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -100,7 +100,7 @@ const EquipmentTransferManager = () => {
           </CardTitle>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button>
                 <Package className="mr-2 h-4 w-4" />
                 Transfer Equipment
               </Button>
@@ -150,7 +150,7 @@ const EquipmentTransferManager = () => {
                       </SelectContent>
                     </Select>
                     {fromLocationId && (
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-corporate-silver mt-1">
                         Available: {getAvailableEquipment(fromLocationId, fromLocationType).length} items
                       </div>
                     )}
@@ -247,10 +247,10 @@ const EquipmentTransferManager = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-center py-8 text-gray-500">
-          <ArrowRightLeft className="mx-auto h-12 w-12 text-gray-300 mb-2" />
+        <div className="text-center py-8 text-corporate-silver">
+          <ArrowRightLeft className="mx-auto h-12 w-12 text-muted-foreground mb-2" />
           <p className="text-sm">Use the transfer button to move equipment between locations</p>
-          <p className="text-xs text-gray-400 mt-1">Transfer between storage locations and job sites</p>
+          <p className="text-xs text-muted-foreground mt-1">Transfer between storage locations and job sites</p>
         </div>
       </CardContent>
     </Card>

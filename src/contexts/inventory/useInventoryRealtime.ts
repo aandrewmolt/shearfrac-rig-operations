@@ -14,6 +14,21 @@ export const useInventoryRealtime = (refetch: () => void) => {
       refetchFn();
     }, delay);
   };
+  
+  // Listen for equipment update events
+  useEffect(() => {
+    const handleEquipmentUpdate = (event: CustomEvent) => {
+      console.log('Equipment update event received:', event.detail);
+      // Debounce refetch to avoid multiple rapid updates
+      debouncedRefetch(refetch, 300);
+    };
+    
+    window.addEventListener('equipment-updated', handleEquipmentUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('equipment-updated', handleEquipmentUpdate as EventListener);
+    };
+  }, [refetch]);
 
   // Listen for optimistic delete events
   useEffect(() => {

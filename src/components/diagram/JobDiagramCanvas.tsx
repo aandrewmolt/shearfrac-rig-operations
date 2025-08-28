@@ -87,7 +87,7 @@ const JobDiagramCanvas: React.FC<JobDiagramCanvasProps> = ({
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView
-          className="bg-gray-50"
+          className="bg-card"
           deleteKeyCode={['Backspace', 'Delete']}
           defaultEdgeOptions={{
             type: 'cable',
@@ -98,7 +98,7 @@ const JobDiagramCanvas: React.FC<JobDiagramCanvasProps> = ({
           <Controls className="react-flow__controls" />
           <MiniMap 
             nodeStrokeColor="#374151"
-            nodeColor="#f3f4f6"
+            nodeColor="#2a2a2a"
             nodeBorderRadius={8}
             maskColor="rgba(0, 0, 0, 0.1)"
             className="react-flow__minimap hidden md:block"

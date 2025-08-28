@@ -1,13 +1,13 @@
 
 import { useMemo } from 'react';
 import { Node, Edge } from '@xyflow/react';
-import { useInventoryData } from '@/hooks/useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 import { DetailedEquipmentUsage } from './types/equipmentUsageTypes';
 import { analyzeEdges } from './utils/edgeAnalyzer';
 import { analyzeNodes } from './utils/nodeAnalyzer';
 
 export const useEquipmentUsageAnalyzer = (nodes: Node[], edges: Edge[]) => {
-  const { data } = useInventoryData();
+  const { data } = useInventory();
 
   const analyzeEquipmentUsage = () => {
     const usage: DetailedEquipmentUsage = {

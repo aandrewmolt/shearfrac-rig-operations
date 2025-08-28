@@ -225,11 +225,11 @@ const EnhancedEquipmentNode: React.FC<EnhancedEquipmentNodeProps> = ({
   // Determine node styling based on status
   const getNodeStyle = () => {
     if (isRedTagged) {
-      return 'bg-red-600 border-red-400';
+      return 'bg-destructive border-destructive/50';
     } else if (isMaintenance) {
-      return 'bg-yellow-600 border-yellow-400';
+      return 'bg-warning border-border';
     }
-    return 'bg-gray-700 border-gray-500';
+    return 'bg-muted-foreground border-border';
   };
 
   return (
@@ -255,7 +255,7 @@ const EnhancedEquipmentNode: React.FC<EnhancedEquipmentNodeProps> = ({
                 {!isRedTagged && !isMaintenance && (
                   <DropdownMenuItem 
                     onClick={() => setShowRedTagDialog(true)}
-                    className="text-red-600"
+                    className="text-destructive"
                   >
                     <AlertTriangle className="mr-2 h-4 w-4" />
                     Red Tag Equipment
@@ -272,7 +272,7 @@ const EnhancedEquipmentNode: React.FC<EnhancedEquipmentNodeProps> = ({
                 {isRedTagged && (
                   <DropdownMenuItem 
                     onClick={handleClearRedTag}
-                    className="text-green-600"
+                    className="text-foreground"
                   >
                     <CheckCircle className="mr-2 h-4 w-4" />
                     Clear Red Tag
@@ -282,7 +282,7 @@ const EnhancedEquipmentNode: React.FC<EnhancedEquipmentNodeProps> = ({
                 {isMaintenance && (
                   <DropdownMenuItem 
                     onClick={handleClearRedTag}
-                    className="text-green-600"
+                    className="text-foreground"
                   >
                     <CheckCircle className="mr-2 h-4 w-4" />
                     Complete Maintenance
@@ -304,8 +304,8 @@ const EnhancedEquipmentNode: React.FC<EnhancedEquipmentNodeProps> = ({
           position={Position.Right}
           style={{
             right: -8,
-            backgroundColor: '#374151',
-            border: '2px solid white',
+            backgroundColor: 'hsl(var(--muted-foreground))',
+            border: '2px solid hsl(var(--background))',
             width: 12,
             height: 12,
           }}
@@ -316,8 +316,8 @@ const EnhancedEquipmentNode: React.FC<EnhancedEquipmentNodeProps> = ({
           position={Position.Left}
           style={{
             left: -8,
-            backgroundColor: '#374151',
-            border: '2px solid white',
+            backgroundColor: 'hsl(var(--muted-foreground))',
+            border: '2px solid hsl(var(--background))',
             width: 12,
             height: 12,
           }}
@@ -328,9 +328,9 @@ const EnhancedEquipmentNode: React.FC<EnhancedEquipmentNodeProps> = ({
           {(isRedTagged || isMaintenance) && (
             <div className="absolute -top-2 -right-2">
               {isRedTagged ? (
-                <AlertTriangle className="h-5 w-5 text-red-300 animate-pulse" />
+                <AlertTriangle className="h-5 w-5 text-destructive/80 animate-pulse" />
               ) : (
-                <Wrench className="h-5 w-5 text-yellow-300 animate-pulse" />
+                <Wrench className="h-5 w-5 text-warning/80 animate-pulse" />
               )}
             </div>
           )}
@@ -339,15 +339,15 @@ const EnhancedEquipmentNode: React.FC<EnhancedEquipmentNodeProps> = ({
           <div>
             <h3 className="font-bold text-sm">{getNodeTitle()}</h3>
             {isAssigned && data.equipmentId && (
-              <p className={`text-xs ${isRedTagged ? 'text-red-300' : 'text-green-300'}`}>
+              <p className={`text-xs ${isRedTagged ? 'text-destructive/80' : 'text-success'}`}>
                 {data.equipmentId}
               </p>
             )}
             {type === 'computer' && (
-              <p className="text-xs text-gray-300">{isTablet ? 'Tablet' : 'Computer'}</p>
+              <p className="text-xs text-white/70">{isTablet ? 'Tablet' : 'Computer'}</p>
             )}
             {data.name && (
-              <p className="text-xs text-gray-300">{data.name}</p>
+              <p className="text-xs text-white/70">{data.name}</p>
             )}
           </div>
         </div>

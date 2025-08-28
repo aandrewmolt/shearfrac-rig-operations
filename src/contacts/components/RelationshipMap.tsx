@@ -244,7 +244,7 @@ function NetworkVisualization({
     <div className="relative w-full h-full">
       <svg
         ref={svgRef}
-        className="w-full h-full border rounded-lg bg-gray-50"
+        className="w-full h-full border rounded-lg bg-card"
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
       >
         {/* Relationships */}
@@ -338,7 +338,7 @@ function NetworkVisualization({
                   x={pos.x}
                   y={pos.y + getNodeSize(node) + 12}
                   textAnchor="middle"
-                  className="text-xs fill-gray-700 pointer-events-none"
+                  className="text-xs fill-foreground pointer-events-none"
                   fontSize="10"
                 >
                   {node.name}
@@ -358,7 +358,7 @@ function NetworkVisualization({
 
         return (
           <div
-            className="absolute bg-white border shadow-lg rounded-lg p-3 text-sm z-10 max-w-xs"
+            className="absolute bg-card border shadow-lg rounded-lg p-3 text-sm z-10 max-w-xs"
             style={{
               left: pos.x + 20,
               top: pos.y - 40,
@@ -366,9 +366,9 @@ function NetworkVisualization({
             }}
           >
             <div className="font-medium">{node.name}</div>
-            <div className="text-gray-600">{node.company}</div>
-            <div className="text-gray-500 text-xs">{node.job}</div>
-            {node.title && <div className="text-gray-500 text-xs">{node.title}</div>}
+            <div className="text-muted-foreground">{node.company}</div>
+            <div className="text-muted-foreground text-xs">{node.job}</div>
+            {node.title && <div className="text-muted-foreground text-xs">{node.title}</div>}
             <div className="mt-2 pt-2 border-t text-xs">
               <div>Connections: {node.connectionCount}</div>
               <div>Centrality: {node.centralityScore.toFixed(1)}</div>
@@ -437,7 +437,7 @@ export function RelationshipMap({ contacts, onContactSelect, className }: Relati
         
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Search className="h-4 w-4 absolute left-2 top-2.5 text-gray-400" />
+            <Search className="h-4 w-4 absolute left-2 top-2.5 text-muted-foreground" />
             <Input
               placeholder="Search contacts..."
               value={searchQuery}
@@ -612,8 +612,8 @@ export function RelationshipMap({ contacts, onContactSelect, className }: Relati
               <CardContent className="space-y-3 text-sm">
                 <div>
                   <div className="font-medium">{selectedContact.name}</div>
-                  <div className="text-gray-600">{selectedContact.company}</div>
-                  <div className="text-gray-500">{selectedContact.job}</div>
+                  <div className="text-muted-foreground">{selectedContact.company}</div>
+                  <div className="text-muted-foreground">{selectedContact.job}</div>
                 </div>
                 
                 {influencers.length > 0 && (
@@ -623,11 +623,11 @@ export function RelationshipMap({ contacts, onContactSelect, className }: Relati
                       {influencers.slice(0, 3).map(influencer => (
                         <div 
                           key={influencer.id}
-                          className="text-xs p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100"
+                          className="text-xs p-2 bg-muted rounded cursor-pointer hover:bg-muted"
                           onClick={() => setSelectedNode(influencer.id)}
                         >
                           <div className="font-medium">{influencer.name}</div>
-                          <div className="text-gray-500">{influencer.company}</div>
+                          <div className="text-muted-foreground">{influencer.company}</div>
                         </div>
                       ))}
                     </div>

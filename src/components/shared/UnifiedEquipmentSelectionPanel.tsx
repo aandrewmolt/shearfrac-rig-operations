@@ -81,28 +81,28 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
     switch (status) {
       case 'available':
         return (
-          <Badge variant="outline" className="ml-2 text-xs bg-green-50 text-green-700 border-green-200">
+          <Badge variant="outline" className="ml-2 text-xs bg-muted text-foreground border-border">
             <CheckCircle className="w-3 h-3 mr-1" />
             Available
           </Badge>
         );
       case 'allocated':
         return (
-          <Badge variant="outline" className="ml-2 text-xs bg-yellow-50 text-yellow-700 border-yellow-200">
+          <Badge variant="outline" className="ml-2 text-xs bg-muted text-foreground border-border">
             <AlertCircle className="w-3 h-3 mr-1" />
             Allocated
           </Badge>
         );
       case 'deployed':
         return (
-          <Badge variant="outline" className="ml-2 text-xs bg-blue-50 text-blue-700 border-blue-200">
+          <Badge variant="outline" className="ml-2 text-xs bg-muted text-foreground border-border">
             <AlertCircle className="w-3 h-3 mr-1" />
             Deployed
           </Badge>
         );
       case 'unavailable':
         return (
-          <Badge variant="outline" className="ml-2 text-xs bg-red-50 text-red-700 border-red-200">
+          <Badge variant="outline" className="ml-2 text-xs bg-muted text-destructive border-destructive">
             <X className="w-3 h-3 mr-1" />
             Unavailable
           </Badge>
@@ -139,7 +139,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
     <div className="space-y-3">
       <div className={`flex items-center justify-between p-3 bg-gradient-to-r ${color} rounded-lg border border-opacity-30`}>
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-white/20 rounded">
+          <div className="p-1.5 bg-card/20 rounded">
             <Icon className="h-4 w-4 text-white" />
           </div>
           <Label className="text-sm font-semibold text-white">
@@ -150,20 +150,20 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
           onClick={onAdd}
           size="sm"
           variant="outline"
-          className="h-7 w-7 p-0 bg-white/20 border-white/30 text-white hover:bg-white/30"
+          className="h-7 w-7 p-0 bg-card/20 border-white/30 text-white hover:bg-card/30"
         >
           <Plus className="h-3 w-3" />
         </Button>
       </div>
       
       {Array.from({ length: count }, (_, index) => (
-        <div key={index} className="space-y-2 p-3 bg-white rounded-lg border border-gray-200 hover:border-opacity-50 transition-all duration-200">
+        <div key={index} className="space-y-2 p-3 bg-card rounded-lg border border-border hover:border-opacity-50 transition-all duration-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${selectedItems[index] ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-              <Label className="text-xs font-medium text-gray-700">{type} {index + 1}</Label>
+              <div className={`w-2 h-2 rounded-full ${selectedItems[index] ? 'bg-primary' : 'bg-muted'}`}></div>
+              <Label className="text-xs font-medium text-muted-foreground">{type} {index + 1}</Label>
               {selectedItems[index] && (
-                <CheckCircle className="h-3 w-3 text-green-500" />
+                <CheckCircle className="h-3 w-3 text-success" />
               )}
             </div>
             {count > 1 && (
@@ -171,7 +171,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
                 onClick={() => onRemove(index)}
                 size="sm"
                 variant="ghost"
-                className="h-5 w-5 p-0 text-red-500 hover:bg-red-50"
+                className="h-5 w-5 p-0 text-destructive hover:bg-muted"
               >
                 <X className="h-3 w-3" />
               </Button>
@@ -181,16 +181,16 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
             value={selectedItems[index] || ''}
             onValueChange={(value) => onSelect(value, index)}
           >
-            <SelectTrigger className="h-8 text-xs border-2 border-gray-200 hover:border-blue-300 focus:border-blue-400 transition-all duration-200">
+            <SelectTrigger className="h-8 text-xs border-2 border-border hover:border-border focus:border-border transition-all duration-200">
               <SelectValue placeholder={`Select ${type}...`} />
             </SelectTrigger>
-            <SelectContent className="bg-white border-2 border-gray-100 shadow-xl z-50">
+            <SelectContent className="bg-card border-2 border-border shadow-xl z-50">
               {availableItems
                 .filter(eq => !selectedItems.includes(eq.id) || selectedItems[index] === eq.id)
                 .length === 0 ? (
-                <SelectItem value="none" disabled className="text-gray-400">
+                <SelectItem value="none" disabled className="text-muted-foreground">
                   <div className="flex items-center gap-2">
-                    <AlertCircle className="h-3 w-3 text-red-400" />
+                    <AlertCircle className="h-3 w-3 text-destructive" />
                     No {title.toLowerCase()} available
                   </div>
                 </SelectItem>
@@ -198,7 +198,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
                 availableItems
                   .filter(eq => !selectedItems.includes(eq.id) || selectedItems[index] === eq.id)
                   .map(equipment => (
-                    <SelectItem key={equipment.id} value={equipment.id} className="hover:bg-blue-50">
+                    <SelectItem key={equipment.id} value={equipment.id} className="hover:bg-muted">
                       <span className="font-medium">{equipment.equipmentId}</span>
                     </SelectItem>
                   ))
@@ -212,14 +212,14 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
 
   if (variant === 'compact') {
     return (
-      <Card className="bg-gradient-to-br from-white to-indigo-50/30 shadow-lg border-indigo-200/50">
-        <CardHeader className="pb-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-lg">
+      <Card className="bg-gradient-to-br from-card to-primary/10 shadow-lg border-border">
+        <CardHeader className="pb-3 bg-gradient-to-r from-primary to-primary/80 text-white rounded-t-lg">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-            <div className="p-1.5 bg-white/20 rounded-md">
+            <div className="p-1.5 bg-card/20 rounded-md">
               <Square className="h-4 w-4" />
             </div>
             Equipment Assignment
-            <Badge variant="secondary" className="ml-auto bg-white/20 text-white border-white/30">
+            <Badge variant="secondary" className="ml-auto bg-card/20 text-white border-white/30">
               {shearstreamBoxCount + customerComputerCount + (hasWellsideGauge ? 1 : 0)} total
             </Badge>
           </CardTitle>
@@ -229,7 +229,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
           <CompactEquipmentSection
             title="SS Boxes"
             icon={Square}
-            color="from-blue-500 to-indigo-600"
+            color="from-primary to-primary/80"
             count={shearstreamBoxCount}
             selectedItems={selectedShearstreamBoxes}
             availableItems={availableEquipment.ssBoxes}
@@ -244,7 +244,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
             <CompactEquipmentSection
               title="Starlink"
               icon={Satellite}
-              color="from-orange-500 to-amber-600"
+              color="from-warning to-warning/80"
               count={1}
               selectedItems={selectedStarlink ? [selectedStarlink] : []}
               availableItems={availableEquipment.starlinks}
@@ -260,7 +260,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
             <CompactEquipmentSection
               title="Customer Devices"
               icon={Monitor}
-              color="from-purple-500 to-violet-600"
+              color="from-accent to-accent/80"
               count={customerComputerCount}
               selectedItems={selectedCustomerComputers}
               availableItems={allCustomerDevices}
@@ -277,7 +277,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
 
   // Standard variant (original EquipmentSelectionPanel functionality)
   return (
-    <Card className="bg-white shadow-lg">
+    <Card className="bg-card shadow-lg">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -342,7 +342,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
                 <SelectTrigger className="h-8">
                   <SelectValue placeholder="Select SS Box..." />
                 </SelectTrigger>
-                <SelectContent className="bg-white z-50">
+                <SelectContent className="bg-card z-50">
                   {availableEquipment.ssBoxes
                     .filter(eq => {
                       const selectedInOtherSlots = selectedShearstreamBoxes.some((selectedId, idx) => 
@@ -377,7 +377,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
                 </SelectContent>
               </Select>
               {selectedShearstreamBoxes[index] && (
-                <div className="text-xs text-gray-600">
+                <div className="text-xs text-muted-foreground">
                   Selected: {getSelectedEquipment(selectedShearstreamBoxes[index])?.equipmentId}
                 </div>
               )}
@@ -429,7 +429,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
                   <SelectTrigger className="h-8">
                     <SelectValue placeholder="Select Starlink..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-white z-50">
+                  <SelectContent className="bg-card z-50">
                     {availableEquipment.starlinks
                       .filter(eq => {
                         const selectedInOtherSlots = selectedStarlinks.some((selectedId, idx) => 
@@ -464,7 +464,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
                   </SelectContent>
                 </Select>
                 {selectedStarlinks[index] && (
-                  <div className="text-xs text-gray-600">
+                  <div className="text-xs text-muted-foreground">
                     Selected: {getSelectedEquipment(selectedStarlinks[index])?.equipmentId}
                   </div>
                 )}
@@ -517,7 +517,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
                   <SelectTrigger className="h-8">
                     <SelectValue placeholder="Select Device..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-white z-50">
+                  <SelectContent className="bg-card z-50">
                     {allCustomerDevices
                       .filter(eq => {
                         const selectedInOtherSlots = selectedCustomerComputers.some((selectedId, idx) => 
@@ -557,7 +557,7 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
                   </SelectContent>
                 </Select>
                 {selectedCustomerComputers[index] && (
-                  <div className="text-xs text-gray-600">
+                  <div className="text-xs text-muted-foreground">
                     Selected: {getSelectedEquipment(selectedCustomerComputers[index])?.equipmentId}
                   </div>
                 )}

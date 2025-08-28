@@ -41,20 +41,20 @@ const EquipmentAvailabilityStatus: React.FC<EquipmentAvailabilityStatusProps> = 
   // Fallback to simple availability check
   if (!availability.hasIssues) {
     return (
-      <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
-        <CheckCircle className="h-4 w-4 text-green-600" />
-        <span className="text-sm text-green-800 font-medium">All equipment available</span>
+      <div className="flex items-center gap-2 p-3 bg-muted rounded-lg border border-border">
+        <CheckCircle className="h-4 w-4 text-foreground" />
+        <span className="text-sm text-foreground font-medium">All equipment available</span>
       </div>
     );
   }
 
   return (
-    <div className="p-3 bg-red-50 rounded-lg border border-red-200">
+    <div className="p-3 bg-muted rounded-lg border border-red-200">
       <div className="flex items-center gap-2 mb-2">
-        <AlertTriangle className="h-4 w-4 text-red-600" />
-        <span className="text-sm text-red-800 font-medium">Equipment Issues</span>
+        <AlertTriangle className="h-4 w-4 text-destructive" />
+        <span className="text-sm text-destructive font-medium">Equipment Issues</span>
       </div>
-      <ul className="text-xs text-red-700 space-y-1">
+      <ul className="text-xs text-destructive space-y-1">
         {availability.issues.map((issue, index) => (
           <li key={index}>• {issue}</li>
         ))}

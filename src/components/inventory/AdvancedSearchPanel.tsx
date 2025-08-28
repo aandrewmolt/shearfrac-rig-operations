@@ -168,7 +168,7 @@ const AdvancedSearchPanel: React.FC = () => {
         </CardHeader>
         <CardContent>
           {searchResults.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               <Filter className="mx-auto h-8 w-8 mb-2" />
               <p>No equipment matches your search criteria</p>
             </div>
@@ -182,7 +182,7 @@ const AdvancedSearchPanel: React.FC = () => {
                   <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex-1">
                       <h4 className="font-semibold">{item.displayName}</h4>
-                      <div className="text-sm text-gray-600 space-y-1">
+                      <div className="text-sm text-muted-foreground space-y-1">
                         <p>Type: {equipmentType?.name} • Category: {equipmentType?.category}</p>
                         <p>Location: {locationName} • Status: {item.status}</p>
                         {item.type === 'bulk' && <p>Quantity: {item.quantity}</p>}

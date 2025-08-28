@@ -18,7 +18,7 @@ const LoadingFallback = () => (
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           Initializing inventory data and setting up real-time connections...
         </p>
       </CardContent>
@@ -29,15 +29,15 @@ const LoadingFallback = () => (
 const ErrorFallback = () => (
   <Card className="max-w-2xl mx-auto my-8">
     <CardHeader>
-      <CardTitle className="text-red-600">
+      <CardTitle className="text-destructive">
         Inventory System Error
       </CardTitle>
     </CardHeader>
     <CardContent>
-      <p className="text-sm text-gray-600 mb-4">
+      <p className="text-sm text-muted-foreground mb-4">
         There was an error loading the inventory system. This might be due to:
       </p>
-      <ul className="text-sm text-gray-600 space-y-1 mb-4">
+      <ul className="text-sm text-muted-foreground space-y-1 mb-4">
         <li>• Network connectivity issues</li>
         <li>• Database connection problems</li>
         <li>• Data initialization errors</li>

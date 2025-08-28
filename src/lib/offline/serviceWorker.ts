@@ -140,7 +140,7 @@ export const getServiceWorkerManager = (): ServiceWorkerManager => {
 export const serviceWorkerManager = new Proxy({} as ServiceWorkerManager, {
   get(target, prop) {
     const manager = getServiceWorkerManager();
-    return (manager as any)[prop];
+    return (manager as Record<string, unknown>)[prop as string];
   }
 });
 

@@ -133,11 +133,11 @@ const RedTagDashboard = () => {
   };
 
   return (
-    <Card className="bg-white shadow-lg">
+    <Card className="bg-card shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <AlertTriangle className="h-5 w-5 text-red-600" />
+            <AlertTriangle className="h-5 w-5 text-destructive" />
             Red Tagged Equipment ({redTaggedItems.length})
           </CardTitle>
         </div>
@@ -160,13 +160,13 @@ const RedTagDashboard = () => {
           
           <TabsContent value="all" className="space-y-3">
             {filteredItems.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Package className="mx-auto h-12 w-12 text-gray-300 mb-2" />
+              <div className="text-center py-8 text-corporate-silver">
+                <Package className="mx-auto h-12 w-12 text-muted-foreground mb-2" />
                 <p className="text-sm">No red tagged equipment found</p>
               </div>
             ) : (
               filteredItems.map(item => (
-                <Card key={item.id} className="border-red-200 bg-red-50">
+                <Card key={item.id} className="border-destructive/20 bg-destructive/5">
                   <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -179,8 +179,8 @@ const RedTagDashboard = () => {
                           <Badge variant="secondary" className="text-xs">Qty: {item.quantity}</Badge>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{item.redTagReason}</p>
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <p className="text-sm text-corporate-silver mb-2">{item.redTagReason}</p>
+                      <div className="flex items-center gap-4 text-xs text-corporate-silver">
                         <div className="flex items-center gap-1">
                           <MapPin className="h-3 w-3" />
                           {item.locationName} ({item.locationType})
@@ -204,7 +204,7 @@ const RedTagDashboard = () => {
                         onClick={() => handleReturnToService(item.id)}
                         variant="outline"
                         size="sm"
-                        className="text-green-600 hover:text-green-700"
+                        className="text-foreground hover:text-foreground"
                       >
                         Return to Service
                       </Button>
@@ -225,7 +225,7 @@ const RedTagDashboard = () => {
                 </h3>
                 <div className="space-y-2">
                   {group.items.map(item => (
-                    <div key={item.id} className="p-2 bg-red-50 rounded flex items-center justify-between">
+                    <div key={item.id} className="p-2 bg-destructive/5 rounded flex items-center justify-between">
                       <span className="text-sm">{item.name}</span>
                       <Button
                         onClick={() => handleViewDetails(item)}
@@ -247,10 +247,10 @@ const RedTagDashboard = () => {
                 <h3 className="font-medium mb-3">{typeName} ({items.length} items)</h3>
                 <div className="space-y-2">
                   {items.map(item => (
-                    <div key={item.id} className="p-2 bg-red-50 rounded flex items-center justify-between">
+                    <div key={item.id} className="p-2 bg-destructive/5 rounded flex items-center justify-between">
                       <div>
                         <span className="text-sm font-medium">{item.name}</span>
-                        <p className="text-xs text-gray-500">{item.locationName}</p>
+                        <p className="text-xs text-corporate-silver">{item.locationName}</p>
                       </div>
                       <Button
                         onClick={() => handleViewDetails(item)}
@@ -272,7 +272,7 @@ const RedTagDashboard = () => {
           <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
+                <AlertTriangle className="h-5 w-5 text-destructive" />
                 Red Tagged Equipment Details
               </DialogTitle>
             </DialogHeader>
@@ -281,27 +281,27 @@ const RedTagDashboard = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Equipment Name</label>
-                    <p className="text-sm text-gray-600">{selectedItem.name}</p>
+                    <p className="text-sm text-corporate-silver">{selectedItem.name}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium">Type</label>
-                    <p className="text-sm text-gray-600">{selectedItem.typeName}</p>
+                    <p className="text-sm text-corporate-silver">{selectedItem.typeName}</p>
                   </div>
                   {selectedItem.equipmentId && (
                     <div>
                       <label className="text-sm font-medium">Equipment ID</label>
-                      <p className="text-sm text-gray-600">{selectedItem.equipmentId}</p>
+                      <p className="text-sm text-corporate-silver">{selectedItem.equipmentId}</p>
                     </div>
                   )}
                   <div>
                     <label className="text-sm font-medium">Location</label>
-                    <p className="text-sm text-gray-600">{selectedItem.locationName} ({selectedItem.locationType})</p>
+                    <p className="text-sm text-corporate-silver">{selectedItem.locationName} ({selectedItem.locationType})</p>
                   </div>
                 </div>
                 
                 <div>
                   <label className="text-sm font-medium">Red Tag Reason</label>
-                  <p className="text-sm text-gray-600 p-2 bg-gray-50 rounded">{selectedItem.redTagReason}</p>
+                  <p className="text-sm text-muted-foreground p-2 bg-muted rounded">{selectedItem.redTagReason}</p>
                 </div>
                 
                 <div>
@@ -312,20 +312,20 @@ const RedTagDashboard = () => {
                         <div key={photo.id} className="border rounded-lg overflow-hidden">
                           <img src={photo.url} alt="Red tag evidence" className="w-full h-32 object-cover" />
                           {photo.description && (
-                            <p className="p-2 text-xs text-gray-600">{photo.description}</p>
+                            <p className="p-2 text-xs text-muted-foreground">{photo.description}</p>
                           )}
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500 mt-1">No photos available</p>
+                    <p className="text-sm text-muted-foreground mt-1">No photos available</p>
                   )}
                 </div>
                 
                 <div className="flex gap-3 pt-4">
                   <Button
                     onClick={() => handleReturnToService(selectedItem.id)}
-                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    className="flex-1"
                   >
                     Return to Service
                   </Button>

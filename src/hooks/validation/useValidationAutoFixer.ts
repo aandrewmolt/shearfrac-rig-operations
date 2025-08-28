@@ -1,12 +1,12 @@
 
 import { useCallback } from 'react';
-import { useInventoryData } from '@/hooks/useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 import { useAuditTrail } from '@/hooks/useAuditTrail';
 import { ValidationIssue } from '@/types/validation';
 import { toast } from 'sonner';
 
 export const useValidationAutoFixer = () => {
-  const { data, updateEquipmentItems } = useInventoryData();
+  const { data, updateEquipmentItems } = useInventory();
   const { addAuditEntry } = useAuditTrail();
 
   const autoFixIssues = useCallback(async (issues: ValidationIssue[]) => {

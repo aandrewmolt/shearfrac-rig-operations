@@ -20,7 +20,7 @@ const EdgeDebugPanel: React.FC<EdgeDebugPanelProps> = ({ edges }) => {
   }, {} as Record<string, Edge[]>);
 
   return (
-    <Card className="absolute top-4 right-4 w-96 max-h-96 overflow-auto bg-white/95 backdrop-blur shadow-lg z-50">
+    <Card className="absolute top-4 right-4 w-96 max-h-96 overflow-auto bg-card/95 backdrop-blur shadow-lg z-50">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-sm">
           <Bug className="h-4 w-4" />
@@ -63,14 +63,14 @@ const EdgeDebugPanel: React.FC<EdgeDebugPanelProps> = ({ edges }) => {
               equipmentId?: string;
             };
             return (
-              <div key={edge.id} className="ml-2 p-2 bg-gray-50 rounded text-xs space-y-1">
+              <div key={edge.id} className="ml-2 p-2 bg-muted rounded text-xs space-y-1">
                 <div className="font-medium">Edge {index + 1}:</div>
                 <div className="ml-2 space-y-0.5">
                   <div>ID: {edge.id}</div>
                   <div>Source: {edge.source} → Target: {edge.target}</div>
                   <div>Type: {edge.type || 'default'}</div>
                   <div>Connection Type: {data?.connectionType || 'not set'}</div>
-                  <div className={data?.cableTypeId ? 'text-green-600' : 'text-red-600 font-semibold'}>
+                  <div className={data?.cableTypeId ? 'text-foreground' : 'text-destructive font-semibold'}>
                     Cable Type ID: {data?.cableTypeId || 'MISSING!'}
                   </div>
                   <div>Label: {edge.label || data?.label || 'none'}</div>

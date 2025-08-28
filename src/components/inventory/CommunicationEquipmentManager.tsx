@@ -97,7 +97,7 @@ const CommunicationEquipmentManager: React.FC = () => {
     return (
       <Card>
         <CardContent className="p-6">
-          <p className="text-center text-gray-500">
+          <p className="text-center text-corporate-silver">
             No communication equipment types found. Please add equipment types first.
           </p>
         </CardContent>
@@ -113,7 +113,7 @@ const CommunicationEquipmentManager: React.FC = () => {
             <Wifi className="h-5 w-5" />
             Communication Equipment Management
           </CardTitle>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-corporate-silver">
             Manage individual communication equipment items with enhanced tracking and job integration.
           </p>
         </CardHeader>
@@ -122,12 +122,12 @@ const CommunicationEquipmentManager: React.FC = () => {
       {/* Data Management Tools */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Migration Tool */}
-        <Card className="border-blue-200 bg-blue-50">
+        <Card className="border-border bg-status-info/20">
           <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-blue-700 font-medium">Fix Equipment Naming</p>
-                <p className="text-xs text-blue-600">
+                <p className="text-sm text-foreground font-medium">Fix Equipment Naming</p>
+                <p className="text-xs text-foreground">
                   Update names: SS0001→ShearStream-0001, CC01→Customer Computer 01
                 </p>
               </div>
@@ -158,12 +158,12 @@ const CommunicationEquipmentManager: React.FC = () => {
         </Card>
 
         {/* Delete All Tool */}
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-red-200 bg-status-danger/20">
           <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-red-700 font-medium">Delete All Communication</p>
-                <p className="text-xs text-red-600">
+                <p className="text-sm text-destructive font-medium">Delete All Communication</p>
+                <p className="text-xs text-destructive">
                   Remove all communication equipment (except deployed)
                 </p>
               </div>
@@ -171,7 +171,7 @@ const CommunicationEquipmentManager: React.FC = () => {
                 size="sm" 
                 onClick={handleDeleteAllCommunicationEquipment} 
                 variant="outline"
-                className="text-red-600 hover:text-red-700"
+                className="text-destructive hover:text-destructive"
                 disabled={deletingAll}
               >
                 {deletingAll ? (
@@ -204,14 +204,14 @@ const CommunicationEquipmentManager: React.FC = () => {
       })}
 
       {draftEquipment.length > 0 && (
-        <Card className="border-orange-200 bg-orange-50">
+        <Card className="border-border bg-muted">
           <CardHeader>
-            <CardTitle className="text-sm text-orange-700">
+            <CardTitle className="text-sm text-foreground">
               Pending Changes ({draftEquipment.length} items)
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <p className="text-xs text-orange-600">
+            <p className="text-xs text-foreground">
               Items are automatically saved after creation. Serial numbers are hidden by default - hover over deployed items to see details.
             </p>
           </CardContent>

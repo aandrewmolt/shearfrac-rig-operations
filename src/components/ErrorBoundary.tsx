@@ -97,12 +97,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       // For isolated errors, show a more compact error UI
       if (isolate && level === 'component') {
         return (
-          <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-            <div className="flex items-center gap-2 text-red-600 mb-2">
+          <div className="p-4 border border-red-200 bg-muted rounded-lg">
+            <div className="flex items-center gap-2 text-destructive mb-2">
               <AlertTriangle className="h-4 w-4" />
               <span className="font-medium">Component Error</span>
             </div>
-            <p className="text-sm text-gray-600 mb-2">{errorMessage}</p>
+            <p className="text-sm text-muted-foreground mb-2">{errorMessage}</p>
             <Button size="sm" onClick={this.handleRetry}>
               <RefreshCw className="h-3 w-3 mr-1" />
               Retry
@@ -114,7 +114,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         <Card className="max-w-2xl mx-auto my-8">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-red-600">
+            <CardTitle className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-5 w-5" />
               {level === 'page' ? 'Page Error' : level === 'section' ? 'Section Error' : 'Application Error'}
             </CardTitle>
@@ -145,17 +145,17 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               </AlertDescription>
             </Alert>
 
-            <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="bg-muted p-4 rounded-lg">
               <h4 className="font-medium mb-2">Technical Details:</h4>
-              <div className="text-sm font-mono bg-white p-2 rounded border overflow-x-auto">
+              <div className="text-sm font-mono bg-card p-2 rounded border overflow-x-auto">
                 {errorMessage}
               </div>
               {this.state.error?.stack && (
                 <details className="mt-2">
-                  <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
+                  <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
                     Stack Trace
                   </summary>
-                  <pre className="text-xs mt-2 p-2 bg-white rounded border overflow-x-auto">
+                  <pre className="text-xs mt-2 p-2 bg-card rounded border overflow-x-auto">
                     {this.state.error.stack}
                   </pre>
                 </details>
@@ -175,7 +175,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               </Button>
             </div>
 
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-muted-foreground">
               <h4 className="font-medium mb-2">Troubleshooting:</h4>
               <ul className="space-y-1">
                 <li>• Try refreshing the page</li>

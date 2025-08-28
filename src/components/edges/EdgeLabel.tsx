@@ -42,10 +42,10 @@ const EdgeLabel: React.FC<EdgeLabelProps> = ({
       <div className={`
         flex items-center gap-1 rounded-md px-2 py-1 shadow-sm transition-all duration-200
         ${selected 
-          ? 'bg-blue-100 border border-blue-400 shadow-lg ring-2 ring-blue-200' 
+          ? 'bg-blue-500/20 border border-blue-500/50 shadow-lg ring-2 ring-blue-500/30' 
           : isHovered 
-            ? 'bg-blue-50 border border-blue-300 shadow-md' 
-            : 'bg-white border border-gray-300'
+            ? 'bg-blue-500/15 border border-blue-500/40 shadow-md' 
+            : 'bg-blue-500/10 border border-blue-500/30'
         }
       `}>
         {isInteractive && onToggle ? (
@@ -60,10 +60,10 @@ const EdgeLabel: React.FC<EdgeLabelProps> = ({
             className={`
               text-xs font-medium cursor-pointer transition-colors duration-200 h-auto p-0
               ${selected
-                ? 'text-blue-800 hover:text-blue-900'
+                ? 'text-foreground hover:text-primary'
                 : isHovered 
-                  ? 'text-blue-700 hover:text-blue-900' 
-                  : 'text-blue-600 hover:text-blue-800'
+                  ? 'text-foreground hover:text-primary' 
+                  : 'text-foreground hover:text-foreground'
               }
             `}
             title={isInteractive ? "Click to toggle connection type (T)" : undefined}
@@ -74,8 +74,8 @@ const EdgeLabel: React.FC<EdgeLabelProps> = ({
           <span className={`
             text-xs font-medium transition-colors duration-200
             ${selected
-              ? 'text-gray-900'
-              : isHovered ? 'text-gray-800' : 'text-gray-700'
+              ? 'text-foreground'
+              : isHovered ? 'text-foreground' : 'text-muted-foreground'
             }
           `}>
             {label}
@@ -90,8 +90,8 @@ const EdgeLabel: React.FC<EdgeLabelProps> = ({
             className={`
               h-4 w-4 p-0 transition-all duration-200
               ${selected || isHovered 
-                ? 'opacity-100 hover:bg-red-100 hover:text-red-600' 
-                : 'opacity-70 hover:bg-red-100 hover:text-red-600'
+                ? 'opacity-100 hover:bg-muted hover:text-destructive' 
+                : 'opacity-70 hover:bg-muted hover:text-destructive'
               }
             `}
             title="Delete connection (Del)"

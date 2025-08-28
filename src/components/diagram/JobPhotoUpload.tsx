@@ -84,9 +84,9 @@ const JobPhotoUpload: React.FC<JobPhotoUploadProps> = ({
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-sm flex items-center gap-2">
-          <Zap className="h-4 w-4 text-green-500" />
+          <Zap className="h-4 w-4 text-success" />
           Add Photo to {sectionLabel}
-          <span className="text-xs text-green-600 font-normal">(Auto-optimized to WebP)</span>
+          <span className="text-xs text-foreground font-normal">(Auto-optimized to WebP)</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -103,7 +103,7 @@ const JobPhotoUpload: React.FC<JobPhotoUploadProps> = ({
         
         <div
           className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
-            dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300'
+            dragOver ? 'border-border bg-muted' : 'border-border'
           }`}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -111,12 +111,12 @@ const JobPhotoUpload: React.FC<JobPhotoUploadProps> = ({
         >
           <div className="space-y-2">
             <div className="flex justify-center">
-              <Upload className="h-8 w-8 text-gray-400" />
+              <Upload className="h-8 w-8 text-muted-foreground" />
             </div>
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-muted-foreground">
               Drag & drop an image here, or click to select
             </p>
-            <p className="text-xs text-green-600">
+            <p className="text-xs text-foreground">
               Images will be automatically compressed and converted to WebP format
             </p>
             {isMobile ? (
@@ -191,7 +191,7 @@ const JobPhotoUpload: React.FC<JobPhotoUploadProps> = ({
         />
         
         {isProcessing && (
-          <div className="text-xs text-blue-600 text-center space-y-1">
+          <div className="text-xs text-foreground text-center space-y-1">
             <p>{isOptimizing ? 'Optimizing image...' : 'Uploading...'}</p>
             <Progress value={75} className="h-1" />
           </div>

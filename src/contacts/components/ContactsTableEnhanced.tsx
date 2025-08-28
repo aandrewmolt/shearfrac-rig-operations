@@ -201,9 +201,9 @@ export function ContactsTableEnhanced({
           // Special rendering for different fields
           if (col.key === 'shift' && value) {
             const shiftColors = {
-              days: 'bg-yellow-100 text-yellow-800',
-              nights: 'bg-blue-100 text-blue-800',
-              off: 'bg-gray-100 text-gray-800',
+              days: 'bg-muted text-foreground',
+              nights: 'bg-muted text-foreground',
+              off: 'bg-muted text-foreground',
             };
             return (
               <Badge className={cn('capitalize', shiftColors[value as keyof typeof shiftColors])}>
@@ -215,7 +215,7 @@ export function ContactsTableEnhanced({
           if (col.key === 'email' && value) {
             return (
               <div className="flex items-center gap-2">
-                <a href={`mailto:${value}`} className="text-blue-600 hover:underline">
+                <a href={`mailto:${value}`} className="text-foreground hover:underline">
                   {value as string}
                 </a>
                 <Button
@@ -233,7 +233,7 @@ export function ContactsTableEnhanced({
           if (col.key === 'phone' && value) {
             return (
               <div className="flex items-center gap-2">
-                <a href={`tel:${value}`} className="text-blue-600 hover:underline">
+                <a href={`tel:${value}`} className="text-foreground hover:underline">
                   {value as string}
                 </a>
                 <Button
@@ -258,11 +258,11 @@ export function ContactsTableEnhanced({
             const getTypeColor = (type: string) => {
               switch (type) {
                 case 'client':
-                  return 'bg-green-100 text-green-800';
+                  return 'bg-muted text-foreground';
                 case 'frac':
-                  return 'bg-purple-100 text-purple-800';
+                  return 'bg-muted text-purple-800';
                 default:
-                  return 'bg-orange-100 text-orange-800';
+                  return 'bg-muted text-foreground';
               }
             };
             return (
@@ -314,7 +314,7 @@ export function ContactsTableEnhanced({
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem 
-                className="text-red-600"
+                className="text-destructive"
                 onClick={() => onDelete(contact.id)}
               >
                 <Trash2 className="mr-2 h-4 w-4" />

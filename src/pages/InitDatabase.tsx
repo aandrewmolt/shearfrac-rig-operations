@@ -36,7 +36,8 @@ export default function InitDatabase() {
   };
 
   return (
-    <div className="container mx-auto py-8 max-w-2xl">
+    <div className="min-h-screen bg-gradient-corporate">
+      <div className="container mx-auto py-8 max-w-2xl">
       <Card>
         <CardHeader>
           <CardTitle>Initialize Turso Database</CardTitle>
@@ -58,16 +59,16 @@ export default function InitDatabase() {
           </div>
 
           {status === 'success' && (
-            <Alert className="bg-green-50 border-green-200">
-              <AlertDescription className="text-green-800">
+            <Alert className="bg-status-success/20 border-status-success">
+              <AlertDescription className="text-status-success">
                 {message}
               </AlertDescription>
             </Alert>
           )}
 
           {status === 'error' && (
-            <Alert className="bg-red-50 border-red-200">
-              <AlertDescription className="text-red-800">
+            <Alert className="bg-status-danger/20 border-status-danger">
+              <AlertDescription className="text-status-danger">
                 {message}
               </AlertDescription>
             </Alert>
@@ -89,6 +90,7 @@ export default function InitDatabase() {
           </p>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

@@ -174,7 +174,7 @@ const EnhancedRedTagManager: React.FC<EnhancedRedTagManagerProps> = ({
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+              <AlertTriangle className="h-5 w-5 text-destructive" />
               Red Tag Equipment
             </CardTitle>
             <Button variant="ghost" size="sm" onClick={handleClose}>
@@ -185,7 +185,7 @@ const EnhancedRedTagManager: React.FC<EnhancedRedTagManagerProps> = ({
         <CardContent className="space-y-4">
           <div>
             <h4 className="font-medium mb-2">Equipment Details</h4>
-            <div className="p-3 bg-gray-50 rounded text-sm">
+            <div className="p-3 bg-card rounded text-sm">
               <p><strong>Type:</strong> {equipmentItem.typeId}</p>
               <p><strong>Quantity:</strong> {equipmentItem.quantity}</p>
               <Badge variant="outline" className="mt-1">Current Status: {equipmentItem.status}</Badge>
@@ -289,7 +289,7 @@ const EnhancedRedTagManager: React.FC<EnhancedRedTagManagerProps> = ({
             {isUploading && (
               <div className="text-center py-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="text-sm text-gray-600 mt-2">Uploading photo...</p>
+                <p className="text-sm text-corporate-silver mt-2">Uploading photo...</p>
               </div>
             )}
 

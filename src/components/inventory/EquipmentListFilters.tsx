@@ -43,7 +43,7 @@ const EquipmentListFilters: React.FC<EquipmentListFiltersProps> = ({
   return (
     <div className="space-y-3">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input
           placeholder="Search equipment..."
           value={searchTerm}
@@ -72,7 +72,7 @@ const EquipmentListFilters: React.FC<EquipmentListFiltersProps> = ({
           <SelectContent>
             <SelectItem value="all">All Locations</SelectItem>
             {/* Storage Locations */}
-            <div className="px-2 py-1 text-xs font-semibold text-gray-500">Storage Locations</div>
+            <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">Storage Locations</div>
             {data.storageLocations.map(location => (
               <SelectItem key={location.id} value={location.id}>
                 <div className="flex items-center gap-2">
@@ -84,7 +84,7 @@ const EquipmentListFilters: React.FC<EquipmentListFiltersProps> = ({
             {/* Jobs */}
             {jobs.length > 0 && (
               <>
-                <div className="px-2 py-1 text-xs font-semibold text-gray-500 border-t mt-1 pt-1">Jobs</div>
+                <div className="px-2 py-1 text-xs font-semibold text-muted-foreground border-t mt-1 pt-1">Jobs</div>
                 {jobs.map(job => (
                   <SelectItem key={job.id} value={job.id}>
                     <div className="flex items-center gap-2">

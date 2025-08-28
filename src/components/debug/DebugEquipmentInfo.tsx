@@ -55,7 +55,7 @@ export function DebugEquipmentInfo() {
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          <div className="text-sm text-gray-600 mb-3">
+          <div className="text-sm text-muted-foreground mb-3">
             Showing available equipment counts by type ID:
           </div>
           {criticalTypes.map(typeId => {
@@ -88,7 +88,7 @@ export function DebugEquipmentInfo() {
             );
           })}
         </div>
-        <Alert className="mt-4 bg-yellow-50 border-yellow-200">
+        <Alert className="mt-4 bg-muted border-border">
           <AlertDescription className="text-xs">
             <strong>Note:</strong> Equipment must have status "available" and be in the selected location to be allocatable.
           </AlertDescription>

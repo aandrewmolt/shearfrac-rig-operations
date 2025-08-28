@@ -59,7 +59,7 @@ const EquipmentTable: React.FC<EquipmentTableProps> = ({
   if (filteredEquipment.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500 mb-4">No equipment found matching your filters.</p>
+        <p className="text-corporate-silver mb-4">No equipment found matching your filters.</p>
         <Button variant="outline" onClick={onClearFilters}>
           Clear Filters
         </Button>
@@ -87,7 +87,7 @@ const EquipmentTable: React.FC<EquipmentTableProps> = ({
             const syncStatus = getEquipmentStatus ? getEquipmentStatus(item.id) : item.status;
             
             return (
-              <TableRow key={item.id} className={conflict ? 'bg-red-50' : ''}>
+              <TableRow key={item.id} className={conflict ? 'bg-status-danger/20' : ''}>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
                     {getEquipmentTypeName(item.typeId)}
@@ -139,7 +139,7 @@ const EquipmentTable: React.FC<EquipmentTableProps> = ({
                         <TooltipTrigger>
                           <Badge 
                             variant="outline" 
-                            className="text-xs cursor-pointer hover:bg-gray-100 flex items-center gap-1"
+                            className="text-xs cursor-pointer hover:bg-card flex items-center gap-1"
                             onClick={() => navigate(`/jobs?edit=${item.jobId}`)}
                           >
                             {getJobName(item.jobId)}

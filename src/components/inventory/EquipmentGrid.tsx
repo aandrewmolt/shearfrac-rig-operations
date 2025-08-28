@@ -29,7 +29,7 @@ const EquipmentGrid: React.FC<EquipmentGridProps> = ({
   if (equipment.length === 0 && draftEquipment.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">No equipment found.</p>
+        <p className="text-muted-foreground">No equipment found.</p>
       </div>
     );
   }

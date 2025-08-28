@@ -89,7 +89,7 @@ export function ResponsiveTable<T>({
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <p className="text-gray-500 text-center">{emptyMessage}</p>
+          <p className="text-muted-foreground text-center">{emptyMessage}</p>
         </CardContent>
       </Card>
     );
@@ -100,7 +100,7 @@ export function ResponsiveTable<T>({
     return (
       <div className="space-y-3">
         {selectedRows.length > 0 && bulkActions && (
-          <div className="sticky top-0 z-10 bg-white border rounded-lg p-3 shadow-sm">
+          <div className="sticky top-0 z-10 bg-card border rounded-lg p-3 shadow-sm">
             {bulkActions}
           </div>
         )}
@@ -115,7 +115,7 @@ export function ResponsiveTable<T>({
               className={cn(
                 "relative transition-all",
                 onRowClick && "cursor-pointer hover:shadow-md",
-                isSelected && "ring-2 ring-blue-500"
+                isSelected && "ring-2 ring-primary"
               )}
               onClick={() => onRowClick?.(item)}
             >
@@ -128,7 +128,7 @@ export function ResponsiveTable<T>({
                       onCheckedChange={(checked) => {
                         onSelectRow(id, checked as boolean);
                       }}
-                      className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                      className="h-4 w-4"
                       onClick={(e) => e.stopPropagation()}
                     />
                   </div>
@@ -152,7 +152,7 @@ export function ResponsiveTable<T>({
                         isPrimary ? "flex-col" : "flex-row justify-between items-start"
                       )}>
                         {!isPrimary && (
-                          <span className="text-sm text-gray-500 font-medium">
+                          <span className="text-sm text-muted-foreground font-medium">
                             {column.header}:
                           </span>
                         )}
@@ -187,7 +187,7 @@ export function ResponsiveTable<T>({
                                 action.onClick(item);
                               }}
                               className={cn(
-                                action.variant === 'destructive' && "text-red-600"
+                                action.variant === 'destructive' && "text-destructive"
                               )}
                             >
                               {Icon && <Icon className="h-4 w-4 mr-2" />}
@@ -203,7 +203,7 @@ export function ResponsiveTable<T>({
                 {/* Row click indicator */}
                 {onRowClick && !actions && (
                   <div className="absolute top-1/2 right-4 -translate-y-1/2">
-                    <ChevronRight className="h-5 w-5 text-gray-400" />
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </div>
                 )}
               </CardContent>
@@ -218,12 +218,12 @@ export function ResponsiveTable<T>({
   return (
     <div className="w-full">
       {selectedRows.length > 0 && bulkActions && (
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="mb-4 p-3 bg-muted border rounded-lg">
           {bulkActions}
         </div>
       )}
       
-      <div className="overflow-x-auto rounded-lg border bg-white">
+      <div className="overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -236,7 +236,7 @@ export function ResponsiveTable<T>({
                         onSelectRow(getRowId(item), checked as boolean);
                       });
                     }}
-                    className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                    className="h-4 w-4 text-foreground rounded border-border"
                   />
                 </TableHead>
               )}
@@ -269,7 +269,7 @@ export function ResponsiveTable<T>({
                   key={id}
                   className={cn(
                     onRowClick && "cursor-pointer",
-                    isSelected && "bg-blue-50"
+                    isSelected && "bg-muted"
                   )}
                   onClick={() => onRowClick?.(item)}
                 >
@@ -281,7 +281,7 @@ export function ResponsiveTable<T>({
                           onSelectRow(id, checked as boolean);
                         }}
                         onClick={(e) => e.stopPropagation()}
-                        className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                        className="h-4 w-4"
                       />
                     </TableCell>
                   )}
@@ -315,7 +315,7 @@ export function ResponsiveTable<T>({
                                   action.onClick(item);
                                 }}
                                 className={cn(
-                                  action.variant === 'destructive' && "text-red-600"
+                                  action.variant === 'destructive' && "text-destructive"
                                 )}
                               >
                                 {Icon && <Icon className="h-4 w-4 mr-2" />}

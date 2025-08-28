@@ -93,11 +93,11 @@ const EnhancedEquipmentReports: React.FC = () => {
 
   // Prepare chart data for status distribution
   const statusChartData: ChartData[] = [
-    { label: 'Available', value: stats.available, color: 'bg-green-500', percentage: (stats.available / stats.total) * 100 },
-    { label: 'Deployed', value: stats.deployed, color: 'bg-blue-500', percentage: (stats.deployed / stats.total) * 100 },
-    { label: 'Maintenance', value: stats.maintenance, color: 'bg-yellow-500', percentage: (stats.maintenance / stats.total) * 100 },
-    { label: 'Red Tagged', value: stats.redTagged, color: 'bg-red-500', percentage: (stats.redTagged / stats.total) * 100 },
-    { label: 'Retired', value: stats.retired, color: 'bg-gray-500', percentage: (stats.retired / stats.total) * 100 },
+    { label: 'Available', value: stats.available, color: 'bg-status-success/200', percentage: (stats.available / stats.total) * 100 },
+    { label: 'Deployed', value: stats.deployed, color: 'bg-status-info/200', percentage: (stats.deployed / stats.total) * 100 },
+    { label: 'Maintenance', value: stats.maintenance, color: 'bg-status-warning/200', percentage: (stats.maintenance / stats.total) * 100 },
+    { label: 'Red Tagged', value: stats.redTagged, color: 'bg-status-danger/200', percentage: (stats.redTagged / stats.total) * 100 },
+    { label: 'Retired', value: stats.retired, color: 'bg-card0', percentage: (stats.retired / stats.total) * 100 },
   ].filter(item => item.value > 0);
 
   // Generate detailed reports
@@ -350,7 +350,7 @@ const EnhancedEquipmentReports: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Needs Attention</p>
-                <p className="text-2xl font-bold text-orange-600">
+                <p className="text-2xl font-bold text-foreground">
                   {stats.maintenance + stats.redTagged}
                 </p>
               </div>
@@ -411,7 +411,7 @@ const EnhancedEquipmentReports: React.FC = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {Object.entries(stats.byCategory).map(([category, count]) => (
                   <div key={category} className="text-center p-4 border rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">{count}</div>
+                    <div className="text-2xl font-bold text-foreground">{count}</div>
                     <div className="text-sm text-muted-foreground capitalize">{category}</div>
                   </div>
                 ))}
@@ -434,7 +434,7 @@ const EnhancedEquipmentReports: React.FC = () => {
                 {Object.entries(stats.byLocation).map(([location, count]) => (
                   <div key={location} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-gray-500" />
+                      <MapPin className="h-4 w-4 text-corporate-silver" />
                       <span className="font-medium">{location}</span>
                     </div>
                     <Badge>{count} items</Badge>
@@ -499,7 +499,7 @@ const EnhancedEquipmentReports: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-4 bg-blue-50 rounded-lg">
+              <div className="p-4 bg-status-info/20 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium">Equipment Lifecycle</span>
                   <Clock className="h-4 w-4 text-blue-500" />

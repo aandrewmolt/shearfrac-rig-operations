@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { useInventoryData } from './useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 
 interface AuditEntry {
   id: string;
@@ -25,7 +25,7 @@ interface AuditEntry {
 }
 
 export const useAuditTrail = () => {
-  const { data } = useInventoryData();
+  const { data } = useInventory();
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
 
   const addAuditEntry = (entry: Omit<AuditEntry, 'id' | 'timestamp'>) => {

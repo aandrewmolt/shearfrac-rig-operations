@@ -2,12 +2,12 @@
 import { useState, useCallback } from 'react';
 import { useNodesState, useEdgesState } from '@xyflow/react';
 import { JobEquipmentAssignment } from '@/types/equipment';
-import { useInventoryData } from './useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 import { useCableTypeService } from './cables/useCableTypeService';
 import { useJobPersistence } from './useJobPersistence';
 
 export const useJobDiagramState = () => {
-  const { data } = useInventoryData();
+  const { data } = useInventory();
   const { getDefaultCableType } = useCableTypeService(data.equipmentTypes);
   
   // React Flow state
@@ -94,7 +94,18 @@ export const useJobDiagramState = () => {
   }, [setNodes]);
 
   // Sync function for loading persisted data
-  const syncWithLoadedData = useCallback((jobData: any) => {
+  const syncWithLoadedData = useCallback((jobData: { 
+    selectedCableType?: string; 
+    equipmentAssignment?: Record<string, string | string[]>; 
+    companyComputerNames?: Record<string, string>;
+    fracBaudRate?: string;
+    gaugeBaudRate?: string;
+    fracComPort?: string;
+    gaugeComPort?: string;
+    mainBoxName?: string;
+    satelliteName?: string;
+    wellsideGaugeName?: string;
+  }) => {
     if (jobData.selectedCableType) {
       setSelectedCableType(jobData.selectedCableType);
     }

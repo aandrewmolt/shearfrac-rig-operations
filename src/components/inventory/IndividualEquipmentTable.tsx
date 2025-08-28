@@ -87,7 +87,7 @@ const IndividualEquipmentTable: React.FC<IndividualEquipmentTableProps> = ({
 
   if (filteredEquipment.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-corporate-silver">
         <p>No individual equipment items found</p>
         <p className="text-sm">Individual equipment items are tracked with unique IDs</p>
       </div>
@@ -99,7 +99,7 @@ const IndividualEquipmentTable: React.FC<IndividualEquipmentTableProps> = ({
     const syncStatus = getEquipmentStatus ? getEquipmentStatus(item.equipmentId) : item.status;
     
     return (
-      <TableRow key={item.id || item.equipmentId || `equipment-${index}`} className={conflict ? 'bg-red-50' : ''}>
+      <TableRow key={item.id || item.equipmentId || `equipment-${index}`} className={conflict ? 'bg-status-danger/20' : ''}>
         <TableCell className="font-medium">
           <div className="flex items-center gap-2">
             {item.equipmentId}
@@ -130,7 +130,7 @@ const IndividualEquipmentTable: React.FC<IndividualEquipmentTableProps> = ({
           {showJobBadge && item.jobId ? (
             <Badge 
               variant="outline" 
-              className="text-xs cursor-pointer hover:bg-gray-100 flex items-center gap-1"
+              className="text-xs cursor-pointer hover:bg-muted flex items-center gap-1"
               onClick={() => navigate(`/jobs?edit=${item.jobId}`)}
             >
               <Briefcase className="h-3 w-3" />
@@ -138,7 +138,7 @@ const IndividualEquipmentTable: React.FC<IndividualEquipmentTableProps> = ({
               <ExternalLink className="h-3 w-3" />
             </Badge>
           ) : (
-            <span className="text-gray-500 text-sm">{getLocationName(item.locationId)}</span>
+            <span className="text-corporate-silver text-sm">{getLocationName(item.locationId)}</span>
           )}
         </TableCell>
         <TableCell>
@@ -179,11 +179,11 @@ const IndividualEquipmentTable: React.FC<IndividualEquipmentTableProps> = ({
         {/* Jobs with Deployed Equipment */}
         {Object.entries(groupedEquipment.jobDeployments).map(([jobId, { jobName, equipment }]) => (
           <div key={jobId} className="border rounded-lg overflow-hidden">
-            <div className="bg-blue-50 px-4 py-3 flex items-center justify-between">
+            <div className="bg-status-info/20 px-4 py-3 flex items-center justify-between">
               <h3 className="font-semibold flex items-center gap-2">
-                <Briefcase className="h-5 w-5 text-blue-600" />
+                <Briefcase className="h-5 w-5 text-foreground" />
                 {jobName}
-                <Badge className="bg-blue-100 text-blue-800">{equipment.length} items deployed</Badge>
+                <Badge className="bg-status-info/20 text-status-info">{equipment.length} items deployed</Badge>
               </h3>
               <Button
                 variant="outline"
@@ -218,11 +218,11 @@ const IndividualEquipmentTable: React.FC<IndividualEquipmentTableProps> = ({
         {/* Available Equipment */}
         {groupedEquipment.available.length > 0 && (
           <div className="border rounded-lg overflow-hidden">
-            <div className="bg-green-50 px-4 py-3">
+            <div className="bg-status-success/20 px-4 py-3">
               <h3 className="font-semibold flex items-center gap-2">
-                <Home className="h-5 w-5 text-green-600" />
+                <Home className="h-5 w-5 text-foreground" />
                 Available Equipment at Storage Locations
-                <Badge className="bg-green-100 text-green-800">{groupedEquipment.available.length} items</Badge>
+                <Badge className="bg-status-success/20 text-status-success">{groupedEquipment.available.length} items</Badge>
               </h3>
             </div>
             <Table>
@@ -248,11 +248,11 @@ const IndividualEquipmentTable: React.FC<IndividualEquipmentTableProps> = ({
         {/* Other Status Equipment */}
         {groupedEquipment.other.length > 0 && (
           <div className="border rounded-lg overflow-hidden">
-            <div className="bg-orange-50 px-4 py-3">
+            <div className="bg-status-warning/20 px-4 py-3">
               <h3 className="font-semibold flex items-center gap-2">
-                <Wrench className="h-5 w-5 text-orange-600" />
+                <Wrench className="h-5 w-5 text-foreground" />
                 Equipment Needing Attention
-                <Badge className="bg-orange-100 text-orange-800">{groupedEquipment.other.length} items</Badge>
+                <Badge className="bg-status-warning/20 text-status-warning">{groupedEquipment.other.length} items</Badge>
               </h3>
             </div>
             <Table>

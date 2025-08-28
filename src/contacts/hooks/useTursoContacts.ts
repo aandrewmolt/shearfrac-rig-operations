@@ -3,6 +3,7 @@ import { Contact, ContactColumn, ContactsDatabase } from '../types';
 import { tursoDb } from '@/services/tursoDb';
 import { toast } from 'sonner';
 import { defaultClientColumns, defaultFracColumns, defaultCustomColumns } from '../utils/columnConfig';
+import edgeSync from '@/services/edgeFunctionSync';
 
 // Migration helper to import existing localStorage data
 async function migrateFromLocalStorage() {
@@ -125,6 +126,33 @@ export function useTursoContacts() {
         setCustomTypes(prev => [...prev, contact.type]);
       }
       
+      // Sync to edge functions if enabled
+      if (edgeSync.isEnabled()) {
+        try {
+          await edgeSync.contacts.create({
+            type: newContact.type,
+            name: newContact.name,
+            company: newContact.company,
+            title: newContact.title,
+            phone: newContact.phone,
+            email: newContact.email,
+            job: newContact.job,
+            crew: newContact.crew,
+            shift: newContact.shift,
+            notes: newContact.notes,
+            jobAssignments: newContact.jobAssignments
+          });
+          console.log(`Contact ${newContact.id} synced to edge functions`);
+        } catch (syncError) {
+          console.error('Edge sync failed, adding to queue:', syncError);
+          edgeSync.queue.add({
+            type: 'contact',
+            action: 'create',
+            data: newContact
+          });
+        }
+      }
+      
       toast.success('Contact added successfully');
     } catch (err) {
       console.error('Failed to add contact:', err);
@@ -144,6 +172,21 @@ export function useTursoContacts() {
       // Optimistically update local state
       setContacts(prev => prev.map(c => c.id === id ? contact : c));
       
+      // Sync to edge functions if enabled
+      if (edgeSync.isEnabled()) {
+        try {
+          await edgeSync.contacts.update(id, contact);
+          console.log(`Contact ${id} synced to edge functions`);
+        } catch (syncError) {
+          console.error('Edge sync failed, adding to queue:', syncError);
+          edgeSync.queue.add({
+            type: 'contact',
+            action: 'update',
+            data: { id, ...contact }
+          });
+        }
+      }
+      
       toast.success('Contact updated successfully');
     } catch (err) {
       console.error('Failed to update contact:', err);
@@ -162,6 +205,21 @@ export function useTursoContacts() {
       
       // Optimistically update local state
       setContacts(prev => prev.filter(c => c.id !== id));
+      
+      // Sync to edge functions if enabled
+      if (edgeSync.isEnabled()) {
+        try {
+          await edgeSync.contacts.delete(id);
+          console.log(`Contact ${id} deletion synced to edge functions`);
+        } catch (syncError) {
+          console.error('Edge sync failed, adding to queue:', syncError);
+          edgeSync.queue.add({
+            type: 'contact',
+            action: 'delete',
+            data: { id }
+          });
+        }
+      }
       
       toast.success('Contact deleted successfully');
     } catch (err) {

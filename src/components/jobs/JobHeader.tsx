@@ -15,8 +15,8 @@ const JobHeader: React.FC<JobHeaderProps> = ({ job, onDeleteJob, onBackToJobs })
   return (
     <div className="flex items-center justify-between mb-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{job.name}</h1>
-        <p className="text-gray-600">
+        <h1 className="text-3xl font-bold text-foreground">{job.name}</h1>
+        <p className="text-muted-foreground">
           Wells: {job.wellCount} 
           {job.hasWellsideGauge && ' | Wellside Gauge: Yes'}
           <Badge variant="outline" className="ml-2">
@@ -28,7 +28,7 @@ const JobHeader: React.FC<JobHeaderProps> = ({ job, onDeleteJob, onBackToJobs })
         <Button 
           onClick={() => onDeleteJob(job)}
           variant="outline"
-          className="bg-red-50 text-red-600 hover:bg-red-100"
+          className="bg-muted text-destructive hover:bg-muted"
         >
           <Trash2 className="mr-2 h-4 w-4" />
           Delete Job
@@ -36,7 +36,7 @@ const JobHeader: React.FC<JobHeaderProps> = ({ job, onDeleteJob, onBackToJobs })
         <Button 
           onClick={onBackToJobs}
           variant="outline"
-          className="bg-white"
+          className="bg-card"
         >
           Back to Jobs
         </Button>

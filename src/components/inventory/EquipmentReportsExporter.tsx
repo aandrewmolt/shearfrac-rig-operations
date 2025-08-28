@@ -131,20 +131,20 @@ const EquipmentReportsExporter: React.FC = () => {
       <CardContent className="space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{stats.totalEquipment}</div>
-            <div className="text-sm text-gray-500">Total Equipment</div>
+            <div className="text-2xl font-bold text-foreground">{stats.totalEquipment}</div>
+            <div className="text-sm text-muted-foreground">Total Equipment</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{stats.availableEquipment}</div>
-            <div className="text-sm text-gray-500">Available</div>
+            <div className="text-2xl font-bold text-foreground">{stats.availableEquipment}</div>
+            <div className="text-sm text-muted-foreground">Available</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-orange-600">{stats.deployedEquipment}</div>
-            <div className="text-sm text-gray-500">Deployed</div>
+            <div className="text-2xl font-bold text-foreground">{stats.deployedEquipment}</div>
+            <div className="text-sm text-muted-foreground">Deployed</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-red-600">{stats.redTaggedEquipment}</div>
-            <div className="text-sm text-gray-500">Red Tagged</div>
+            <div className="text-2xl font-bold text-destructive">{stats.redTaggedEquipment}</div>
+            <div className="text-sm text-muted-foreground">Red Tagged</div>
           </div>
         </div>
 

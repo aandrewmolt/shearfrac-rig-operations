@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { EquipmentType } from '@/types/inventory';
-import { useInventoryData } from '@/hooks/useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 import { toast } from 'sonner';
 
 interface FormData {
@@ -12,7 +12,7 @@ interface FormData {
 }
 
 export const useEquipmentTypeForm = () => {
-  const { data, updateEquipmentTypes } = useInventoryData();
+  const { data, updateEquipmentTypes } = useInventory();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingType, setEditingType] = useState<EquipmentType | null>(null);
   const [formData, setFormData] = useState<FormData>({

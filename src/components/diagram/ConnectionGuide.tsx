@@ -5,14 +5,14 @@ import { Cable } from 'lucide-react';
 
 const ConnectionGuide: React.FC = () => {
   return (
-    <Card className="bg-blue-50 border-blue-200">
+    <Card className="bg-muted border-border">
       <CardHeader className="pb-1">
-        <CardTitle className="text-blue-800 flex items-center gap-2 text-base">
+        <CardTitle className="text-foreground flex items-center gap-2 text-base">
           <Cable className="h-4 w-4" />
           Cable Connection Guide
         </CardTitle>
       </CardHeader>
-      <CardContent className="text-xs text-blue-700 space-y-1 pt-0">
+      <CardContent className="text-xs text-foreground space-y-1 pt-0">
         <p><strong>300ft Reels (Old):</strong> Connect from Main Box → Y Adapter → Wells (direct connection from Y adapter)</p>
         <p><strong>300ft Cables/Reels (New):</strong> Connect from Main Box - Direct to Well</p>
         <p><strong>200ft Cables:</strong> Connect directly Main Box → Well (can't add Y connect to 200ft Cables/Reels)</p>

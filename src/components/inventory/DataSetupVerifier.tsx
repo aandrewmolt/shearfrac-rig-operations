@@ -84,7 +84,7 @@ const DataSetupVerifier: React.FC = () => {
 
   const getStatusBadge = (status: boolean) => {
     return (
-      <Badge className={status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+      <Badge className={status ? 'bg-muted text-foreground' : 'bg-muted text-destructive'}>
         {status ? 'OK' : 'Issues'}
       </Badge>
     );
@@ -119,9 +119,9 @@ const DataSetupVerifier: React.FC = () => {
         <CardTitle className="flex items-center justify-between">
           <span>System Status</span>
           {allSystemsGo ? (
-            <Badge className="bg-green-100 text-green-800">All Systems Operational</Badge>
+            <Badge className="bg-muted text-foreground">All Systems Operational</Badge>
           ) : (
-            <Badge className="bg-yellow-100 text-yellow-800">Setup Required</Badge>
+            <Badge className="bg-muted text-foreground">Setup Required</Badge>
           )}
         </CardTitle>
       </CardHeader>
@@ -132,7 +132,7 @@ const DataSetupVerifier: React.FC = () => {
               {getStatusIcon(verificationResults.equipmentTypes)}
               <div>
                 <div className="font-medium">Equipment Types</div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-corporate-silver">
                   {data.equipmentTypes.length} types configured
                 </div>
               </div>
@@ -145,7 +145,7 @@ const DataSetupVerifier: React.FC = () => {
               {getStatusIcon(verificationResults.storageLocations)}
               <div>
                 <div className="font-medium">Storage Locations</div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-corporate-silver">
                   {data.storageLocations.length} locations configured
                 </div>
               </div>
@@ -159,7 +159,7 @@ const DataSetupVerifier: React.FC = () => {
               {getStatusIcon(verificationResults.dataConsistency)}
               <div>
                 <div className="font-medium">Data Consistency</div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-corporate-silver">
                   All references valid
                 </div>
               </div>
@@ -172,7 +172,7 @@ const DataSetupVerifier: React.FC = () => {
               {getStatusIcon(verificationResults.individualEquipment)}
               <div>
                 <div className="font-medium">Individual Equipment</div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-corporate-silver">
                   {data.individualEquipment.length} items tracked
                 </div>
               </div>
@@ -197,7 +197,7 @@ const DataSetupVerifier: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <div className="font-medium">Data Summary</div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-corporate-silver">
                 {data.equipmentItems.length} equipment items, {data.individualEquipment.length} individual items
               </div>
             </div>
@@ -209,9 +209,9 @@ const DataSetupVerifier: React.FC = () => {
         </div>
 
         {!allSystemsGo && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <div className="font-medium text-yellow-800">Setup Recommendations:</div>
-            <ul className="mt-2 text-sm text-yellow-700 space-y-1">
+          <div className="bg-status-warning/20 border border-border rounded-lg p-4">
+            <div className="font-medium text-foreground">Setup Recommendations:</div>
+            <ul className="mt-2 text-sm text-foreground space-y-1">
               {!verificationResults.equipmentTypes && (
                 <li>• Visit Equipment Types tab to ensure all required types are configured</li>
               )}

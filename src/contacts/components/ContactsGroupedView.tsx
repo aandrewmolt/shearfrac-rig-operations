@@ -15,14 +15,14 @@ interface ContactsGroupedViewProps {
 // Generate consistent colors for companies
 function getCompanyColor(company: string): string {
   const colors = [
-    'bg-blue-100 border-blue-300 text-blue-900',
-    'bg-green-100 border-green-300 text-green-900',
-    'bg-purple-100 border-purple-300 text-purple-900',
-    'bg-yellow-100 border-yellow-300 text-yellow-900',
+    'bg-muted border-border text-blue-900',
+    'bg-muted border-border text-green-900',
+    'bg-muted border-purple-300 text-purple-900',
+    'bg-muted border-border text-yellow-900',
     'bg-pink-100 border-pink-300 text-pink-900',
     'bg-indigo-100 border-indigo-300 text-indigo-900',
-    'bg-red-100 border-red-300 text-red-900',
-    'bg-orange-100 border-orange-300 text-orange-900',
+    'bg-muted border-red-300 text-red-900',
+    'bg-muted border-border text-orange-900',
     'bg-teal-100 border-teal-300 text-teal-900',
     'bg-cyan-100 border-cyan-300 text-cyan-900',
   ];
@@ -79,8 +79,8 @@ export function ContactsGroupedView({ contacts, onEdit, onDelete }: ContactsGrou
                 <div key={`${company}-${crew}`} className="mb-4 last:mb-0">
                   {crew !== 'No Crew' && (
                     <div className="flex items-center gap-2 mb-2">
-                      <Users className="h-4 w-4 text-gray-500" />
-                      <span className="font-medium text-sm text-gray-700">Crew: {crew}</span>
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium text-sm text-muted-foreground">Crew: {crew}</span>
                       <Badge variant="outline" className="text-xs">
                         {crewContacts.length}
                       </Badge>
@@ -94,9 +94,9 @@ export function ContactsGroupedView({ contacts, onEdit, onDelete }: ContactsGrou
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <h4 className="font-medium text-gray-900">{contact.name}</h4>
+                            <h4 className="font-medium text-foreground">{contact.name}</h4>
                             {'title' in contact && contact.title && (
-                              <p className="text-sm text-gray-600">{contact.title}</p>
+                              <p className="text-sm text-muted-foreground">{contact.title}</p>
                             )}
                           </div>
                           <div className="flex gap-1">
@@ -111,7 +111,7 @@ export function ContactsGroupedView({ contacts, onEdit, onDelete }: ContactsGrou
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-7 w-7 p-0 text-red-600 hover:text-red-700"
+                              className="h-7 w-7 p-0 text-destructive hover:text-destructive"
                               onClick={() => onDelete(contact.id)}
                             >
                               <Trash2 className="h-3 w-3" />
@@ -121,7 +121,7 @@ export function ContactsGroupedView({ contacts, onEdit, onDelete }: ContactsGrou
                         
                         <div className="space-y-1 text-sm">
                           {contact.phone && (
-                            <div className="flex items-center gap-1 text-gray-600">
+                            <div className="flex items-center gap-1 text-muted-foreground">
                               <Phone className="h-3 w-3" />
                               <a href={`tel:${contact.phone}`} className="hover:underline">
                                 {contact.phone}
@@ -129,7 +129,7 @@ export function ContactsGroupedView({ contacts, onEdit, onDelete }: ContactsGrou
                             </div>
                           )}
                           {contact.email && (
-                            <div className="flex items-center gap-1 text-gray-600">
+                            <div className="flex items-center gap-1 text-muted-foreground">
                               <Mail className="h-3 w-3" />
                               <a href={`mailto:${contact.email}`} className="hover:underline truncate">
                                 {contact.email}
@@ -137,7 +137,7 @@ export function ContactsGroupedView({ contacts, onEdit, onDelete }: ContactsGrou
                             </div>
                           )}
                           {'dateOfRotation' in contact && contact.dateOfRotation && (
-                            <div className="flex items-center gap-1 text-gray-600">
+                            <div className="flex items-center gap-1 text-muted-foreground">
                               <Calendar className="h-3 w-3" />
                               <span>Rotation: {new Date(contact.dateOfRotation).toLocaleDateString()}</span>
                             </div>
@@ -147,9 +147,9 @@ export function ContactsGroupedView({ contacts, onEdit, onDelete }: ContactsGrou
                               variant="outline" 
                               className={cn(
                                 "text-xs",
-                                contact.shift === 'days' && "bg-yellow-50 text-yellow-700 border-yellow-300",
-                                contact.shift === 'nights' && "bg-blue-50 text-blue-700 border-blue-300",
-                                contact.shift === 'off' && "bg-gray-50 text-gray-700 border-gray-300"
+                                contact.shift === 'days' && "bg-muted text-foreground border-border",
+                                contact.shift === 'nights' && "bg-muted text-foreground border-border",
+                                contact.shift === 'off' && "bg-muted text-muted-foreground border-border"
                               )}
                             >
                               {contact.shift === 'off' ? 'Time-Off' : contact.shift}

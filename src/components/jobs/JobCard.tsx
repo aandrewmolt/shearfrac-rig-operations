@@ -52,7 +52,7 @@ const JobCard: React.FC<JobCardProps> = ({
 
   return (
     <Card 
-      className="cursor-pointer hover:shadow-lg transition-shadow bg-white"
+      className="cursor-pointer hover:shadow-lg transition-shadow bg-card"
       onClick={() => onSelectJob(job)}
     >
       <CardHeader>
@@ -70,10 +70,10 @@ const JobCard: React.FC<JobCardProps> = ({
                 autoFocus
               />
               <Button size="sm" variant="ghost" onClick={handleSaveName}>
-                <Check className="h-4 w-4 text-green-600" />
+                <Check className="h-4 w-4 text-foreground" />
               </Button>
               <Button size="sm" variant="ghost" onClick={handleCancelEdit}>
-                <X className="h-4 w-4 text-red-600" />
+                <X className="h-4 w-4 text-destructive" />
               </Button>
             </div>
           ) : (
@@ -81,8 +81,8 @@ const JobCard: React.FC<JobCardProps> = ({
               <CardTitle className="text-lg flex items-center gap-2">
                 <div className="flex flex-col items-start">
                   <span>{job.name}</span>
-                  <span className="text-sm font-medium text-blue-600">
-                    {job.client || <span className="text-gray-400 italic">No client assigned</span>}
+                  <span className="text-sm font-medium text-foreground">
+                    {job.client || <span className="text-muted-foreground italic">No client assigned</span>}
                   </span>
                 </div>
                 {onUpdateJobName && (
@@ -109,7 +109,7 @@ const JobCard: React.FC<JobCardProps> = ({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2 text-sm text-gray-600">
+        <div className="space-y-2 text-sm text-muted-foreground">
           <p>Wells: {job.wellCount}</p>
           {job.hasWellsideGauge && <p>Wellside Gauge: Yes</p>}
           <div className="flex items-center gap-2">
@@ -129,7 +129,7 @@ const JobCard: React.FC<JobCardProps> = ({
               </Badge>
             )}
             {job.status === 'active' && (
-              <Badge variant="default" className="bg-blue-600 hover:bg-blue-700">
+              <Badge variant="default" className="bg-primary hover:bg-primary/80">
                 <Clock className="h-3 w-3 mr-1" />
                 Active
               </Badge>
@@ -142,12 +142,12 @@ const JobCard: React.FC<JobCardProps> = ({
             
             {/* Equipment Status */}
             {job.equipmentAllocated && (
-              <Badge variant="outline" className="text-green-600">
+              <Badge variant="outline" className="text-foreground">
                 Equipment Allocated
               </Badge>
             )}
             {hasEquipment && (
-              <Badge variant="outline" className="text-blue-600">
+              <Badge variant="outline" className="text-foreground">
                 Equipment Deployed
               </Badge>
             )}

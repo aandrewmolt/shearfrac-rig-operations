@@ -31,7 +31,7 @@ const ExtrasOnLocationPanel: React.FC<ExtrasOnLocationPanelProps> = ({
 
   return (
     <CollapsibleCard
-      className="bg-white shadow-lg"
+      className="bg-card shadow-lg"
       defaultOpen={extrasOnLocation.length > 0}
       title="Extras on Location"
       icon={<Package className="h-5 w-5" />}
@@ -43,7 +43,7 @@ const ExtrasOnLocationPanel: React.FC<ExtrasOnLocationPanelProps> = ({
       action={
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" className="bg-green-600 hover:bg-green-700">
+            <Button size="sm" className="bg-success hover:bg-success/90">
               <Plus className="mr-2 h-4 w-4" />
               Add Extra
             </Button>

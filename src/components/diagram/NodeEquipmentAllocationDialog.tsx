@@ -101,8 +101,8 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
         setAvailableEquipment(equipment);
         
         // If node already has allocated equipment, pre-select it
-        if (node.data?.allocatedEquipmentId) {
-          setSelectedEquipmentId(node.data.allocatedEquipmentId);
+        if (node.data?.equipmentId) {
+          setSelectedEquipmentId(node.data.equipmentId);
         }
       }
     }
@@ -139,12 +139,12 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
         <div className="space-y-4">
           {/* Node Info */}
           {node && (
-            <div className="bg-gray-50 p-3 rounded-lg text-sm">
+            <div className="bg-card p-3 rounded-lg text-sm">
               <p className="font-medium">Node Details:</p>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Type: {equipmentType?.name || node.type}
               </p>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Label: {node.data?.label || 'Unnamed'}
               </p>
             </div>
@@ -152,7 +152,7 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
 
           {/* Show gauge type selection for wells */}
           {node?.type === 'well' && node.data?.gaugeType && (
-            <div className="bg-blue-50 p-3 rounded-lg text-sm">
+            <div className="bg-card p-3 rounded-lg text-sm">
               <p className="font-medium mb-1">Selected Gauge Type:</p>
               <div className="flex flex-wrap gap-1">
                 {(() => {
@@ -164,7 +164,7 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
                   );
                 })()}
               </div>
-              <p className="text-xs text-blue-600 mt-2">
+              <p className="text-xs text-muted-foreground mt-2">
                 Equipment will be allocated for this gauge type.
               </p>
             </div>
@@ -185,10 +185,10 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
                 <SelectTrigger>
                   <SelectValue placeholder="Select equipment" />
                 </SelectTrigger>
-                <SelectContent className="bg-white z-50 max-h-[300px]">
+                <SelectContent className="bg-card z-50 max-h-[300px]">
                   {availableEquipment.map(equipment => {
                     const location = getLocation(equipment.locationId);
-                    const isCurrentlyAllocated = equipment.id === node?.data?.allocatedEquipmentId;
+                    const isCurrentlyAllocated = equipment.id === node?.data?.equipmentId;
                     
                     return (
                       <SelectItem key={equipment.id} value={equipment.id}>
@@ -196,22 +196,18 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
                           <div className="flex items-center gap-2">
                             <span className="font-medium">{equipment.equipmentId}</span>
                             {equipment.name && equipment.name !== equipment.equipmentId && (
-                              <span className="text-gray-500">({equipment.name})</span>
+                              <span className="text-muted-foreground">({equipment.name})</span>
                             )}
                           </div>
                           <div className="flex items-center gap-2">
                             {isCurrentlyAllocated && (
-                              <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                              <Badge variant="secondary" className="text-xs">
                                 Current
                               </Badge>
                             )}
                             <Badge 
-                              variant="outline" 
-                              className={`text-xs ${
-                                equipment.status === 'available' 
-                                  ? 'bg-green-50 text-green-700 border-green-200' 
-                                  : 'bg-yellow-50 text-yellow-700 border-yellow-200'
-                              }`}
+                              variant={equipment.status === 'available' ? 'secondary' : 'outline'}
+                              className="text-xs"
                             >
                               {equipment.status === 'available' ? (
                                 <>
@@ -234,10 +230,10 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
                           </div>
                         </div>
                         {equipment.notes && (
-                          <div className="text-xs text-gray-500 mt-1">{equipment.notes}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{equipment.notes}</div>
                         )}
                         {equipment.serialNumber && (
-                          <div className="text-xs text-gray-500">Serial: {equipment.serialNumber}</div>
+                          <div className="text-xs text-muted-foreground">Serial: {equipment.serialNumber}</div>
                         )}
                       </SelectItem>
                     );
@@ -247,12 +243,12 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
             )}
             
             {selectedEquipmentId && (
-              <div className="mt-2 p-3 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-800">
+              <div className="mt-2 p-3 bg-card rounded-lg">
+                <p className="text-sm text-foreground">
                   <strong>Selected:</strong> {availableEquipment.find(e => e.id === selectedEquipmentId)?.equipmentId}
                 </p>
                 {availableEquipment.find(e => e.id === selectedEquipmentId)?.serialNumber && (
-                  <p className="text-xs text-blue-600 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Serial: {availableEquipment.find(e => e.id === selectedEquipmentId)?.serialNumber}
                   </p>
                 )}
@@ -260,8 +256,8 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
             )}
           </div>
 
-          <div className="bg-amber-50 p-3 rounded-lg">
-            <p className="text-sm text-amber-800">
+          <div className="bg-muted p-3 rounded-lg">
+            <p className="text-sm text-muted-foreground">
               <strong>Note:</strong> This equipment will be allocated specifically to this node. 
               It will be marked as deployed for this job.
             </p>

@@ -15,6 +15,7 @@ import EquipmentStatusDebug from '@/components/inventory/EquipmentStatusDebug';
 import { useDefaultDataSetup } from '@/hooks/useDefaultDataSetup';
 import { useInventory } from '@/contexts/InventoryContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Package, Settings, MapPin, List, ArrowRightLeft, AlertTriangle, Search, History, FileText, Wrench, CheckSquare, Users, Loader2, LayoutDashboard, ChevronDown } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -44,7 +45,7 @@ const EquipmentInventory = () => {
   // Show loading state while data is being initialized
   if (isLoading || isInitializing) {
     return (
-      <div className="h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
+      <div className="h-screen bg-gradient-corporate flex flex-col">
         <AppHeader />
         <div className="flex-1 p-4 overflow-hidden">
           <div className="max-w-7xl mx-auto h-full flex items-center justify-center">
@@ -59,21 +60,21 @@ const EquipmentInventory = () => {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
+    <div className="h-screen bg-gradient-to-br from-background to-muted flex flex-col">
       <AppHeader />
       <div className="flex-1 p-3 sm:p-4 overflow-hidden">
         <div className="max-w-full lg:max-w-7xl mx-auto h-full flex flex-col">
           <div className="mb-3 sm:mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 text-center sm:text-left">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-corporate-light uppercase tracking-wider text-center sm:text-left">
                 Equipment Inventory Management
               </h1>
             </div>
-            <p className="text-sm sm:text-base text-gray-600 text-center sm:text-left">
+            <p className="text-sm sm:text-base text-corporate-silver text-center sm:text-left">
               Comprehensive equipment tracking and management system.
             </p>
             {isInitializing && (
-              <div className="mt-2 text-xs sm:text-sm text-blue-600 text-center sm:text-left">
+              <div className="mt-2 text-xs sm:text-sm text-foreground text-center sm:text-left">
                 Setting up default equipment types and storage locations...
               </div>
             )}
@@ -116,7 +117,7 @@ const EquipmentInventory = () => {
             ) : (
               /* Desktop Scrollable Tabs */
               <div className="relative mb-6">
-                <TabsList className="w-full overflow-x-auto flex h-auto p-1 bg-gray-100 rounded-lg">
+                <TabsList className="w-full overflow-x-auto flex h-auto p-1 bg-muted rounded-lg">
                   <div className="flex gap-1 min-w-max">
                     {tabItems.map((tab) => {
                       const Icon = tab.icon;
@@ -126,7 +127,7 @@ const EquipmentInventory = () => {
                           value={tab.value}
                           className={cn(
                             "flex items-center gap-2 px-3 py-2 whitespace-nowrap",
-                            "data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                            "data-[state=active]:bg-accent-gold data-[state=active]:text-corporate-dark data-[state=active]:shadow-sm"
                           )}
                         >
                           <Icon className="h-4 w-4" />

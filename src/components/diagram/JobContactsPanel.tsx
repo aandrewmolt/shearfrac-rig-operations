@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Users, Plus, Search, Filter, UserPlus, UserMinus, Edit2, Trash2, MoreVertical, UsersIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import edgeSync from '@/services/edgeFunctionSync';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,6 +38,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useTursoContacts } from '@/contacts/hooks/useTursoContacts';
 import { Contact, ContactType, JobAssignment } from '@/contacts/types';
 import { ContactFormEnhanced } from '@/contacts/components/ContactFormEnhanced';
+import { useUnifiedEvents } from '@/services/unifiedEventSystem';
 import { BulkCrewImportDialog } from './BulkCrewImportDialog';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -69,6 +71,31 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
     updateContact,
     deleteContact,
   } = useTursoContacts();
+
+  const eventSystem = useUnifiedEvents();
+
+  // Subscribe to contact assignment/unassignment events from other parts of the system
+  useEffect(() => {
+    const unsubscribe = eventSystem.subscribe('contact_assignment', (event) => {
+      const { contactId, jobId: eventJobId, action } = event.data;
+      
+      // Only react to events for this job
+      if (eventJobId === jobId) {
+        console.log(`Contact ${action} event received for job ${jobId}:`, contactId);
+        
+        if (action === 'assign') {
+          toast.info('Contact assigned to job from another system');
+        } else if (action === 'unassign') {
+          toast.info('Contact removed from job from another system');
+        }
+        
+        // The useTursoContacts hook should refresh automatically, 
+        // but we could trigger a manual refresh here if needed
+      }
+    });
+
+    return unsubscribe;
+  }, [eventSystem, jobId]);
 
   // Get all unique crews from frac and custom contacts
   const uniqueCrews = useMemo(() => {
@@ -151,8 +178,28 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
 
     try {
       await updateContact(contact.id, updatedContact);
+      
+      // Sync to edge functions if enabled
+      if (edgeSync.isEnabled()) {
+        try {
+          await edgeSync.contacts.assignToJob(contact.id, jobId, jobName, client);
+          console.log(`Contact ${contact.id} assignment to job ${jobId} synced`);
+        } catch (syncError) {
+          console.error('Edge sync failed, adding to queue:', syncError);
+          edgeSync.queue.add({
+            type: 'contact',
+            action: 'assign',
+            data: { contactId: contact.id, jobId, jobName, client }
+          });
+        }
+      }
+      
+      // Trigger unified event system notification
+      await eventSystem.contactAssigned(contact.id, jobId, contact.type || 'custom');
+      
       toast.success(`${contact.name} assigned to ${jobName}`);
     } catch (error) {
+      console.error('Failed to assign contact:', error);
       toast.error('Failed to assign contact');
     }
   };
@@ -176,8 +223,28 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
 
     try {
       await updateContact(contact.id, updatedContact);
+      
+      // Sync to edge functions if enabled
+      if (edgeSync.isEnabled()) {
+        try {
+          await edgeSync.contacts.unassignFromJob(contact.id, jobId);
+          console.log(`Contact ${contact.id} unassignment from job ${jobId} synced`);
+        } catch (syncError) {
+          console.error('Edge sync failed, adding to queue:', syncError);
+          edgeSync.queue.add({
+            type: 'contact',
+            action: 'unassign',
+            data: { contactId: contact.id, jobId }
+          });
+        }
+      }
+      
+      // Trigger unified event system notification
+      await eventSystem.contactUnassigned(contact.id, jobId);
+      
       toast.success(`${contact.name} removed from ${jobName}`);
     } catch (error) {
+      console.error('Failed to remove contact:', error);
       toast.error('Failed to remove contact');
     }
   };
@@ -209,8 +276,9 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
   const handleBulkImport = async (contactsToImport: Partial<Contact>[]) => {
     try {
       for (const contactData of contactsToImport) {
+        const contactId = uuidv4();
         const newContact: Contact = {
-          id: uuidv4(),
+          id: contactId,
           ...contactData,
           createdDate: new Date().toISOString(),
           lastUpdatedDate: new Date().toISOString(),
@@ -225,11 +293,15 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
         } as Contact;
         
         await addContact(newContact);
+        
+        // Trigger unified event system notification for each contact
+        await eventSystem.contactAssigned(contactId, jobId, newContact.type || 'custom');
       }
       
-      toast.success(`Imported ${contactsToImport.length} contacts`);
+      toast.success(`Imported ${contactsToImport.length} contacts and assigned to ${jobName}`);
       setShowBulkImport(false);
     } catch (error) {
+      console.error('Failed to import contacts:', error);
       toast.error('Failed to import contacts');
     }
   };
@@ -249,9 +321,14 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
 
     try {
       await addContact(newContact);
+      
+      // Trigger unified event system notification
+      await eventSystem.contactAssigned(contact.id, jobId, contact.type || 'custom');
+      
       toast.success('Contact added and assigned to job');
       setShowAddForm(false);
     } catch (error) {
+      console.error('Failed to add contact:', error);
       toast.error('Failed to add contact');
     }
   };
@@ -264,9 +341,9 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
   };
 
   const getContactTypeColor = (contact: Contact) => {
-    if (contact.type === 'client') return 'bg-blue-100 text-blue-800';
-    if (contact.type === 'frac') return 'bg-green-100 text-green-800';
-    return 'bg-purple-100 text-purple-800';
+    if (contact.type === 'client') return 'bg-muted text-foreground';
+    if (contact.type === 'frac') return 'bg-muted text-foreground';
+    return 'bg-muted text-accent';
   };
 
   const renderContact = (contact: Contact, isAssigned: boolean) => {
@@ -278,7 +355,7 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
     };
 
     return (
-      <div key={contact.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+      <div key={contact.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted">
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <span className="font-medium">{contact.name}</span>
@@ -286,7 +363,7 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
               {getContactTypeLabel(contact)}
             </Badge>
           </div>
-          <div className="text-sm text-gray-600 mt-1">
+          <div className="text-sm text-muted-foreground mt-1">
             <span className="font-medium">{getCompanyTypeLabel()}:</span>
             <span className="ml-1">{contact.company}</span>
             {('crew' in contact && contact.crew) && (
@@ -297,7 +374,7 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
             )}
           </div>
           {contact.jobAssignments && contact.jobAssignments.length > 1 && (
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs text-muted-foreground mt-1">
               Also on {contact.jobAssignments.filter(a => a.jobId !== jobId && a.active).length} other jobs
             </div>
           )}
@@ -334,7 +411,7 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
             </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={() => handleDeleteClick(contact)}
-              className="text-red-600"
+              className="text-destructive"
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
@@ -349,7 +426,7 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
   const getRoleSuggestions = () => {
     if (filterType === 'client') {
       return (
-        <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded mb-3">
+        <div className="text-sm text-muted-foreground bg-card p-3 rounded mb-3">
           <p className="font-medium mb-1">Client Roles Needed:</p>
           <ul className="space-y-1">
             <li>• Company Man (Day Shift) - {client}</li>
@@ -359,7 +436,7 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
       );
     } else if (filterType === 'frac') {
       return (
-        <div className="text-sm text-gray-600 bg-green-50 p-3 rounded mb-3">
+        <div className="text-sm text-muted-foreground bg-card p-3 rounded mb-3">
           <p className="font-medium mb-1">Frac Crew Roles Needed:</p>
           <ul className="space-y-1">
             <li>• Engineer (Day & Night Shifts)</li>
@@ -410,7 +487,7 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
               <div className="space-y-3 mb-4">
                 <div className="flex gap-2">
                   <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Search contacts..."
                       value={searchQuery}
@@ -450,7 +527,7 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
                 <ScrollArea className="h-[400px]">
                   <div className="space-y-2">
                     {filteredContacts.length === 0 ? (
-                      <p className="text-center text-gray-500 py-8">
+                      <p className="text-center text-muted-foreground py-8">
                         {searchQuery || filterType !== 'all' || filterCrew !== 'all' 
                           ? 'No contacts match your filters' 
                           : 'No contacts assigned to this job'}
@@ -466,7 +543,7 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
                 <ScrollArea className="h-[400px]">
                   <div className="space-y-2">
                     {filteredContacts.length === 0 ? (
-                      <p className="text-center text-gray-500 py-8">
+                      <p className="text-center text-muted-foreground py-8">
                         No available contacts match your filters
                       </p>
                     ) : (
@@ -525,7 +602,7 @@ export function JobContactsPanel({ jobId, jobName, client, className }: JobConta
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive hover:bg-destructive/80">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

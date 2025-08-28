@@ -176,10 +176,10 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Red Tagged Items</p>
-                  <p className="text-2xl font-bold text-red-600">{redTaggedItems_dashboard.length}</p>
+                  <p className="text-sm text-muted-foreground">Red Tagged Items</p>
+                  <p className="text-2xl font-bold text-destructive">{redTaggedItems_dashboard.length}</p>
                 </div>
-                <AlertTriangle className="h-8 w-8 text-red-600" />
+                <AlertTriangle className="h-8 w-8 text-destructive" />
               </div>
             </CardContent>
           </Card>
@@ -188,10 +188,10 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Available Items</p>
-                  <p className="text-2xl font-bold text-green-600">{availableItems_dashboard.length}</p>
+                  <p className="text-sm text-muted-foreground">Available Items</p>
+                  <p className="text-2xl font-bold text-foreground">{availableItems_dashboard.length}</p>
                 </div>
-                <CheckCircle className="h-8 w-8 text-green-600" />
+                <CheckCircle className="h-8 w-8 text-foreground" />
               </div>
             </CardContent>
           </Card>
@@ -200,21 +200,21 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Items</p>
-                  <p className="text-2xl font-bold text-blue-600">{unifiedData.equipmentItems.length}</p>
+                  <p className="text-sm text-muted-foreground">Total Items</p>
+                  <p className="text-2xl font-bold text-foreground">{unifiedData.equipmentItems.length}</p>
                 </div>
-                <AlertTriangle className="h-8 w-8 text-blue-600" />
+                <AlertTriangle className="h-8 w-8 text-foreground" />
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Red Tagged Equipment Table */}
-        <Card className="bg-white shadow-lg">
+        <Card className="bg-card shadow-lg">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
+                <AlertTriangle className="h-5 w-5 text-destructive" />
                 Red Tagged Equipment
               </CardTitle>
               {showLocationFilter && (
@@ -261,11 +261,11 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
                         <TableCell>
                           {item.redTagPhoto ? (
                             <div className="flex items-center gap-2">
-                              <Camera className="h-4 w-4 text-blue-600" />
-                              <span className="text-sm text-blue-600">View Photo</span>
+                              <Camera className="h-4 w-4 text-foreground" />
+                              <span className="text-sm text-foreground">View Photo</span>
                             </div>
                           ) : (
-                            <span className="text-sm text-gray-500">No photo</span>
+                            <span className="text-sm text-muted-foreground">No photo</span>
                           )}
                         </TableCell>
                         <TableCell>
@@ -276,7 +276,7 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
                             onClick={() => handleRemoveRedTag(item.id)}
                             variant="outline"
                             size="sm"
-                            className="text-green-600 hover:text-green-700"
+                            className="text-foreground hover:text-foreground"
                           >
                             Remove Red Tag
                           </Button>
@@ -287,17 +287,17 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
                 </Table>
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
-                <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-400" />
+              <div className="text-center py-8 text-muted-foreground">
+                <CheckCircle className="h-8 w-8 mx-auto mb-2 text-success" />
                 <p>No red-tagged equipment</p>
-                <p className="text-sm text-gray-400">All equipment is in good condition</p>
+                <p className="text-sm text-muted-foreground">All equipment is in good condition</p>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Available Equipment for Red Tagging */}
-        <Card className="bg-white shadow-lg">
+        <Card className="bg-card shadow-lg">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
               <AlertTriangle className="h-5 w-5" />
@@ -311,11 +311,11 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
                   <div key={item.id} className="border rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium">{getEquipmentTypeName(item.typeId)}</span>
-                      <Badge variant="outline" className="bg-green-50 text-green-700">
+                      <Badge variant="outline" className="bg-muted text-foreground">
                         {item.quantity} available
                       </Badge>
                     </div>
-                    <div className="text-sm text-gray-600 mb-3">
+                    <div className="text-sm text-muted-foreground mb-3">
                       <div className="flex items-center gap-1">
                         <MapPin className="h-3 w-3" />
                         {getLocationName(item.locationId)}
@@ -325,7 +325,7 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
                       onClick={() => openRedTagDialog(item)}
                       variant="outline"
                       size="sm"
-                      className="w-full text-red-600 hover:text-red-700"
+                      className="w-full text-destructive hover:text-destructive"
                     >
                       <AlertTriangle className="h-4 w-4 mr-2" />
                       Red Tag
@@ -334,7 +334,7 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-muted-foreground">
                 <p>No available equipment to red tag</p>
               </div>
             )}
@@ -355,10 +355,10 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
   if (variant === 'location') {
     return (
       <CollapsibleCard
-        className="bg-white shadow-lg border-red-200"
+        className="bg-card shadow-lg border-destructive/30"
         defaultOpen={redTaggedItems.length > 0}
-        title={<span className="text-red-700">Red Tagged Equipment</span>}
-        icon={<AlertTriangle className="h-5 w-5 text-red-700" />}
+        title={<span className="text-destructive">Red Tagged Equipment</span>}
+        icon={<AlertTriangle className="h-5 w-5 text-destructive" />}
         badge={redTaggedItems.length > 0 && (
           <Badge variant="destructive" className="ml-2">
             {redTaggedItems.length}
@@ -383,7 +383,7 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
                     <SelectTrigger>
                       <SelectValue placeholder="Select equipment type" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectContent className="bg-card">
                       {data.equipmentTypes.map(type => (
                         <SelectItem key={type.id} value={type.id}>
                           <div className="flex items-center gap-2">
@@ -402,18 +402,18 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
                   <div>
                     <label className="block text-sm font-medium mb-1">
                       Select Specific Equipment
-                      <AlertTriangle className="inline h-4 w-4 ml-1 text-orange-500" />
+                      <AlertTriangle className="inline h-4 w-4 ml-1 text-warning" />
                     </label>
                     <Select value={selectedIndividualEquipment} onValueChange={setSelectedIndividualEquipment}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select specific equipment" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-card">
                         {availableIndividualEquipment.map(equipment => (
                           <SelectItem key={equipment.id} value={equipment.id}>
                             <div className="flex flex-col">
                               <span className="font-medium">{equipment.equipmentId}</span>
-                              <span className="text-sm text-gray-500">{equipment.name}</span>
+                              <span className="text-sm text-muted-foreground">{equipment.name}</span>
                               <Badge 
                                 variant={equipment.status === 'red-tagged' ? 'destructive' : 'secondary'}
                                 className="text-xs w-fit"
@@ -434,7 +434,7 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
                     <SelectTrigger>
                       <SelectValue placeholder="Select reason" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectContent className="bg-card">
                       {commonReasons.map(reasonOption => (
                         <SelectItem key={reasonOption} value={reasonOption}>
                           {reasonOption}
@@ -469,22 +469,22 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
       >
         <div className="space-y-4">
           {redTaggedItems.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <AlertTriangle className="mx-auto h-12 w-12 text-red-300 mb-2" />
+            <div className="text-center py-8 text-muted-foreground">
+              <AlertTriangle className="mx-auto h-12 w-12 text-destructive/60 mb-2" />
               <p className="text-sm">No red tagged equipment on location</p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Track damaged or non-functional equipment
               </p>
             </div>
           ) : (
             <div className="space-y-3">
-              <h4 className="text-sm font-medium text-red-700">Red Tagged Equipment:</h4>
+              <h4 className="text-sm font-medium text-destructive">Red Tagged Equipment:</h4>
               {redTaggedItems.map(item => {
                 const equipmentType = data.equipmentTypes.find(type => type.id === item.equipmentTypeId);
                 const isIndividuallyTracked = equipmentType?.requiresIndividualTracking;
                 
                 return (
-                  <div key={item.id} className="flex items-start justify-between p-3 border rounded-lg bg-red-50 border-red-200">
+                  <div key={item.id} className="flex items-start justify-between p-3 border rounded-lg bg-muted border-destructive/30">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium">{getEquipmentTypeName(item.equipmentTypeId)}</span>
@@ -497,7 +497,7 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
                           Red Tagged
                         </Badge>
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-muted-foreground">
                         <div><strong>Reason:</strong> {item.reason}</div>
                         <div><strong>Added:</strong> {item.addedDate.toLocaleDateString()}</div>
                         {item.notes && (
@@ -525,10 +525,10 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
 
   // Compact Variant
   return (
-    <Card className="bg-white shadow-lg border-red-200">
+    <Card className="bg-card shadow-lg border-destructive/30">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-sm">
-          <AlertTriangle className="h-4 w-4 text-red-600" />
+          <AlertTriangle className="h-4 w-4 text-destructive" />
           Red Tagged Equipment ({redTaggedItems_dashboard.length})
         </CardTitle>
       </CardHeader>
@@ -536,10 +536,10 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
         {redTaggedItems_dashboard.length > 0 ? (
           <div className="space-y-2">
             {redTaggedItems_dashboard.slice(0, 3).map(item => (
-              <div key={item.id} className="flex items-center justify-between p-2 bg-red-50 rounded text-sm">
+              <div key={item.id} className="flex items-center justify-between p-2 bg-muted rounded text-sm">
                 <div>
                   <span className="font-medium">{getEquipmentTypeName(item.typeId)}</span>
-                  <span className="text-gray-500 ml-2">{item.redTagReason}</span>
+                  <span className="text-muted-foreground ml-2">{item.redTagReason}</span>
                 </div>
                 <Badge variant="destructive" className="text-xs">
                   Red Tagged
@@ -547,14 +547,14 @@ export const UnifiedRedTagPanel: React.FC<UnifiedRedTagPanelProps> = ({
               </div>
             ))}
             {redTaggedItems_dashboard.length > 3 && (
-              <div className="text-xs text-gray-500 text-center">
+              <div className="text-xs text-muted-foreground text-center">
                 +{redTaggedItems_dashboard.length - 3} more
               </div>
             )}
           </div>
         ) : (
-          <div className="text-center py-4 text-gray-500">
-            <CheckCircle className="h-6 w-6 mx-auto mb-1 text-green-400" />
+          <div className="text-center py-4 text-muted-foreground">
+            <CheckCircle className="h-6 w-6 mx-auto mb-1 text-success" />
             <p className="text-xs">No red-tagged equipment</p>
           </div>
         )}

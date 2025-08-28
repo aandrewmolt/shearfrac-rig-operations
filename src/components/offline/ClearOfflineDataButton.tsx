@@ -56,7 +56,7 @@ export function ClearOfflineDataButton() {
         variant="outline"
         size="sm"
         onClick={() => setShowConfirm(true)}
-        className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+        className="gap-2 text-destructive hover:text-destructive hover:bg-muted"
       >
         <Trash2 className="h-4 w-4" />
         Clear Offline Cache
@@ -66,7 +66,7 @@ export function ClearOfflineDataButton() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+              <AlertTriangle className="h-5 w-5 text-destructive" />
               Clear Offline Data?
             </AlertDialogTitle>
             <AlertDialogDescription>
@@ -83,7 +83,7 @@ export function ClearOfflineDataButton() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleClearData}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-destructive hover:bg-destructive/90"
             >
               Clear Data & Reload
             </AlertDialogAction>

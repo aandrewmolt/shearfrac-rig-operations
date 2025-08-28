@@ -50,7 +50,7 @@ const EnhancedEquipmentCard: React.FC<EnhancedEquipmentCardProps> = ({
 
   return (
     <TooltipProvider>
-      <Card className={`border ${isDraft ? 'border-orange-200 bg-orange-50' : 'border-gray-200'} hover:shadow-md transition-shadow`}>
+      <Card className={`border ${isDraft ? 'border-border bg-muted' : 'border-border'} hover:shadow-md transition-shadow`}>
         <CardContent className="p-3">
           <div className="flex items-start justify-between mb-2">
             <div className="flex-1">
@@ -73,11 +73,11 @@ const EnhancedEquipmentCard: React.FC<EnhancedEquipmentCardProps> = ({
                         </div>
                         <p className="text-sm">{getLocationName(equipment.locationId)}</p>
                         {equipment.jobId && (
-                          <p className="text-sm text-gray-600">Job ID: {equipment.jobId}</p>
+                          <p className="text-sm text-muted-foreground">Job ID: {equipment.jobId}</p>
                         )}
                         {equipment.serialNumber && (
                           <div className="pt-2 border-t">
-                            <p className="text-xs text-gray-500">Serial: {equipment.serialNumber}</p>
+                            <p className="text-xs text-muted-foreground">Serial: {equipment.serialNumber}</p>
                           </div>
                         )}
                       </div>
@@ -85,7 +85,7 @@ const EnhancedEquipmentCard: React.FC<EnhancedEquipmentCardProps> = ({
                   </HoverCard>
                 )}
               </div>
-              <p className="text-xs text-gray-600 mb-2">{equipment.name}</p>
+              <p className="text-xs text-muted-foreground mb-2">{equipment.name}</p>
             </div>
             
             <div className="flex gap-1">
@@ -127,7 +127,7 @@ const EnhancedEquipmentCard: React.FC<EnhancedEquipmentCardProps> = ({
                     size="sm"
                     variant="ghost"
                     onClick={() => onDelete(equipment.id)}
-                    className="h-6 w-6 p-0 hover:text-red-600"
+                    className="h-6 w-6 p-0 hover:text-destructive"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -144,7 +144,7 @@ const EnhancedEquipmentCard: React.FC<EnhancedEquipmentCardProps> = ({
               {equipment.status}
             </Badge>
             
-            <div className="flex items-center gap-1 text-xs text-gray-500">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <MapPin className="h-3 w-3" />
               <span>{getLocationName(equipment.locationId)}</span>
             </div>
@@ -154,7 +154,7 @@ const EnhancedEquipmentCard: React.FC<EnhancedEquipmentCardProps> = ({
                 <HoverCardTrigger asChild>
                   <div className="flex items-center gap-1 cursor-help">
                     <Info className="h-3 w-3 text-blue-500" />
-                    <span className="text-xs text-blue-600">Has notes</span>
+                    <span className="text-xs text-foreground">Has notes</span>
                   </div>
                 </HoverCardTrigger>
                 <HoverCardContent>

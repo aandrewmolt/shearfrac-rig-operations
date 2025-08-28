@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, CheckCircle, RefreshCw, AlertTriangle } from 'lucide-react';
-import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
+import { useUnifiedEquipmentSync } from '@/hooks/useUnifiedEquipmentSync';
 import { Progress } from '@/components/ui/progress';
 
 const EquipmentSyncStatus: React.FC = () => {
@@ -13,7 +13,7 @@ const EquipmentSyncStatus: React.FC = () => {
     allocations, 
     syncInventoryStatus,
     resolveConflict 
-  } = useInventoryMapperSync();
+  } = useUnifiedEquipmentSync();
 
   const totalAllocations = allocations?.size || 0;
   const activeConflicts = conflicts?.length || 0;
@@ -56,15 +56,15 @@ const EquipmentSyncStatus: React.FC = () => {
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold">{totalAllocations}</div>
-            <div className="text-sm text-gray-600">Total Allocations</div>
+            <div className="text-sm text-corporate-silver">Total Allocations</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{deployedCount}</div>
-            <div className="text-sm text-gray-600">Deployed</div>
+            <div className="text-2xl font-bold text-foreground">{deployedCount}</div>
+            <div className="text-sm text-corporate-silver">Deployed</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-yellow-600">{allocatedCount}</div>
-            <div className="text-sm text-gray-600">Allocated</div>
+            <div className="text-2xl font-bold text-foreground">{allocatedCount}</div>
+            <div className="text-sm text-corporate-silver">Allocated</div>
           </div>
         </div>
 
@@ -82,15 +82,15 @@ const EquipmentSyncStatus: React.FC = () => {
 
         {/* Conflicts Alert */}
         {activeConflicts > 0 && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className="p-3 bg-status-danger/20 border border-border rounded-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-red-600" />
+                <AlertCircle className="h-5 w-5 text-destructive" />
                 <div>
                   <div className="font-medium text-red-900">
                     {activeConflicts} Equipment Conflict{activeConflicts > 1 ? 's' : ''}
                   </div>
-                  <div className="text-sm text-red-700">
+                  <div className="text-sm text-destructive">
                     Equipment is double-booked across jobs
                   </div>
                 </div>
@@ -144,7 +144,7 @@ const EquipmentSyncStatus: React.FC = () => {
             <div className="space-y-1">
               {allocations && Array.from(allocations.entries()).slice(0, 3).map(([id, allocation]) => (
                 <div key={id} className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">{allocation.jobName}</span>
+                  <span className="text-corporate-silver">{allocation.jobName}</span>
                   <Badge variant="outline" className="text-xs">
                     {allocation.status}
                   </Badge>

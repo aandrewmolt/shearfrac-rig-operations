@@ -1,10 +1,6 @@
-
 import { useCallback } from 'react';
-import { Node } from '@xyflow/react';
-import { useEquipmentDeployment } from './useEquipmentDeployment';
-import { useEquipmentNodeUpdater } from './useEquipmentNodeUpdater';
-import { useInventory } from '@/contexts/InventoryContext';
-import { toast } from 'sonner';
+import { useEquipmentSelectionManager } from './managers/useEquipmentSelectionManager';
+import type { Node } from '@xyflow/react';
 
 interface Job {
   id: string;
@@ -23,256 +19,128 @@ interface UseEquipmentSelectionProps {
   setSelectedStarlink: (starlink: string) => void;
   setSelectedCustomerComputers: (computers: string[]) => void;
   setNodes: (updater: (nodes: Node[]) => Node[]) => void;
+  updateMainBoxName?: (nodeId: string, name: string, setNodes: (updater: (nodes: Node[]) => Node[]) => void) => void;
+  updateSatelliteName?: (name: string, setNodes: (updater: (nodes: Node[]) => Node[]) => void) => void;
+  updateCustomerComputerName?: (nodeId: string, name: string, setNodes: (updater: (nodes: Node[]) => Node[]) => void) => void;
   validateEquipmentAvailability?: (equipmentId: string, jobId: string) => Promise<boolean>;
-  allocateEquipment?: (equipmentId: string, jobId: string, jobName: string) => Promise<void>;
-  releaseEquipment?: (equipmentId: string, jobId: string) => Promise<void>;
+  allocateEquipment?: (equipmentId: string, allocation: string | Record<string, unknown>) => Promise<void>;
+  releaseEquipment?: (equipmentId: string, jobId?: string) => Promise<void>;
   onSave?: () => void;
 }
 
-export const useEquipmentSelection = ({
-  job,
-  selectedShearstreamBoxes,
-  selectedStarlink,
-  selectedCustomerComputers,
-  setSelectedShearstreamBoxes,
-  setSelectedStarlink,
-  setSelectedCustomerComputers,
-  setNodes,
-  validateEquipmentAvailability,
-  allocateEquipment,
-  releaseEquipment,
-  onSave,
-}: UseEquipmentSelectionProps) => {
-  const { data } = useInventory();
-  const { deployEquipment, returnEquipment } = useEquipmentDeployment();
-  const { 
-    updateShearstreamBoxNode, 
-    updateStarlinkNode, 
-    updateCustomerComputerNode,
-    updateAllNodes 
-  } = useEquipmentNodeUpdater();
-
+/**
+ * Legacy compatibility wrapper for useEquipmentSelection
+ * 
+ * This wrapper maintains the original API while using the new V2 manager internally.
+ * This allows existing components to work without modification while we migrate to V2.
+ * 
+ * @deprecated Use useEquipmentSelectionManager for new code
+ */
+export const useEquipmentSelection = (props: UseEquipmentSelectionProps) => {
+  const selectionManager = useEquipmentSelectionManager(props.job);
+  
+  // Legacy API wrapper - adapt the V2 manager to match original interface
   const handleEquipmentSelect = useCallback(async (
-    type: 'shearstream-box' | 'starlink' | 'customer-computer', 
-    equipmentId: string, 
+    equipmentId: string,
+    equipmentType: 'shearstream-box' | 'starlink' | 'customer-computer',
     index?: number
   ) => {
-    // Handle deselection (empty or none values)
-    if (!equipmentId || equipmentId === '__none__' || equipmentId === 'none' || equipmentId === '') {
-      if (type === 'shearstream-box' && index !== undefined) {
-        const newBoxes = [...selectedShearstreamBoxes];
-        const previousEquipment = newBoxes[index];
-        
-        if (previousEquipment && releaseEquipment) {
-          await releaseEquipment(previousEquipment, job.id);
-        }
-        
-        newBoxes[index] = '';
-        setSelectedShearstreamBoxes(newBoxes);
-        
-        // Clear node assignment
-        setNodes(nodes => nodes.map(node => {
-          const boxNodeId = index === 0 ? 'main-box' : `main-box-${index + 1}`;
-          return node.id === boxNodeId
-            ? { ...node, data: { ...node.data, label: 'ShearStream Box', equipmentId: '', assigned: false } }
-            : node;
-        }));
-      } else if (type === 'starlink') {
-        if (selectedStarlink && releaseEquipment) {
-          await releaseEquipment(selectedStarlink, job.id);
-        }
-        setSelectedStarlink('');
-        
-        // Clear node assignment
-        setNodes(nodes => nodes.map(node => 
-          node.type === 'satellite'
-            ? { ...node, data: { ...node.data, label: 'Starlink', equipmentId: '', assigned: false } }
-            : node
-        ));
-      } else if (type === 'customer-computer' && index !== undefined) {
-        const newComputers = [...selectedCustomerComputers];
-        const previousEquipment = newComputers[index];
-        
-        if (previousEquipment && releaseEquipment) {
-          await releaseEquipment(previousEquipment, job.id);
-        }
-        
-        newComputers[index] = '';
-        setSelectedCustomerComputers(newComputers);
-        
-        // Clear node assignment
-        setNodes(nodes => nodes.map(node => 
-          node.id === `customer-computer-${index + 1}`
-            ? { ...node, data: { ...node.data, label: 'Customer Computer', equipmentId: '', assigned: false, isTablet: false } }
-            : node
-        ));
+    console.log(`handleEquipmentSelect called:`, { equipmentId, equipmentType, index });
+    
+    const onSuccess = (selectedId: string) => {
+      console.log(`Equipment selection success:`, { selectedId, equipmentType, index });
+      // Update the appropriate state based on equipment type
+      switch (equipmentType) {
+        case 'shearstream-box':
+          // For shearstream boxes, update the specific index if provided
+          if (index !== undefined) {
+            const updatedBoxes = [...props.selectedShearstreamBoxes];
+            updatedBoxes[index] = selectedId;
+            props.setSelectedShearstreamBoxes(updatedBoxes);
+            
+            // Update the node name if function is provided
+            if (props.updateMainBoxName) {
+              const nodeId = `shearstream-box-${index + 1}`;
+              props.updateMainBoxName(nodeId, selectedId, props.setNodes);
+            }
+          } else {
+            props.setSelectedShearstreamBoxes([...props.selectedShearstreamBoxes, selectedId]);
+          }
+          break;
+        case 'starlink':
+          props.setSelectedStarlink(selectedId);
+          
+          // Update the satellite node name if function is provided
+          if (props.updateSatelliteName) {
+            props.updateSatelliteName(selectedId, props.setNodes);
+          }
+          break;
+        case 'customer-computer':
+          // For customer computers, update the specific index if provided
+          if (index !== undefined) {
+            const updatedComputers = [...props.selectedCustomerComputers];
+            updatedComputers[index] = selectedId;
+            props.setSelectedCustomerComputers(updatedComputers);
+            
+            // Update the node name if function is provided
+            if (props.updateCustomerComputerName) {
+              const nodeId = `customer-computer-${index + 1}`;
+              props.updateCustomerComputerName(nodeId, selectedId, props.setNodes);
+            }
+          } else {
+            props.setSelectedCustomerComputers([...props.selectedCustomerComputers, selectedId]);
+          }
+          break;
       }
       
-      // Auto-save after deselection
-      if (onSave) {
-        setTimeout(() => onSave(), 100);
-      }
-      return;
-    }
-
-    const equipment = data.individualEquipment.find(eq => eq.equipmentId === equipmentId);
-    if (!equipment) return;
-
-    // Check if equipment is red-tagged or in maintenance
-    if (equipment.status === 'red-tagged' || equipment.status === 'maintenance') {
-      toast.error(`Equipment ${equipment.name} is not available (Status: ${equipment.status})`);
-      return;
-    }
-
-    // Use sync validation if available
-    if (validateEquipmentAvailability) {
-      const isAvailable = await validateEquipmentAvailability(equipment.equipmentId, job.id);
-      if (!isAvailable) {
-        // Validation failed, equipment is not available
-        return;
-      }
-    }
-
-    if (type === 'shearstream-box' && index !== undefined) {
-      const newBoxes = [...selectedShearstreamBoxes];
-      const previousEquipment = newBoxes[index];
-      
-      // Release previous equipment
-      if (previousEquipment) {
-        if (releaseEquipment) {
-          await releaseEquipment(previousEquipment, job.id);
-        } else {
-          returnEquipment(previousEquipment);
-        }
-      }
-      
-      // Allocate new equipment
-      newBoxes[index] = equipmentId;
-      setSelectedShearstreamBoxes(newBoxes);
-      
-      if (allocateEquipment) {
-        await allocateEquipment(equipmentId, job.id, job.name);
-      } else {
-        deployEquipment(equipmentId, job.id);
-      }
-      
-      setNodes(nodes => updateShearstreamBoxNode(nodes, index, equipmentId));
-      
-      // Auto-save after equipment selection
-      if (onSave) {
-        setTimeout(() => onSave(), 100);
-      }
-    } else if (type === 'starlink') {
-      // Release previous equipment
-      if (selectedStarlink) {
-        if (releaseEquipment) {
-          await releaseEquipment(selectedStarlink, job.id);
-        } else {
-          returnEquipment(selectedStarlink);
-        }
-      }
-      
-      // Allocate new equipment
-      setSelectedStarlink(equipmentId);
-      
-      if (allocateEquipment) {
-        await allocateEquipment(equipmentId, job.id, job.name);
-      } else {
-        deployEquipment(equipmentId, job.id);
-      }
-      
-      setNodes(nodes => updateStarlinkNode(nodes, equipmentId));
-      
-      // Auto-save after equipment selection
-      if (onSave) {
-        setTimeout(() => onSave(), 100);
-      }
-    } else if (type === 'customer-computer' && index !== undefined) {
-      const newComputers = [...selectedCustomerComputers];
-      const previousEquipment = newComputers[index];
-      
-      // Release previous equipment
-      if (previousEquipment) {
-        if (releaseEquipment) {
-          await releaseEquipment(previousEquipment, job.id);
-        } else {
-          returnEquipment(previousEquipment);
-        }
-      }
-      
-      // Allocate new equipment
-      newComputers[index] = equipmentId;
-      setSelectedCustomerComputers(newComputers);
-      
-      if (allocateEquipment) {
-        await allocateEquipment(equipmentId, job.id, job.name);
-      } else {
-        deployEquipment(equipmentId, job.id);
-      }
-      
-      setNodes(nodes => updateCustomerComputerNode(nodes, index, equipmentId));
-      
-      // Auto-save after equipment selection
-      if (onSave) {
-        setTimeout(() => onSave(), 100);
-      }
-    }
-  }, [
-    data.individualEquipment,
-    selectedShearstreamBoxes, 
-    selectedStarlink, 
-    selectedCustomerComputers, 
-    returnEquipment, 
-    deployEquipment, 
-    job.id,
-    job.name,
-    setNodes,
-    setSelectedShearstreamBoxes,
-    setSelectedStarlink,
-    setSelectedCustomerComputers,
-    updateShearstreamBoxNode,
-    updateStarlinkNode,
-    updateCustomerComputerNode,
-    validateEquipmentAvailability,
-    allocateEquipment,
-    releaseEquipment,
-    onSave
-  ]);
+      if (props.onSave) props.onSave();
+    };
+    
+    const onFailure = (error: string) => {
+      console.error('Equipment selection failed:', error);
+    };
+    
+    return selectionManager.handleEquipmentSelect(
+      equipmentId,
+      equipmentType,
+      onSuccess,
+      onFailure,
+      props.validateEquipmentAvailability,
+      props.allocateEquipment
+    );
+  }, [selectionManager, props]);
 
   const handleEquipmentAssignment = useCallback((assignments: {
-    shearstreamBoxes: string[];
+    shearstreamBoxes?: string[];
     starlink?: string;
-    customerComputers: string[];
+    customerComputers?: string[];
   }) => {
-    // Deploy all selected equipment
-    [...assignments.shearstreamBoxes, ...(assignments.starlink ? [assignments.starlink] : []), ...assignments.customerComputers]
-      .forEach(equipmentId => {
-        if (equipmentId) {
-          deployEquipment(equipmentId, job.id);
-        }
-      });
-
-    // Update state
-    setSelectedShearstreamBoxes(assignments.shearstreamBoxes);
-    if (assignments.starlink) {
-      setSelectedStarlink(assignments.starlink);
+    const result = selectionManager.handleEquipmentAssignment(assignments);
+    
+    // Update state if successful
+    if (result.successful > 0) {
+      if (assignments.shearstreamBoxes) {
+        props.setSelectedShearstreamBoxes(assignments.shearstreamBoxes);
+      }
+      if (assignments.starlink) {
+        props.setSelectedStarlink(assignments.starlink);
+      }
+      if (assignments.customerComputers) {
+        props.setSelectedCustomerComputers(assignments.customerComputers);
+      }
+      
+      if (props.onSave) props.onSave();
     }
-    setSelectedCustomerComputers(assignments.customerComputers);
-
-    // Update node labels with equipment IDs
-    setNodes(nodes => updateAllNodes(nodes, assignments));
-  }, [
-    job.id, 
-    deployEquipment, 
-    setSelectedShearstreamBoxes, 
-    setSelectedStarlink, 
-    setSelectedCustomerComputers, 
-    setNodes, 
-    updateAllNodes
-  ]);
+    
+    return result;
+  }, [selectionManager, props]);
 
   return {
+    // Legacy API methods
     handleEquipmentSelect,
     handleEquipmentAssignment,
+    
+    // Pass through all V2 manager methods
+    ...selectionManager
   };
 };

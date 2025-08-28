@@ -33,33 +33,33 @@ const DeployedEquipmentList: React.FC<DeployedEquipmentListProps> = ({ jobId }) 
     <div>
       <h4 className="text-sm font-medium mb-2">Equipment Deployed to Job</h4>
       {deployedEquipment.length === 0 ? (
-        <p className="text-sm text-gray-500">No equipment currently deployed</p>
+        <p className="text-sm text-muted-foreground">No equipment currently deployed</p>
       ) : (
         <div className="space-y-2">
           {deployedEquipment.map(item => (
-            <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg bg-green-50 border-green-200">
+            <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg bg-card border-border">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-medium">{item.name || getEquipmentTypeName(item.equipmentTypeId || item.typeId)}</span>
                   {item.equipmentId && <Badge variant="secondary">{item.equipmentId}</Badge>}
                 </div>
-                <div className="text-xs text-gray-600 space-y-1">
+                <div className="text-xs text-muted-foreground space-y-1">
                   <div className="flex items-center gap-1">
                     <Briefcase className="h-3 w-3" />
-                    <span className="font-medium text-blue-700">Job: {getJobName(jobId)}</span>
+                    <span className="font-medium text-foreground">Job: {getJobName(jobId)}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
                     <span>From: {getLocationName(item.storageLocationId || item.locationId)}</span>
                   </div>
-                  <div className="text-gray-500">
+                  <div className="text-muted-foreground">
                     Deployed: {new Date(item.lastUpdatedDate || item.lastUpdated).toLocaleDateString()}
                   </div>
                 </div>
               </div>
             </div>
           ))}
-          <div className="text-xs text-gray-500 mt-2 p-2 bg-gray-50 rounded">
+          <div className="text-xs text-muted-foreground mt-2 p-2 bg-card rounded">
             💡 Equipment is automatically returned when job is deleted
           </div>
         </div>

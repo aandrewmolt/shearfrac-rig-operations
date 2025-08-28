@@ -80,7 +80,7 @@ export const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
                 e.stopPropagation();
                 setShowCompletionDialog(true);
               }}
-              className="text-green-600"
+              className="text-foreground"
             >
               <CheckCircle2 className="h-4 w-4 mr-2" />
               Complete Job
@@ -91,7 +91,7 @@ export const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
               e.stopPropagation();
               setShowDeletionDialog(true);
             }}
-            className="text-red-600"
+            className="text-destructive"
           >
             <Trash2 className="h-4 w-4 mr-2" />
             Delete Job

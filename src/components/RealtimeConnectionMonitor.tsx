@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { DATABASE_MODE } from '@/utils/consolidated/databaseUtils';
 import { turso } from '@/utils/consolidated/databaseUtils';
+import { connectionStatus as globalConnectionStatus } from '@/utils/connectionStatus';
 
 export const RealtimeConnectionMonitor = () => {
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting');
@@ -16,9 +17,20 @@ export const RealtimeConnectionMonitor = () => {
 
     const testConnection = async () => {
       try {
-        // Simple health check query to Turso
+        // Simple health check query to Turso with timeout
         const start = Date.now();
-        await turso.execute('SELECT 1');
+        
+        // Create a timeout promise
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Connection timeout')), 5000);
+        });
+        
+        // Race between the query and timeout
+        await Promise.race([
+          turso.execute('SELECT 1'),
+          timeoutPromise
+        ]);
+        
         const latency = Date.now() - start;
         
         if (!mounted) return;
@@ -43,8 +55,8 @@ export const RealtimeConnectionMonitor = () => {
     // Initial connection test
     testConnection();
 
-    // Poll every 30 seconds
-    const intervalId = setInterval(testConnection, 30000);
+    // Poll every 2 minutes instead of 30 seconds due to high latency
+    const intervalId = setInterval(testConnection, 120000);
 
     return () => {
       mounted = false;
@@ -57,15 +69,15 @@ export const RealtimeConnectionMonitor = () => {
   const getStatusColor = () => {
     switch (connectionStatus) {
       case 'connected':
-        return 'bg-green-500';
+        return 'bg-muted0';
       case 'connecting':
-        return 'bg-yellow-500';
+        return 'bg-muted0';
       case 'disconnected':
-        return 'bg-gray-500';
+        return 'bg-muted0';
       case 'error':
-        return 'bg-red-500';
+        return 'bg-muted0';
       default:
-        return 'bg-gray-500';
+        return 'bg-muted0';
     }
   };
 

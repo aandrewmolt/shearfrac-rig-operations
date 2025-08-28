@@ -43,7 +43,8 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
     getJobUsageStats,
     getEquipmentStats,
     createRedTagEvent,
-    getRedTagEvents,
+    redTagEvents,
+    getActiveRedTags,
     calculateHours
   } = useEquipmentUsageTracking();
 
@@ -66,7 +67,8 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
         );
         
         if (!existingSession) {
-          startUsageSession(equipmentId, jobId, new Date(job.start_date));
+          // Start a deployment session, no need to pass date as it uses current time
+          startUsageSession(equipmentId, jobId, 'deployment');
         }
       }
     }
@@ -81,7 +83,8 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
       });
       return;
     }
-    startUsageSession(selectedEquipment, selectedJob);
+    // Start a deployment session
+    startUsageSession(selectedEquipment, selectedJob, 'deployment');
   };
 
   const handleEndTracking = (eqId: string) => {
@@ -118,7 +121,7 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
   const equipmentLifecycle = selectedEquipment ? getEquipmentLifecycle(selectedEquipment) : null;
   const equipmentStats = selectedEquipment ? getEquipmentStats(selectedEquipment) : null;
   const jobStats = selectedJob ? getJobUsageStats(selectedJob) : null;
-  const redTagEvents = getRedTagEvents();
+  // redTagEvents is already available as a state variable from the hook
 
   const activeEquipmentSessions = usageSessions.filter(s => s.status === 'active');
 
@@ -139,7 +142,7 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">Jobs Used</span>
-            <Badge variant="outline">{equipmentLifecycle?.totalJobsUsed || 0}</Badge>
+            <Badge variant="outline">{equipmentLifecycle?.deploymentCount || 0}</Badge>
           </div>
           {equipment?.status === 'deployed' && (
             <div className="pt-2 border-t">
@@ -161,16 +164,26 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
         <CardHeader>
           <CardTitle>Equipment Usage Tracking</CardTitle>
           <CardDescription>
-            Track equipment usage hours, lifecycle, and maintenance events
+            Automatic tracking of equipment usage hours, lifecycle, and maintenance events
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Automated Tracking Notice */}
+          <Alert className="mb-4 border-primary/20 bg-primary/10">
+            <CheckCircle className="h-4 w-4 text-primary" />
+            <AlertDescription>
+              <span className="font-medium">Automatic Tracking Active</span>
+              <br />
+              Usage hours are automatically tracked when equipment is deployed to jobs. No manual action needed.
+            </AlertDescription>
+          </Alert>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label>Select Equipment</Label>
+              <Label>View Equipment Details</Label>
               <Select value={selectedEquipment} onValueChange={setSelectedEquipment}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Choose equipment" />
+                  <SelectValue placeholder="Choose equipment to view" />
                 </SelectTrigger>
                 <SelectContent>
                   {inventoryData.individualEquipment.map(eq => (
@@ -178,7 +191,7 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                       <div className="flex items-center gap-2">
                         {eq.equipmentId} - {eq.name}
                         {eq.status === 'deployed' && (
-                          <Badge variant="secondary" className="text-xs">In Use</Badge>
+                          <Badge variant="secondary" className="text-xs">Tracking</Badge>
                         )}
                       </div>
                     </SelectItem>
@@ -188,10 +201,10 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
             </div>
 
             <div>
-              <Label>Select Job</Label>
+              <Label>View Job Usage</Label>
               <Select value={selectedJob} onValueChange={setSelectedJob}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Choose job" />
+                  <SelectValue placeholder="Choose job to view" />
                 </SelectTrigger>
                 <SelectContent>
                   {jobs.map(job => (
@@ -202,22 +215,11 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="flex items-end gap-2">
-              <Button onClick={handleStartTracking} className="flex-1">
-                <Play className="h-4 w-4 mr-2" />
-                Start Tracking
-              </Button>
-              <Button onClick={handleRedTag} variant="destructive">
-                <AlertTriangle className="h-4 w-4 mr-2" />
-                Red Tag
-              </Button>
-            </div>
           </div>
 
           {/* Active Sessions */}
           {activeEquipmentSessions.length > 0 && (
-            <Alert className="mt-4 bg-blue-50 border-blue-200">
+            <Alert className="mt-4 bg-muted border-border">
               <Clock className="h-4 w-4" />
               <AlertDescription>
                 <h4 className="text-sm font-medium mb-2">
@@ -229,7 +231,7 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                   const currentHours = calculateHours(session.startTime);
                   
                   return (
-                    <Card key={session.id} className="flex items-center justify-between p-2 bg-white">
+                    <Card key={session.id} className="flex items-center justify-between p-2 bg-card">
                       <div className="flex items-center gap-3">
                         <Timer className="h-4 w-4 text-blue-500" />
                         <div>
@@ -351,22 +353,22 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-muted-foreground">Total Hours Used</p>
-                      <p className="text-xl font-bold">{equipmentLifecycle.totalHoursUsed.toFixed(1)} hrs</p>
+                      <p className="text-xl font-bold">{equipmentLifecycle.totalHours.toFixed(1)} hrs</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Total Jobs</p>
-                      <p className="text-xl font-bold">{equipmentLifecycle.totalJobsUsed}</p>
+                      <p className="text-xl font-bold">{equipmentLifecycle.deploymentCount}</p>
                     </div>
-                    {equipmentLifecycle.firstUseDate && (
+                    {equipmentLifecycle.createdDate && (
                       <div>
-                        <p className="text-sm text-muted-foreground">First Use</p>
-                        <p className="text-sm">{format(equipmentLifecycle.firstUseDate, 'MMM d, yyyy')}</p>
+                        <p className="text-sm text-muted-foreground">Created</p>
+                        <p className="text-sm">{format(equipmentLifecycle.createdDate, 'MMM d, yyyy')}</p>
                       </div>
                     )}
-                    {equipmentLifecycle.lastUseDate && (
+                    {equipmentLifecycle.lastUsed && (
                       <div>
                         <p className="text-sm text-muted-foreground">Last Use</p>
-                        <p className="text-sm">{format(equipmentLifecycle.lastUseDate, 'MMM d, yyyy')}</p>
+                        <p className="text-sm">{format(new Date(equipmentLifecycle.lastUsed), 'MMM d, yyyy')}</p>
                       </div>
                     )}
                   </div>
@@ -383,10 +385,9 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                     >
                       {equipmentLifecycle.currentStatus}
                     </Badge>
-                    {equipmentLifecycle.redTaggedDate && (
-                      <div className="mt-2 text-sm text-red-600">
-                        Red tagged on {format(equipmentLifecycle.redTaggedDate, 'MMM d, yyyy')}
-                        {equipmentLifecycle.redTaggedReason && `: ${equipmentLifecycle.redTaggedReason}`}
+                    {equipmentLifecycle.currentStatus === 'red-tagged' && (
+                      <div className="mt-2 text-sm text-destructive">
+                        Equipment is currently red-tagged
                       </div>
                     )}
                   </div>
@@ -395,11 +396,12 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                   <div className="pt-4 border-t">
                     <h4 className="text-sm font-medium mb-2">Recent Usage Sessions</h4>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {equipmentLifecycle.usageSessions
+                      {usageSessions
+                        .filter(s => s.equipmentId === selectedEquipment)
                         .slice(-5)
                         .reverse()
                         .map(session => (
-                          <Card key={session.id} className="flex items-center justify-between p-2 bg-gray-50">
+                          <Card key={session.id} className="flex items-center justify-between p-2 bg-muted">
                             <div>
                               <p className="text-sm font-medium">{session.jobName}</p>
                               <p className="text-xs text-muted-foreground">
@@ -407,11 +409,11 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                               </p>
                             </div>
                             <div className="text-right">
-                              <Badge variant={session.status === 'active' ? 'default' : 'secondary'}>
-                                {session.hoursUsed.toFixed(1)} hrs
+                              <Badge variant={!session.endTime ? 'default' : 'secondary'}>
+                                {session.totalHours.toFixed(1)} hrs
                               </Badge>
-                              {session.status === 'active' && (
-                                <p className="text-xs text-blue-600 mt-1">Active</p>
+                              {!session.endTime && (
+                                <p className="text-xs text-foreground mt-1">Active</p>
                               )}
                             </div>
                           </Card>

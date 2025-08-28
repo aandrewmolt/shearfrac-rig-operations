@@ -101,7 +101,7 @@ export const YAdapterAllocationDialog: React.FC<YAdapterAllocationDialogProps> =
                             {location?.name || 'Unknown Location'}
                           </div>
                         </div>
-                        <Badge variant="outline" className="bg-green-50">
+                        <Badge variant="outline" className="bg-muted">
                           Available
                         </Badge>
                       </Label>

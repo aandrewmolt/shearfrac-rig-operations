@@ -210,6 +210,29 @@ export async function createSchema() {
       )
     `);
 
+    // Storage Transfers table
+    await turso.execute(`
+      CREATE TABLE IF NOT EXISTS storage_transfers (
+        id TEXT PRIMARY KEY,
+        from_location_id TEXT NOT NULL,
+        to_location_id TEXT NOT NULL,
+        equipment_type_id TEXT NOT NULL,
+        equipment_ids TEXT, -- JSON array of individual equipment IDs
+        quantity INTEGER NOT NULL,
+        status TEXT DEFAULT 'pending', -- pending, in_transit, completed, cancelled
+        requested_by TEXT,
+        approved_by TEXT,
+        notes TEXT,
+        requested_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        executed_at DATETIME,
+        completed_at DATETIME,
+        cancelled_at DATETIME,
+        FOREIGN KEY (from_location_id) REFERENCES storage_locations(id),
+        FOREIGN KEY (to_location_id) REFERENCES storage_locations(id),
+        FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id)
+      )
+    `);
+
     // Create indexes for better performance
     await turso.execute('CREATE INDEX IF NOT EXISTS idx_equipment_items_type ON equipment_items(type_id)');
     await turso.execute('CREATE INDEX IF NOT EXISTS idx_equipment_items_location ON equipment_items(location_id)');
@@ -223,6 +246,9 @@ export async function createSchema() {
     await turso.execute('CREATE INDEX IF NOT EXISTS idx_contacts_type ON contacts(type)');
     await turso.execute('CREATE INDEX IF NOT EXISTS idx_contacts_name ON contacts(name)');
     await turso.execute('CREATE INDEX IF NOT EXISTS idx_contacts_company ON contacts(company)');
+    await turso.execute('CREATE INDEX IF NOT EXISTS idx_storage_transfers_status ON storage_transfers(status)');
+    await turso.execute('CREATE INDEX IF NOT EXISTS idx_storage_transfers_from ON storage_transfers(from_location_id)');
+    await turso.execute('CREATE INDEX IF NOT EXISTS idx_storage_transfers_to ON storage_transfers(to_location_id)');
 
     // Add pad column to existing jobs tables (migration)
     try {
@@ -230,10 +256,11 @@ export async function createSchema() {
         ALTER TABLE jobs ADD COLUMN pad TEXT
       `);
       console.log('✅ Added pad column to jobs table');
-    } catch (error: any) {
-      if (error.message?.includes('duplicate column name') || 
-          error.message?.includes('already exists') ||
-          error.code === 'SQLITE_ERROR') {
+    } catch (error) {
+      const err = error as { message?: string; code?: string };
+      if (err.message?.includes('duplicate column name') || 
+          err.message?.includes('already exists') ||
+          err.code === 'SQLITE_ERROR') {
         console.log('✅ Pad column already exists in jobs table');
       } else {
         console.error('❌ Error adding pad column:', error);

@@ -60,7 +60,7 @@ const EquipmentSummaryPanel: React.FC<EquipmentSummaryPanelProps> = ({
 
   return (
     <CollapsibleCard
-      className="bg-white shadow-lg"
+      className="bg-card shadow-lg"
       defaultOpen={true}
       title="Equipment Summary"
       icon={<Package className="h-5 w-5" />}
@@ -73,7 +73,7 @@ const EquipmentSummaryPanel: React.FC<EquipmentSummaryPanelProps> = ({
       <div className="space-y-4">
         {/* Main Equipment */}
         <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Main Equipment</h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-2">Main Equipment</h4>
           <div className="space-y-1 text-sm">
             {shearstreamBoxCount > 0 && (
               <div className="flex justify-between">
@@ -117,7 +117,7 @@ const EquipmentSummaryPanel: React.FC<EquipmentSummaryPanelProps> = ({
         {/* Cables */}
         {Object.keys(equipmentUsage.cables).length > 0 && (
           <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Cables</h4>
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">Cables</h4>
             <div className="space-y-1 text-sm">
               {Object.entries(equipmentUsage.cables).map(([typeId, cable]) => (
                 <div key={typeId} className="flex justify-between">
@@ -132,7 +132,7 @@ const EquipmentSummaryPanel: React.FC<EquipmentSummaryPanelProps> = ({
         {/* Extras on Location */}
         {Object.keys(extrasGrouped).length > 0 && (
           <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Extras on Location</h4>
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">Extras on Location</h4>
             <div className="space-y-1 text-sm">
               {Object.entries(extrasGrouped).map(([typeName, extras]) => {
                 const hasIndividualItems = extras.some(extra => extra.individualEquipmentId);
@@ -145,7 +145,7 @@ const EquipmentSummaryPanel: React.FC<EquipmentSummaryPanelProps> = ({
                     return (
                       <div key={extra.id} className="flex justify-between">
                         <span>{typeName} ({itemName})</span>
-                        <Badge variant="outline" className="bg-yellow-100">Extra</Badge>
+                        <Badge variant="outline" className="bg-card">Extra</Badge>
                       </div>
                     );
                   });
@@ -157,7 +157,7 @@ const EquipmentSummaryPanel: React.FC<EquipmentSummaryPanelProps> = ({
                       <span>{typeName}</span>
                       <div className="flex gap-1">
                         <Badge variant="secondary">{totalQuantity}</Badge>
-                        <Badge variant="outline" className="bg-yellow-100">Extra</Badge>
+                        <Badge variant="outline" className="bg-card">Extra</Badge>
                       </div>
                     </div>
                   );

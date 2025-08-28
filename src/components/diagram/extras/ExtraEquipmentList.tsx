@@ -22,10 +22,10 @@ const ExtraEquipmentList: React.FC<ExtraEquipmentListProps> = ({
 }) => {
   if (extrasOnLocation.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        <Package className="mx-auto h-12 w-12 text-gray-300 mb-2" />
+      <div className="text-center py-8 text-muted-foreground">
+        <Package className="mx-auto h-12 w-12 text-muted-foreground mb-2" />
         <p className="text-sm">No extra equipment on location</p>
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Track additional equipment beyond diagram requirements
         </p>
       </div>
@@ -34,7 +34,7 @@ const ExtraEquipmentList: React.FC<ExtraEquipmentListProps> = ({
 
   return (
     <div className="space-y-3">
-      <h4 className="text-sm font-medium text-gray-700">Extra Equipment:</h4>
+      <h4 className="text-sm font-medium text-muted-foreground">Extra Equipment:</h4>
       {extrasOnLocation.map(extra => (
         <ExtraEquipmentItem
           key={extra.id}

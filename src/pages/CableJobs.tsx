@@ -30,7 +30,7 @@ const CableJobs = () => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'active' | 'completed'>('all');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [showDeletionDialog, setShowDeletionDialog] = useState(false);
-  const [jobToDelete, setJobToDelete] = useState<any>(null);
+  const [jobToDelete, setJobToDelete] = useState<{ id: string; name: string } | null>(null);
   
   const { jobs, isLoading, saveJob, deleteJob, getJobById } = useJobs();
   // const inventoryData = useUnifiedInventory();
@@ -221,7 +221,7 @@ const CableJobs = () => {
 
   if (selectedJob) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="min-h-screen bg-gradient-corporate">
         <AppHeader />
         <div className="p-3 sm:p-4">
           <div className="max-w-full lg:max-w-6xl mx-auto">
@@ -237,7 +237,7 @@ const CableJobs = () => {
               </div>
               <Button 
                 onClick={() => saveJob({ ...selectedJob })}
-                className="bg-green-600 hover:bg-green-700 w-full sm:w-auto h-10"
+                className="bg-success hover:bg-success/90 w-full sm:w-auto h-10"
               >
                 Save Job
               </Button>
@@ -250,24 +250,24 @@ const CableJobs = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted">
       <AppHeader />
       
       <div className="p-3 sm:p-4">
         <div className="max-w-full lg:max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
             <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2 text-center sm:text-left">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-1 sm:mb-2 text-center sm:text-left">
                 Jobs
               </h1>
-              <p className="text-sm sm:text-base text-gray-600 text-center sm:text-left">
+              <p className="text-sm sm:text-base text-muted-foreground text-center sm:text-left">
                 Create and manage job diagrams. All diagrams are saved and accessible to your entire team.
               </p>
             </div>
             <div className="flex gap-2 w-full sm:w-auto">
               <Button 
                 onClick={() => setShowCreateDialog(true)}
-                className="bg-blue-600 hover:bg-blue-700 flex-1 sm:flex-initial h-10"
+                className="bg-primary hover:bg-primary/90 flex-1 sm:flex-initial h-10"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 New Job
@@ -278,7 +278,7 @@ const CableJobs = () => {
           {/* Filters and Search */}
           {isMobile ? (
             // Mobile Filter Sheet
-            <div className="bg-white rounded-lg border p-3 mb-4">
+            <div className="bg-card rounded-lg border border-border p-3 mb-4">
               <div className="flex gap-2">
                 <Input
                   placeholder="Search jobs..."
@@ -298,7 +298,7 @@ const CableJobs = () => {
                     >
                       <Filter className="h-4 w-4" />
                       {hasActiveFilters && (
-                        <div className="absolute -top-1 -right-1 h-3 w-3 bg-blue-600 rounded-full" />
+                        <div className="absolute -top-1 -right-1 h-3 w-3 bg-primary rounded-full" />
                       )}
                     </Button>
                   </SheetTrigger>
@@ -414,7 +414,7 @@ const CableJobs = () => {
             </div>
           ) : (
             // Desktop Filters
-            <div className="bg-white rounded-lg border p-4 mb-6 space-y-4">
+            <div className="bg-card rounded-lg border border-border p-4 mb-6 space-y-4">
               <div className="flex flex-col lg:flex-row gap-4">
                 {/* Search */}
                 <div className="flex-1">
@@ -471,7 +471,7 @@ const CableJobs = () => {
 
               {/* Active filters summary */}
               {hasActiveFilters && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Filter className="h-4 w-4" />
                   <span>
                     Showing {filteredAndSortedJobs.length} of {jobs?.length ?? 0} jobs
@@ -480,7 +480,7 @@ const CableJobs = () => {
                     variant="ghost"
                     size="sm"
                     onClick={clearFilters}
-                    className="text-blue-600 hover:text-blue-700"
+                    className="text-foreground hover:text-foreground"
                   >
                     Clear filters
                   </Button>

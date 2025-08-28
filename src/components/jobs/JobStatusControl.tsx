@@ -62,14 +62,14 @@ export const JobStatusControl: React.FC<JobStatusControlProps> = ({
     switch (job.status) {
       case 'active':
         return (
-          <Badge variant="default" className="bg-blue-600 hover:bg-blue-700">
+          <Badge variant="default" className="bg-primary hover:bg-primary/90">
             <Clock className="h-3 w-3 mr-1" />
             Active
           </Badge>
         );
       case 'completed':
         return (
-          <Badge variant="default" className="bg-green-600 hover:bg-green-700">
+          <Badge variant="default" className="bg-success hover:bg-success/90">
             <CheckCircle2 className="h-3 w-3 mr-1" />
             Completed
           </Badge>
@@ -139,7 +139,7 @@ export const JobStatusControl: React.FC<JobStatusControlProps> = ({
           onClick={handleCompleteJob}
           variant="outline" 
           size="sm"
-          className="text-green-600 hover:text-green-700"
+          className="text-foreground hover:text-foreground"
         >
           <CheckCircle2 className="h-4 w-4 mr-2" />
           Complete Job
@@ -147,14 +147,14 @@ export const JobStatusControl: React.FC<JobStatusControlProps> = ({
       )}
       
       {job.start_date && (
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-muted-foreground">
           <Calendar className="h-3 w-3 inline mr-1" />
           Started: {new Date(job.start_date).toLocaleString()}
         </div>
       )}
       
       {job.end_date && (
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-muted-foreground">
           <CheckCircle2 className="h-3 w-3 inline mr-1" />
           Completed: {new Date(job.end_date).toLocaleString()}
         </div>

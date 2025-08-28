@@ -22,12 +22,15 @@ import {
   ArrowRightLeft,
   Building,
   Calendar,
-  Users
+  Users,
+  Trash,
+  Loader2
 } from 'lucide-react';
 import { useInventory } from '@/contexts/InventoryContext';
 import { useJobs } from '@/hooks/useJobs';
 import { toast } from 'sonner';
 import { StorageLocation } from '@/types/types';
+import { runFullCleanup } from '@/utils/cleanupOrphanedEquipment';
 
 interface ExtendedStorageLocation extends StorageLocation {
   type: 'storage';
@@ -64,6 +67,7 @@ const UnifiedLocationsManager: React.FC = () => {
   const [newLocationName, setNewLocationName] = useState('');
   const [newLocationAddress, setNewLocationAddress] = useState('');
   const [equipmentReturnLocation, setEquipmentReturnLocation] = useState('');
+  const [isCleaningUp, setIsCleaningUp] = useState(false);
 
   // Get all locations (storage + jobs)
   const allLocations = useMemo(() => {
@@ -157,6 +161,31 @@ const UnifiedLocationsManager: React.FC = () => {
     setSelectedLocation(location);
     setEquipmentReturnLocation('');
     setShowDeleteDialog(true); // Reuse delete dialog for equipment return
+  };
+
+  const handleCleanup = async () => {
+    setIsCleaningUp(true);
+    try {
+      console.log('Starting cleanup...');
+      const result = await runFullCleanup();
+      console.log('Cleanup result:', result);
+      
+      if (result.orphanedEquipment > 0 || result.duplicateLocations > 0) {
+        toast.success(
+          `Cleanup complete: ${result.orphanedEquipment} orphaned items cleaned, ${result.duplicateLocations} duplicate locations removed`
+        );
+      } else {
+        toast.info('No cleanup needed - everything is already clean');
+      }
+      
+      // Refresh the data to show updated state
+      window.location.reload();
+    } catch (error) {
+      console.error('Cleanup failed:', error);
+      toast.error('Failed to run cleanup');
+    } finally {
+      setIsCleaningUp(false);
+    }
   };
 
   const handleDeleteJob = (job: JobLocation) => {
@@ -264,15 +293,30 @@ const UnifiedLocationsManager: React.FC = () => {
       );
     }
     
-    const statusColors = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      active: 'bg-blue-100 text-blue-800',
-      completed: 'bg-green-100 text-green-800'
-    };
+    // For job locations, show job status
+    if (location.type === 'job') {
+      const statusColors = {
+        pending: 'bg-warning/20 text-warning border-warning/50',
+        active: 'bg-primary/20 text-primary border-primary/50',
+        completed: 'bg-success/20 text-success border-success/50'
+      };
+      
+      const statusLabels = {
+        pending: 'Pending Job',
+        active: 'Active Job',
+        completed: 'Completed Job'
+      };
+      
+      return (
+        <Badge className={statusColors[location.status as keyof typeof statusColors] || 'bg-muted text-foreground'}>
+          {statusLabels[location.status as keyof typeof statusLabels] || 'Job'}
+        </Badge>
+      );
+    }
     
     return (
-      <Badge className={statusColors[location.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'}>
-        {location.status || 'pending'}
+      <Badge variant="secondary">
+        Unknown
       </Badge>
     );
   };
@@ -291,7 +335,7 @@ const UnifiedLocationsManager: React.FC = () => {
       <TableBody>
         {locations.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+            <TableCell colSpan={5} className="text-center py-8 text-corporate-silver">
               No {type === 'storage' ? 'storage locations' : 'jobs'} found
             </TableCell>
           </TableRow>
@@ -304,7 +348,7 @@ const UnifiedLocationsManager: React.FC = () => {
                   <span className="font-medium">{location.name}</span>
                 </div>
               </TableCell>
-              <TableCell className="text-sm text-gray-600">
+              <TableCell className="text-sm text-corporate-silver">
                 {location.address || 'No details'}
               </TableCell>
               <TableCell>
@@ -329,19 +373,24 @@ const UnifiedLocationsManager: React.FC = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    {getLocationActions(location).map((action, index) => (
-                      <React.Fragment key={index}>
+                    {getLocationActions(location).map((action, index) => {
+                      const items = [];
+                      items.push(
                         <DropdownMenuItem
+                          key={`item-${index}`}
                           onClick={action.onClick}
                           disabled={action.disabled}
-                          className={action.variant === 'destructive' ? 'text-red-600' : ''}
+                          className={action.variant === 'destructive' ? 'text-destructive' : ''}
                         >
                           {action.icon}
                           <span className="ml-2">{action.label}</span>
                         </DropdownMenuItem>
-                        {index === 1 && <DropdownMenuSeparator />}
-                      </React.Fragment>
-                    ))}
+                      );
+                      if (index === 1) {
+                        items.push(<DropdownMenuSeparator key={`sep-${index}`} />);
+                      }
+                      return items;
+                    }).flat()}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -358,10 +407,29 @@ const UnifiedLocationsManager: React.FC = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Locations & Job Management</CardTitle>
-            <Button onClick={() => setShowCreateDialog(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Storage Location
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={handleCleanup}
+                disabled={isCleaningUp}
+              >
+                {isCleaningUp ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Cleaning Up...
+                  </>
+                ) : (
+                  <>
+                    <Trash className="h-4 w-4 mr-2" />
+                    Clean Up Data
+                  </>
+                )}
+              </Button>
+              <Button onClick={() => setShowCreateDialog(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Storage Location
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -471,7 +539,7 @@ const UnifiedLocationsManager: React.FC = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
+              <AlertTriangle className="h-5 w-5 text-destructive" />
               {selectedLocation?.type === 'storage' ? 'Delete Storage Location' : 'Delete Job'}
             </DialogTitle>
             <DialogDescription>
@@ -510,7 +578,7 @@ const UnifiedLocationsManager: React.FC = () => {
             <Button 
               onClick={handleConfirmDelete}
               disabled={selectedLocation?.equipmentCount > 0 && !equipmentReturnLocation}
-              className="bg-red-600 hover:bg-red-700"
+              variant="destructive"
             >
               {selectedLocation?.equipmentCount > 0 ? 
                 `Delete & Return ${selectedLocation?.equipmentCount} Items` : 

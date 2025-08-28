@@ -81,10 +81,10 @@ const EquipmentAllocationPanel: React.FC<EquipmentAllocationPanelProps> = ({
           <div className="space-y-6">
             {/* Node Equipment Allocation */}
             <div>
-              <h3 className="font-semibold mb-3 text-sm text-gray-700">Equipment Items</h3>
+              <h3 className="font-semibold mb-3 text-sm text-muted-foreground">Equipment Items</h3>
               <div className="space-y-2">
                 {allocatableNodes.length === 0 ? (
-                  <p className="text-sm text-gray-500">No equipment nodes in diagram</p>
+                  <p className="text-sm text-muted-foreground">No equipment nodes in diagram</p>
                 ) : (
                   allocatableNodes.map(node => {
                     const assignedEquipmentId = node.data?.equipmentId;
@@ -102,7 +102,7 @@ const EquipmentAllocationPanel: React.FC<EquipmentAllocationPanelProps> = ({
                             </span>
                           </div>
                           {assignedEquipment ? (
-                            <Badge variant="outline" className="text-xs bg-green-50 text-green-700 flex items-center gap-1">
+                            <Badge variant="outline" className="text-xs bg-card text-success flex items-center gap-1">
                               <CheckCircle className="h-3 w-3" />
                               Auto-Allocated
                             </Badge>
@@ -114,26 +114,26 @@ const EquipmentAllocationPanel: React.FC<EquipmentAllocationPanelProps> = ({
                         </div>
                         
                         {assignedEquipment ? (
-                          <div className="bg-green-50 rounded p-2 space-y-1">
+                          <div className="bg-card rounded p-2 space-y-1">
                             <div className="flex items-center justify-between">
                               <span className="text-sm font-medium">{assignedEquipment.equipmentId}</span>
-                              <span className="text-xs text-green-700">
+                              <span className="text-xs text-success">
                                 {assignedEquipment.status === 'deployed' ? 'Deployed' : assignedEquipment.status}
                               </span>
                             </div>
                             {assignedEquipment.serialNumber && (
-                              <p className="text-xs text-gray-600">Serial: {assignedEquipment.serialNumber}</p>
+                              <p className="text-xs text-muted-foreground">Serial: {assignedEquipment.serialNumber}</p>
                             )}
                             {assignedEquipment.locationId && (
-                              <div className="flex items-center gap-1 text-xs text-gray-600">
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                 <MapPin className="h-3 w-3" />
                                 {getLocation(assignedEquipment.locationId)?.name || 'Storage'}
                               </div>
                             )}
                           </div>
                         ) : (
-                          <div className="bg-gray-50 rounded p-2">
-                            <p className="text-xs text-gray-500 italic">
+                          <div className="bg-card rounded p-2">
+                            <p className="text-xs text-muted-foreground italic">
                               Drag equipment from inventory to assign
                             </p>
                           </div>
@@ -147,10 +147,10 @@ const EquipmentAllocationPanel: React.FC<EquipmentAllocationPanelProps> = ({
 
             {/* Cable Allocation */}
             <div>
-              <h3 className="font-semibold mb-3 text-sm text-gray-700">Cable Connections</h3>
+              <h3 className="font-semibold mb-3 text-sm text-muted-foreground">Cable Connections</h3>
               <div className="space-y-2">
                 {cableEdges.length === 0 ? (
-                  <p className="text-sm text-gray-500">No cable connections in diagram</p>
+                  <p className="text-sm text-muted-foreground">No cable connections in diagram</p>
                 ) : (
                   cableEdges.map(edge => {
                     const cableType = edge.data?.cableTypeId ? getEquipmentType(edge.data.cableTypeId) : null;
@@ -171,19 +171,19 @@ const EquipmentAllocationPanel: React.FC<EquipmentAllocationPanelProps> = ({
                           )}
                         </div>
                         
-                        <div className="text-xs text-gray-600">
+                        <div className="text-xs text-muted-foreground">
                           {edge.source} → {edge.target}
                         </div>
                         
                         {cableType ? (
-                          <div className="bg-blue-50 rounded p-2">
-                            <p className="text-xs text-blue-700">
+                          <div className="bg-card rounded p-2">
+                            <p className="text-xs text-foreground">
                               Type: {cableType.name}
                             </p>
                           </div>
                         ) : (
-                          <div className="bg-gray-50 rounded p-2">
-                            <p className="text-xs text-gray-500">
+                          <div className="bg-card rounded p-2">
+                            <p className="text-xs text-muted-foreground">
                               Cable type configured
                             </p>
                           </div>

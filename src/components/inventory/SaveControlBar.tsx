@@ -21,9 +21,9 @@ const SaveControlBar: React.FC<SaveControlBarProps> = ({
 
   return (
     <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in">
-      <Card className="px-4 py-3 bg-orange-50 border-orange-200 shadow-lg">
+      <Card className="px-4 py-3 bg-muted border-border shadow-lg">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-orange-800">
+          <div className="flex items-center gap-2 text-foreground">
             <Clock className="h-4 w-4" />
             <span className="text-sm font-medium">
               {unsavedCount} unsaved {unsavedCount === 1 ? 'item' : 'items'}

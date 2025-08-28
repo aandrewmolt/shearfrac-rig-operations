@@ -178,7 +178,7 @@ export function EnhancedSearch({
         {/* Search input with suggestions */}
         <div className="relative flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               ref={inputRef}
               type="text"
@@ -212,7 +212,7 @@ export function EnhancedSearch({
 
           {/* Search suggestions dropdown */}
           {showSuggestions && (query.trim() || recentSearches.length > 0 || savedSearches.length > 0) && (
-            <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-96 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-card border rounded-md shadow-lg max-h-96 overflow-y-auto">
               <Command>
                 <CommandList>
                   {query.trim() && suggestions.length > 0 && (
@@ -250,7 +250,7 @@ export function EnhancedSearch({
                           }}
                           className="cursor-pointer"
                         >
-                          <Clock className="mr-2 h-4 w-4 text-gray-400" />
+                          <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
                           {recent}
                         </CommandItem>
                       ))}
@@ -267,7 +267,7 @@ export function EnhancedSearch({
                         >
                           <div className="flex items-center justify-between w-full">
                             <div className="flex items-center gap-2">
-                              <Search className="h-4 w-4 text-blue-500" />
+                              <Search className="h-4 w-4 text-primary" />
                               <span>{saved.name}</span>
                             </div>
                             <Button

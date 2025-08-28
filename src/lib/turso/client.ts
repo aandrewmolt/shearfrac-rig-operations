@@ -57,7 +57,7 @@ export function getTursoClient() {
     if (!dbUrl || dbUrl === '' || dbUrl.startsWith('file:')) {
       console.warn('⚠️ No Turso database URL provided. Using in-memory mock database for development.');
       console.log('ℹ️ To use a real database, sign up at https://turso.tech and add credentials to .env');
-      tursoClient = new MockTursoClient() as any;
+      tursoClient = new MockTursoClient() as unknown as typeof tursoClient;
     } else {
       // Create real Turso client
       tursoClient = createClient({
@@ -73,7 +73,7 @@ export function getTursoClient() {
 export const turso = new Proxy({} as ReturnType<typeof createClient>, {
   get(target, prop) {
     const client = getTursoClient();
-    const value = (client as any)[prop];
+    const value = (client as Record<string, unknown>)[prop as string];
     // If it's a function, bind it to the client to maintain correct 'this' context
     if (typeof value === 'function') {
       return value.bind(client);

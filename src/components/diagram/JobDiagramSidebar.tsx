@@ -71,7 +71,7 @@ const JobDiagramSidebar: React.FC<JobDiagramSidebarProps> = ({
   const hasWellsideGauge = !!wellsideGaugeNode;
 
   return (
-    <div className="w-full md:w-80 h-full space-y-4 p-3 md:p-4 bg-gray-50 overflow-y-auto">
+    <div className="w-full md:w-80 h-full space-y-4 p-3 md:p-4 bg-card overflow-y-auto">
       {/* Conflict Indicator at the top if there are conflicts */}
       {conflicts && conflicts.length > 0 && (
         <div className="flex justify-center">

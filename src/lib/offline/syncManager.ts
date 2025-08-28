@@ -64,9 +64,10 @@ export class SyncManager {
         if (createError) throw createError;
         
         // Update local record with cloud ID
-        const table = (offlineDb as any)[tableName];
-        if (table && table.update) {
-          await table.update(
+        const table = (offlineDb as Record<string, unknown>)[tableName];
+        if (table && typeof table === 'object' && 'update' in table) {
+          const tableWithUpdate = table as { update: (id: unknown, data: unknown) => Promise<void> };
+          await tableWithUpdate.update(
             data.localId, 
             { cloudId: created.id, syncStatus: 'synced' }
           );
@@ -199,18 +200,19 @@ export class SyncManager {
     await offlineDb.syncQueue.delete(op.id!);
   }
   
-  private async forceSync(tableName: string, record: any) {
+  private async forceSync(tableName: string, record: unknown) {
     // Force push local version to cloud
+    const rec = record as Record<string, unknown>;
     const { error } = await supabase
       .from(tableName)
       .upsert({
-        id: record.cloudId,
-        ...record
+        id: rec.cloudId,
+        ...rec
       });
       
     if (!error) {
       await offlineDb[tableName as keyof typeof offlineDb].update(
-        record.id,
+        rec.id as number,
         { syncStatus: 'synced' }
       );
     }
@@ -231,6 +233,6 @@ function getSyncManager(): SyncManager {
 export const syncManager = new Proxy({} as SyncManager, {
   get(target, prop) {
     const manager = getSyncManager();
-    return (manager as any)[prop];
+    return (manager as Record<string, unknown>)[prop as string];
   }
 });

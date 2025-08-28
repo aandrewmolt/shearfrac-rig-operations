@@ -73,7 +73,7 @@ const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
   }, [nodes, edges]);
 
   return (
-    <Card className="bg-white shadow-lg">
+    <Card className="bg-card shadow-lg">
       <CardContent className="p-1">
         <div className="h-[900px] border rounded-lg" ref={reactFlowWrapper}>
           <ReactFlow
@@ -100,7 +100,7 @@ const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
             <Controls position="top-left" />
             <MiniMap 
               position="top-right" 
-              style={{ background: '#ffffff', border: '1px solid #e2e8f0' }}
+              style={{ background: '#2d2d2d', border: '1px solid rgba(212, 160, 23, 0.2)' }}
               nodeStrokeWidth={3}
               nodeColor={(node) => {
                 switch (node.type) {

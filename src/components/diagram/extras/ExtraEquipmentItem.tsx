@@ -36,22 +36,22 @@ const ExtraEquipmentItem: React.FC<ExtraEquipmentItemProps> = ({
   const isIndividuallyTracked = equipmentType?.requiresIndividualTracking;
 
   return (
-    <div className="flex items-start justify-between p-3 border rounded-lg bg-yellow-50 border-yellow-200">
+    <div className="flex items-start justify-between p-3 border rounded-lg bg-muted border-border">
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">
           <span className="font-medium text-lg">{getEquipmentTypeName(extra.equipmentTypeId)}</span>
           {isIndividuallyTracked && extra.individualEquipmentId ? (
-            <Badge variant="secondary" className="text-sm font-bold bg-blue-100 text-blue-800">
+            <Badge variant="secondary" className="text-sm font-bold bg-muted text-foreground">
               {getIndividualEquipmentName(extra.individualEquipmentId)}
             </Badge>
           ) : (
             <Badge variant="secondary" className="text-sm">{extra.quantity}x</Badge>
           )}
-          <Badge variant="outline" className="text-xs bg-yellow-100">
+          <Badge variant="outline" className="text-xs bg-muted">
             Extra
           </Badge>
         </div>
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-muted-foreground">
           <div><strong>Reason:</strong> {extra.reason}</div>
           <div><strong>Added:</strong> {extra.addedDate.toLocaleDateString()}</div>
           {extra.notes && (

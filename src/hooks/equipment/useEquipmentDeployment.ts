@@ -1,13 +1,14 @@
 
 import { useCallback } from 'react';
 import { useInventory } from '@/contexts/InventoryContext';
-import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
+import { useUnifiedEquipmentSync } from '@/hooks/useUnifiedEquipmentSync';
 import { useEquipmentUsageTracking } from './useEquipmentUsageTracking';
 import { toast } from 'sonner';
 
-export const useEquipmentDeployment = () => {
+export const useEquipmentDeployment = (jobId?: string) => {
   const { data, updateIndividualEquipment } = useInventory();
-  const { validateEquipmentAvailability } = useInventoryMapperSync();
+  // Always call the hook but with a fallback jobId
+  const syncHook = useUnifiedEquipmentSync({ jobId: jobId || 'no-job' });
   const { startUsageSession, endUsageSession } = useEquipmentUsageTracking();
 
   const deployEquipment = useCallback(async (equipmentId: string, jobId: string) => {
@@ -18,11 +19,13 @@ export const useEquipmentDeployment = () => {
         throw new Error(`Equipment with ID ${equipmentId} not found`);
       }
 
-      // Validate equipment availability before deployment
-      const isAvailable = await validateEquipmentAvailability(equipmentId, jobId);
-      if (!isAvailable) {
-        // Validation already shows appropriate error messages
-        return;
+      // Validate equipment availability before deployment if we have a real job
+      if (jobId && jobId !== 'no-job' && syncHook?.validateEquipmentAvailability) {
+        const isAvailable = await syncHook.validateEquipmentAvailability(equipmentId, jobId);
+        if (!isAvailable) {
+          // Validation already shows appropriate error messages
+          return;
+        }
       }
 
       await updateIndividualEquipment(equipment.id, { 
@@ -39,7 +42,7 @@ export const useEquipmentDeployment = () => {
       console.error('Failed to deploy equipment:', error);
       toast.error('Failed to deploy equipment');
     }
-  }, [updateIndividualEquipment, data.individualEquipment, validateEquipmentAvailability, startUsageSession]);
+  }, [updateIndividualEquipment, data.individualEquipment, syncHook, startUsageSession]);
 
   const returnEquipment = useCallback(async (equipmentId: string) => {
     try {

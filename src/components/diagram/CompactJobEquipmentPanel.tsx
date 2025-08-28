@@ -17,13 +17,14 @@ import {
 } from 'lucide-react';
 import { useUnifiedInventory } from '@/hooks/useUnifiedInventory';
 import { useRobustEquipmentTracking } from '@/hooks/useRobustEquipmentTracking';
-import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
+import { useUnifiedEquipmentSync } from '@/hooks/useUnifiedEquipmentSync';
 import { Node, Edge } from '@xyflow/react';
 import { toast } from 'sonner';
 import ConflictIndicator from './ConflictIndicator';
 import { useEquipmentDebugger } from '@/hooks/equipment/useEquipmentDebugger';
 import { useEquipmentCleanup } from '@/hooks/equipment/useEquipmentCleanup';
 import { isEquipmentAtLocation } from '@/utils/equipmentLocation';
+import { extractNodeEquipment, getEquipmentSummaryFromNodes } from '@/hooks/equipment/utils/nodeEquipmentExtractor';
 
 interface CompactJobEquipmentPanelProps {
   jobId: string;
@@ -73,7 +74,7 @@ const CompactJobEquipmentPanel: React.FC<CompactJobEquipmentPanelProps> = ({
     getJobEquipment,
     resolveConflict,
     syncInventoryStatus
-  } = useInventoryMapperSync();
+  } = useUnifiedEquipmentSync();
   
   const {
     performComprehensiveAllocation,
@@ -86,6 +87,10 @@ const CompactJobEquipmentPanel: React.FC<CompactJobEquipmentPanelProps> = ({
 
   const usage = analyzeEquipmentUsage();
   const report = generateEquipmentReport(usage);
+  
+  // Get actual equipment assignments from nodes
+  const nodeEquipment = extractNodeEquipment(nodes);
+  const equipmentSummary = getEquipmentSummaryFromNodes(nodes);
   
   // Get deployed equipment using unified inventory method
   const deployedEquipment = getDeployedEquipment(jobId);
@@ -244,21 +249,21 @@ const CompactJobEquipmentPanel: React.FC<CompactJobEquipmentPanelProps> = ({
   };
 
   const getStatusColor = () => {
-    if (!isConsistent) return 'text-yellow-600';
-    if (deployedEquipment.length === 0) return 'text-gray-500';
-    return 'text-green-600';
+    if (!isConsistent) return 'text-foreground';
+    if (deployedEquipment.length === 0) return 'text-muted-foreground';
+    return 'text-foreground';
   };
 
   const getStatusIcon = () => {
     if (isProcessing) return <RefreshCw className="h-4 w-4 animate-spin" />;
     if (!isConsistent) return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
-    if (deployedEquipment.length === 0) return <Package className="h-4 w-4 text-gray-500" />;
+    if (deployedEquipment.length === 0) return <Package className="h-4 w-4 text-muted-foreground" />;
     return <CheckCircle className="h-4 w-4 text-green-500" />;
   };
 
   return (
     <div className="space-y-4 h-full overflow-y-auto">
-      <Card className="bg-white shadow-sm">
+      <Card className="bg-card shadow-sm">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center justify-between text-lg">
             <span className="flex items-center gap-2">
@@ -287,55 +292,100 @@ const CompactJobEquipmentPanel: React.FC<CompactJobEquipmentPanelProps> = ({
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Quick Status Overview */}
-          <div className="bg-blue-50 p-3 rounded-lg">
+          <div className="bg-card p-3 rounded-lg">
             <div className="flex justify-between items-center mb-2">
-              <span className="font-medium text-blue-900">Required Equipment</span>
+              <span className="font-medium text-blue-900">Assigned Equipment</span>
               <Badge variant="outline" className="text-xs">
-                {(usage?.cables ? Object.values(usage.cables).reduce((sum, cable) => sum + cable.quantity, 0) : 0) + 
-                 (usage?.gauges1502 || 0) + (usage?.pencilGauges || 0) + (usage?.adapters || 0) + (usage?.computers || 0) + (usage?.satellite || 0) + (usage?.shearstreamBoxes || 0)} items
+                {nodeEquipment.filter(e => e.equipmentId).length} / {nodeEquipment.length} assigned
               </Badge>
             </div>
-            <div className="grid grid-cols-2 gap-1 text-sm text-blue-800">
-              {usage?.cables && Object.entries(usage.cables).map(([typeId, details]) => (
-                <div key={typeId} className="flex justify-between">
-                  <span className="truncate">{details.typeName.replace(/ft.*/, 'ft')}:</span>
-                  <span className="font-bold">{details.quantity}</span>
-                </div>
-              ))}
-              {usage.gauges1502 > 0 && (
-                <div className="flex justify-between">
-                  <span>1502 Pressure Gauge:</span>
-                  <span className="font-bold">{usage.gauges1502}</span>
-                </div>
-              )}
-              {usage.pencilGauges > 0 && (
-                <div className="flex justify-between">
-                  <span>Pencil Gauge:</span>
-                  <span className="font-bold">{usage.pencilGauges}</span>
+            <div className="space-y-2 text-sm text-foreground">
+              {/* ShearStream Boxes */}
+              {equipmentSummary.shearstreamBoxes.length > 0 && (
+                <div>
+                  <span className="font-medium">ShearStream Box:</span>
+                  <div className="ml-4">
+                    {equipmentSummary.shearstreamBoxes.map(id => (
+                      <Badge key={id} variant="secondary" className="mr-1 text-xs">
+                        {id}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               )}
-              {usage.adapters > 0 && (
-                <div className="flex justify-between">
-                  <span>Adapters:</span>
-                  <span className="font-bold">{usage.adapters}</span>
+              
+              {/* Y-Adapters */}
+              {equipmentSummary.yAdapters.length > 0 && (
+                <div>
+                  <span className="font-medium">Y-Adapters:</span>
+                  <div className="ml-4">
+                    {equipmentSummary.yAdapters.map(id => (
+                      <Badge key={id} variant="secondary" className="mr-1 text-xs">
+                        {id}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               )}
-              {usage.computers > 0 && (
-                <div className="flex justify-between">
-                  <span>Customer Computer:</span>
-                  <span className="font-bold">{usage.computers}</span>
+              
+              {/* Computers */}
+              {equipmentSummary.computers.length > 0 && (
+                <div>
+                  <span className="font-medium">Computers:</span>
+                  <div className="ml-4">
+                    {equipmentSummary.computers.map(id => (
+                      <Badge key={id} variant="secondary" className="mr-1 text-xs">
+                        {id}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               )}
-              {usage.satellite > 0 && (
-                <div className="flex justify-between">
-                  <span>Starlink:</span>
-                  <span className="font-bold">{usage.satellite}</span>
+              
+              {/* Satellites */}
+              {equipmentSummary.satellites.length > 0 && (
+                <div>
+                  <span className="font-medium">Starlink:</span>
+                  <div className="ml-4">
+                    {equipmentSummary.satellites.map(id => (
+                      <Badge key={id} variant="secondary" className="mr-1 text-xs">
+                        {id}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               )}
-              {usage.shearstreamBoxes > 0 && (
-                <div className="flex justify-between">
-                  <span>ShearStream Box:</span>
-                  <span className="font-bold">{usage.shearstreamBoxes}</span>
+              
+              {/* Gauges */}
+              {equipmentSummary.gauges.length > 0 && (
+                <div>
+                  <span className="font-medium">Gauges:</span>
+                  <div className="ml-4">
+                    {equipmentSummary.gauges.map(id => (
+                      <Badge key={id} variant="secondary" className="mr-1 text-xs">
+                        {id}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Unassigned nodes */}
+              {equipmentSummary.unassigned.length > 0 && (
+                <div>
+                  <span className="font-medium text-yellow-600">Unassigned:</span>
+                  <div className="ml-4 text-xs text-muted-foreground">
+                    {equipmentSummary.unassigned.map((desc, idx) => (
+                      <div key={idx}>{desc}</div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Show if nothing is assigned */}
+              {nodeEquipment.filter(e => e.equipmentId).length === 0 && (
+                <div className="text-muted-foreground text-xs">
+                  No equipment assigned to nodes
                 </div>
               )}
             </div>
@@ -360,19 +410,19 @@ const CompactJobEquipmentPanel: React.FC<CompactJobEquipmentPanelProps> = ({
 
           {/* Availability Status */}
           {selectedLocation && (
-            <div className={`p-3 rounded-lg ${availability.available ? 'bg-green-50' : 'bg-red-50'}`}>
+            <div className={`p-3 rounded-lg ${availability.available ? 'bg-card' : 'bg-card'}`}>
               <div className="flex items-center gap-2 mb-2">
                 {availability.available ? (
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <CheckCircle className="h-4 w-4 text-foreground" />
                 ) : (
-                  <AlertTriangle className="h-4 w-4 text-red-600" />
+                  <AlertTriangle className="h-4 w-4 text-destructive" />
                 )}
                 <span className={`font-medium ${availability.available ? 'text-green-900' : 'text-red-900'}`}>
                   {availability.available ? 'Ready to Allocate' : 'Cannot Allocate'}
                 </span>
               </div>
               {availability.issues.length > 0 && (
-                <div className="text-sm text-red-800 space-y-1">
+                <div className="text-sm text-destructive space-y-1">
                   {availability.issues.slice(0, 3).map((issue, idx) => (
                     <div key={idx}>• {issue}</div>
                   ))}
@@ -382,7 +432,7 @@ const CompactJobEquipmentPanel: React.FC<CompactJobEquipmentPanelProps> = ({
                 </div>
               )}
               {availability.warnings.length > 0 && (
-                <div className="text-sm text-yellow-800 mt-1">
+                <div className="text-sm text-foreground mt-1">
                   <div>⚠️ {availability.warnings.length} warnings</div>
                 </div>
               )}
@@ -470,22 +520,22 @@ const CompactJobEquipmentPanel: React.FC<CompactJobEquipmentPanelProps> = ({
                     const equipmentType = data.equipmentTypes.find(type => type.id === item.equipmentTypeId);
                     const status = getEquipmentStatus(item.id);
                     return (
-                      <div key={item.id} className="flex justify-between items-center text-sm p-2 bg-green-50 rounded">
+                      <div key={item.id} className="flex justify-between items-center text-sm p-2 bg-card rounded">
                         <span className="truncate">{equipmentType?.name || 'Unknown'}</span>
                         <div className="flex items-center gap-2">
                           <Badge variant="secondary" className="text-xs">1</Badge>
                           {status === 'deployed' && (
-                            <CheckCircle className="h-3 w-3 text-green-600" />
+                            <CheckCircle className="h-3 w-3 text-foreground" />
                           )}
                           {status === 'allocated' && (
-                            <AlertCircle className="h-3 w-3 text-yellow-600" />
+                            <AlertCircle className="h-3 w-3 text-foreground" />
                           )}
                         </div>
                       </div>
                     );
                   })}
                   {deployedEquipment.length > 5 && (
-                    <div className="text-xs text-gray-500 text-center py-1">
+                    <div className="text-xs text-muted-foreground text-center py-1">
                       ... and {deployedEquipment.length - 5} more items
                     </div>
                   )}

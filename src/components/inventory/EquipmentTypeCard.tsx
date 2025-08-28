@@ -45,7 +45,7 @@ const EquipmentTypeCard: React.FC<EquipmentTypeCardProps> = ({
             </Badge>
           </h3>
           {type.description && (
-            <p className="text-sm text-gray-600">{type.description}</p>
+            <p className="text-sm text-muted-foreground">{type.description}</p>
           )}
         </div>
         <div className="flex space-x-1">
@@ -71,11 +71,11 @@ const EquipmentTypeCard: React.FC<EquipmentTypeCardProps> = ({
         <Badge className={getCategoryColor(type.category)}>
           {type.category}
         </Badge>
-        <div className="text-sm font-medium text-gray-700">
+        <div className="text-sm font-medium text-muted-foreground">
           <span>
             {individualItems.length} saved
             {draftCount > 0 && (
-              <span className="text-orange-600"> + {draftCount} draft</span>
+              <span className="text-foreground"> + {draftCount} draft</span>
             )}
             {' = '}
             <span className="font-bold">{totalIndividualCount} total items</span>

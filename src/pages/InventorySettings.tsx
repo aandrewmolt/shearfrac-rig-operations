@@ -10,8 +10,9 @@ import { CleanupDuplicatesButton } from '@/components/inventory/CleanupDuplicate
 import { FixPressureGaugeButton } from '@/components/inventory/FixPressureGaugeButton';
 import { RunMigration } from '@/components/RunMigration';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, Building, ArrowRightLeft, AlertTriangle, Package } from 'lucide-react';
+import { Settings, Building, ArrowRightLeft, AlertTriangle, Package, AlertCircle } from 'lucide-react';
 import { useInventory } from '@/contexts/InventoryContext';
+import EquipmentConflictDashboard from '@/components/inventory/EquipmentConflictDashboard';
 
 const InventorySettings = () => {
   const { data, isLoading } = useInventory();
@@ -24,23 +25,23 @@ const InventorySettings = () => {
 
   return (
     <DataInitializationGuard>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="min-h-screen bg-gradient-corporate">
         <AppHeader />
         
         <div className="p-4">
           <div className="max-w-6xl mx-auto">
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <h1 className="text-3xl font-bold text-corporate-light uppercase tracking-wider mb-2 flex items-center gap-2">
                 <Settings className="h-8 w-8" />
                 Inventory Management
               </h1>
-              <p className="text-gray-600">
-                Manage storage locations, transfer equipment, and track red-tagged items
+              <p className="text-corporate-silver">
+                Manage storage locations, transfer equipment, resolve conflicts, and track red-tagged items
               </p>
             </div>
 
             <Tabs defaultValue="locations" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+              <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
                 <TabsTrigger value="locations" className="flex items-center gap-2">
                   <Building className="h-4 w-4" />
                   Locations
@@ -48,6 +49,10 @@ const InventorySettings = () => {
                 <TabsTrigger value="transfers" className="flex items-center gap-2">
                   <ArrowRightLeft className="h-4 w-4" />
                   Transfers
+                </TabsTrigger>
+                <TabsTrigger value="conflicts" className="flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4" />
+                  Conflicts
                 </TabsTrigger>
                 <TabsTrigger value="redtag" className="flex items-center gap-2">
                   <AlertTriangle className="h-4 w-4" />
@@ -65,6 +70,10 @@ const InventorySettings = () => {
 
               <TabsContent value="transfers">
                 <EquipmentTransferManager />
+              </TabsContent>
+
+              <TabsContent value="conflicts">
+                <EquipmentConflictDashboard />
               </TabsContent>
 
               <TabsContent value="redtag">
@@ -88,15 +97,15 @@ const InventorySettings = () => {
                         </div>
                         <div className="flex justify-between">
                           <span>Available Items</span>
-                          <span className="font-bold text-green-600">{availableItems}</span>
+                          <span className="font-bold text-foreground">{availableItems}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Deployed Items</span>
-                          <span className="font-bold text-blue-600">{deployedItems}</span>
+                          <span className="font-bold text-foreground">{deployedItems}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Red Tagged Items</span>
-                          <span className="font-bold text-red-600">{redTaggedItems}</span>
+                          <span className="font-bold text-destructive">{redTaggedItems}</span>
                         </div>
                       </div>
                     </CardContent>
@@ -137,21 +146,21 @@ const InventorySettings = () => {
                     <CardContent>
                       <div className="space-y-2">
                         {isLoading ? (
-                          <div className="p-2 bg-gray-50 border border-gray-200 rounded text-sm">
-                            <span className="text-gray-700">Loading inventory data...</span>
+                          <div className="p-2 bg-card border border-border rounded text-sm">
+                            <span className="text-corporate-silver">Loading inventory data...</span>
                           </div>
                         ) : redTaggedItems > 0 ? (
-                          <div className="p-2 bg-red-50 border border-red-200 rounded text-sm">
-                            <span className="text-red-700">{redTaggedItems} items need attention (red tagged)</span>
+                          <div className="p-2 bg-status-danger/20 border border-status-danger rounded text-sm">
+                            <span className="text-status-danger">{redTaggedItems} items need attention (red tagged)</span>
                           </div>
                         ) : (
-                          <div className="p-2 bg-green-50 border border-green-200 rounded text-sm">
-                            <span className="text-green-700">All equipment in good condition</span>
+                          <div className="p-2 bg-status-success/20 border border-status-success rounded text-sm">
+                            <span className="text-status-success">All equipment in good condition</span>
                           </div>
                         )}
                         
-                        <div className="p-2 bg-blue-50 border border-blue-200 rounded text-sm">
-                          <span className="text-blue-700">System running normally</span>
+                        <div className="p-2 bg-status-info/20 border border-status-info rounded text-sm">
+                          <span className="text-status-info">System running normally</span>
                         </div>
                       </div>
                     </CardContent>
@@ -168,7 +177,7 @@ const InventorySettings = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-corporate-silver">
                           Initialize a complete inventory set with standard equipment items and cable quantities.
                         </p>
                         <div className="flex gap-2 flex-wrap">

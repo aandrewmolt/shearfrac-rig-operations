@@ -15,7 +15,7 @@ class SimpleBlobClient {
   }
 
   // Equipment Types
-  async getEquipmentTypes(): Promise<any[]> {
+  async getEquipmentTypes(): Promise<unknown[]> {
     // In development, return empty array
     // In production, this would fetch from Blob
     await this.checkProduction();
@@ -30,7 +30,7 @@ class SimpleBlobClient {
   }
 
   // Storage Locations
-  async getStorageLocations(): Promise<any[]> {
+  async getStorageLocations(): Promise<unknown[]> {
     return [];
   }
 
@@ -39,7 +39,7 @@ class SimpleBlobClient {
   }
 
   // Jobs
-  async getAllJobs(): Promise<any[]> {
+  async getAllJobs(): Promise<unknown[]> {
     return [];
   }
 
@@ -48,7 +48,7 @@ class SimpleBlobClient {
   }
 
   // Equipment
-  async getAllEquipment(): Promise<any[]> {
+  async getAllEquipment(): Promise<unknown[]> {
     return [];
   }
 
@@ -85,6 +85,6 @@ export const getBlobStorage = (): SimpleBlobClient => {
 export const blobStorage = new Proxy({} as SimpleBlobClient, {
   get(target, prop) {
     const storage = getBlobStorage();
-    return (storage as any)[prop];
+    return (storage as Record<string, unknown>)[prop as string];
   }
 });

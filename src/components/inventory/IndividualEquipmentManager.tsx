@@ -84,9 +84,9 @@ const IndividualEquipmentManager: React.FC<IndividualEquipmentManagerProps> = ({
           onSaveDrafts={manager.saveImmediately}
           onOpenForm={() => manager.setIsFormOpen(true)}
         />
-        <Card className="border-orange-200 bg-orange-50">
+        <Card className="border-border bg-muted">
           <CardContent className="p-3">
-            <p className="text-sm text-orange-700">
+            <p className="text-sm text-foreground">
               No storage locations found. Please add storage locations first.
             </p>
           </CardContent>
@@ -97,12 +97,12 @@ const IndividualEquipmentManager: React.FC<IndividualEquipmentManagerProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'available': return 'bg-green-100 text-green-800';
-      case 'deployed': return 'bg-blue-100 text-blue-800';
-      case 'maintenance': return 'bg-yellow-100 text-yellow-800';
-      case 'red-tagged': return 'bg-red-100 text-red-800';
-      case 'retired': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'available': return 'bg-muted text-foreground';
+      case 'deployed': return 'bg-muted text-foreground';
+      case 'maintenance': return 'bg-muted text-foreground';
+      case 'red-tagged': return 'bg-muted text-destructive';
+      case 'retired': return 'bg-card text-corporate-light';
+      default: return 'bg-card text-corporate-light';
     }
   };
 
@@ -123,12 +123,12 @@ const IndividualEquipmentManager: React.FC<IndividualEquipmentManagerProps> = ({
       {/* Data Management Tools */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Migration Tool */}
-        <Card className="border-blue-200 bg-blue-50">
+        <Card className="border-border bg-status-info/20">
           <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-blue-700 font-medium">Fix Equipment Naming</p>
-                <p className="text-xs text-blue-600">
+                <p className="text-sm text-foreground font-medium">Fix Equipment Naming</p>
+                <p className="text-xs text-foreground">
                   Update names: SS0001→ShearStream-0001, CC01→Customer Computer 01
                 </p>
               </div>
@@ -159,12 +159,12 @@ const IndividualEquipmentManager: React.FC<IndividualEquipmentManagerProps> = ({
         </Card>
 
         {/* Delete All Tool */}
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-red-200 bg-status-danger/20">
           <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-red-700 font-medium">Delete All Equipment</p>
-                <p className="text-xs text-red-600">
+                <p className="text-sm text-destructive font-medium">Delete All Equipment</p>
+                <p className="text-xs text-destructive">
                   Remove all {equipmentType.name} items (except deployed)
                 </p>
               </div>
@@ -172,7 +172,7 @@ const IndividualEquipmentManager: React.FC<IndividualEquipmentManagerProps> = ({
                 size="sm" 
                 onClick={handleDeleteAllEquipment} 
                 variant="outline"
-                className="text-red-600 hover:text-red-700"
+                className="text-destructive hover:text-destructive"
               >
                 <Trash2 className="h-3 w-3 mr-1" />
                 Delete All

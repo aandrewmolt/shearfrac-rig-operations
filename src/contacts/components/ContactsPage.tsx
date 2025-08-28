@@ -89,7 +89,7 @@ const ViewModeToggle = React.memo(({
   }
 
   return (
-    <div className="flex bg-gray-100 rounded-lg p-1">
+    <div className="flex bg-card rounded-lg p-1">
       <Button
         variant={viewMode === 'table' ? 'default' : 'ghost'}
         size="sm"
@@ -456,16 +456,16 @@ export function ContactsPage() {
 
   return (
     <ErrorBoundary level="page">
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="min-h-screen bg-gradient-corporate">
         <AppHeader />
         
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-6 space-y-3 sm:space-y-6">
           {/* Cloud sync notification */}
-          <Alert className="bg-green-50 border-green-200">
+          <Alert className="bg-status-success/20 border-status-success">
             <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-xs sm:text-sm text-green-800">
+                <div className="w-2 h-2 bg-muted0 rounded-full animate-pulse" />
+                <span className="text-xs sm:text-sm text-status-success">
                   {isMobile ? 'Synced to cloud' : 'Contacts are now synced to the cloud and available across all your devices'}
                 </span>
               </div>

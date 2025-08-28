@@ -52,7 +52,7 @@ const EquipmentTypeGrid: React.FC<EquipmentTypeGridProps> = ({
       
       {filteredTypes.length === 0 && (
         <div className="text-center py-8">
-          <p className="text-gray-500">No equipment types found.</p>
+          <p className="text-muted-foreground">No equipment types found.</p>
         </div>
       )}
     </CardContent>

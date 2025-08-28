@@ -166,9 +166,9 @@ const InventoryConsistencyValidator: React.FC = () => {
         {validationResults && (
           <div className="space-y-3">
             {validationResults.issues.length > 0 && (
-              <Alert className="border-red-200 bg-red-50">
-                <AlertTriangle className="h-4 w-4 text-red-600" />
-                <AlertDescription className="text-red-800">
+              <Alert className="border-red-200 bg-status-danger/20">
+                <AlertTriangle className="h-4 w-4 text-destructive" />
+                <AlertDescription className="text-destructive">
                   <div className="font-medium mb-1">Issues Found ({validationResults.issues.length})</div>
                   <ul className="text-sm space-y-1">
                     {validationResults.issues.map((issue, index) => (
@@ -180,9 +180,9 @@ const InventoryConsistencyValidator: React.FC = () => {
             )}
 
             {validationResults.warnings.length > 0 && (
-              <Alert className="border-yellow-200 bg-yellow-50">
-                <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                <AlertDescription className="text-yellow-800">
+              <Alert className="border-border bg-status-warning/20">
+                <AlertTriangle className="h-4 w-4 text-foreground" />
+                <AlertDescription className="text-foreground">
                   <div className="font-medium mb-1">Warnings ({validationResults.warnings.length})</div>
                   <ul className="text-sm space-y-1">
                     {validationResults.warnings.map((warning, index) => (
@@ -194,9 +194,9 @@ const InventoryConsistencyValidator: React.FC = () => {
             )}
 
             {validationResults.fixed.length > 0 && (
-              <Alert className="border-green-200 bg-green-50">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">
+              <Alert className="border-border bg-status-success/20">
+                <CheckCircle className="h-4 w-4 text-foreground" />
+                <AlertDescription className="text-foreground">
                   <div className="font-medium mb-1">Auto-Fixed ({validationResults.fixed.length})</div>
                   <ul className="text-sm space-y-1">
                     {validationResults.fixed.map((fix, index) => (
@@ -208,9 +208,9 @@ const InventoryConsistencyValidator: React.FC = () => {
             )}
 
             {validationResults.issues.length === 0 && validationResults.warnings.length === 0 && (
-              <Alert className="border-green-200 bg-green-50">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">
+              <Alert className="border-border bg-status-success/20">
+                <CheckCircle className="h-4 w-4 text-foreground" />
+                <AlertDescription className="text-foreground">
                   All inventory data is consistent and properly tracked!
                 </AlertDescription>
               </Alert>

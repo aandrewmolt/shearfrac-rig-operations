@@ -125,7 +125,7 @@ const IndividualEquipmentManagerWrapper: React.FC = () => {
           <CardTitle>No Equipment Types</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-600 mb-4">
+          <p className="text-corporate-silver mb-4">
             No equipment types found. Add your first equipment type to get started.
           </p>
           <Button onClick={() => setShowAddType(true)}>
@@ -174,7 +174,7 @@ const IndividualEquipmentManagerWrapper: React.FC = () => {
               </SelectContent>
             </Select>
             {selectedType && (
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-corporate-silver">
                 Managing {data.individualEquipment.filter(eq => eq.typeId === selectedType.id).length} {selectedType.name} items
                 {draftCount > 0 && ` (${draftCount} drafts)`}
               </p>
@@ -208,7 +208,7 @@ const IndividualEquipmentManagerWrapper: React.FC = () => {
                 onChange={(e) => setBulkAddData(prev => ({ ...prev, prefix: e.target.value.toUpperCase() }))}
                 placeholder={selectedType?.defaultIdPrefix || "AG-"}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-corporate-silver mt-1">
                 Example: AG- will create AG-01, AG-02, etc.
               </p>
             </div>
@@ -251,9 +251,9 @@ const IndividualEquipmentManagerWrapper: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="bg-gray-50 p-3 rounded-md">
+            <div className="bg-card p-3 rounded-md">
               <p className="text-sm font-medium">Preview:</p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-corporate-silver">
                 Will create {bulkAddData.count} items: {bulkAddData.prefix}{String(bulkAddData.startNumber).padStart(2, '0')} to {bulkAddData.prefix}{String(bulkAddData.startNumber + bulkAddData.count - 1).padStart(2, '0')}
               </p>
             </div>
@@ -312,7 +312,7 @@ const IndividualEquipmentManagerWrapper: React.FC = () => {
                 onChange={(e) => setNewTypeData(prev => ({ ...prev, defaultIdPrefix: e.target.value.toUpperCase() }))}
                 placeholder="e.g., AG-"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-corporate-silver mt-1">
                 This will be used to generate IDs like {newTypeData.defaultIdPrefix || 'AG-'}01, {newTypeData.defaultIdPrefix || 'AG-'}02, etc.
               </p>
             </div>

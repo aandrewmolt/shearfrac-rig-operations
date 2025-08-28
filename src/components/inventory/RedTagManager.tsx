@@ -133,7 +133,7 @@ const RedTagManager: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Red Tag Management</h2>
+        <h2 className="text-2xl font-bold text-corporate-light">Red Tag Management</h2>
         <Badge variant="destructive" className="text-lg px-3 py-1">
           {redTaggedItems.length} Red Tagged Items
         </Badge>
@@ -143,8 +143,8 @@ const RedTagManager: React.FC = () => {
         <Card>
           <CardContent className="text-center py-12">
             <AlertTriangle className="mx-auto h-12 w-12 text-green-500 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Red Tagged Items</h3>
-            <p className="text-gray-600">All equipment is currently in good condition.</p>
+            <h3 className="text-lg font-semibold text-corporate-light mb-2">No Red Tagged Items</h3>
+            <p className="text-corporate-silver">All equipment is currently in good condition.</p>
           </CardContent>
         </Card>
       ) : (
@@ -155,10 +155,10 @@ const RedTagManager: React.FC = () => {
             const locationName = getLocationName(item);
 
             return (
-              <Card key={item.id} className="border-red-200 bg-red-50">
+              <Card key={item.id} className="border-red-200 bg-status-danger/20">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg text-red-800">
+                    <CardTitle className="text-lg text-destructive">
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="h-5 w-5" />
                         {isIndividual ? item.equipmentId : `${typeName} (Qty: ${'quantity' in item ? item.quantity : 0})`}
@@ -173,32 +173,32 @@ const RedTagManager: React.FC = () => {
                 <CardContent className="space-y-3">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-gray-500" />
+                      <MapPin className="h-4 w-4 text-corporate-silver" />
                       <span>{locationName}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-500" />
+                      <Calendar className="h-4 w-4 text-corporate-silver" />
                       <span>{new Date(item.lastUpdated || Date.now()).toLocaleDateString()}</span>
                     </div>
                   </div>
 
                   {item.redTagReason && (
-                    <div className="bg-white p-3 rounded border border-red-200">
-                      <h4 className="font-semibold text-red-800 mb-1">Red Tag Reason:</h4>
-                      <p className="text-gray-700">{item.redTagReason}</p>
+                    <div className="bg-card p-3 rounded border border-red-200">
+                      <h4 className="font-semibold text-destructive mb-1">Red Tag Reason:</h4>
+                      <p className="text-corporate-silver">{item.redTagReason}</p>
                     </div>
                   )}
 
                   {item.notes && (
-                    <div className="bg-white p-3 rounded border border-red-200">
-                      <h4 className="font-semibold text-red-800 mb-1">Notes:</h4>
-                      <p className="text-gray-700">{item.notes}</p>
+                    <div className="bg-card p-3 rounded border border-red-200">
+                      <h4 className="font-semibold text-destructive mb-1">Notes:</h4>
+                      <p className="text-corporate-silver">{item.notes}</p>
                     </div>
                   )}
 
                   {item.redTagPhoto && (
-                    <div className="bg-white p-3 rounded border border-red-200">
-                      <h4 className="font-semibold text-red-800 mb-2">Photo:</h4>
+                    <div className="bg-card p-3 rounded border border-red-200">
+                      <h4 className="font-semibold text-destructive mb-2">Photo:</h4>
                       <img 
                         src={item.redTagPhoto} 
                         alt="Red tag photo"
@@ -212,7 +212,7 @@ const RedTagManager: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => handleRemoveRedTag(item)}
-                      className="text-green-600 border-green-600 hover:bg-green-50"
+                      className="text-foreground border-green-600 hover:bg-status-success/20"
                     >
                       Remove Red Tag
                     </Button>
@@ -256,7 +256,7 @@ const RedTagManager: React.FC = () => {
                                   }}
                                   disabled={isUploading}
                                 />
-                                {isUploading && <span className="text-sm text-blue-600">Optimizing...</span>}
+                                {isUploading && <span className="text-sm text-foreground">Optimizing...</span>}
                               </div>
                               
                               {redTagData.photos.length > 0 && (

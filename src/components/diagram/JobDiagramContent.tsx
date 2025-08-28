@@ -97,7 +97,7 @@ const JobDiagramContent: React.FC<JobDiagramContentProps> = ({
       />
 
       {/* Diagram Section */}
-      <div className="relative bg-white rounded-lg border shadow-sm">
+      <div className="relative bg-card rounded-lg border shadow-sm">
         {/* Top Controls Bar - Photos Button moved to left side to avoid zoom controls */}
         <div className="absolute top-4 left-4 z-20">
           <Sheet open={isPhotosPanelOpen} onOpenChange={setIsPhotosPanelOpen}>
@@ -105,7 +105,7 @@ const JobDiagramContent: React.FC<JobDiagramContentProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="bg-white/95 backdrop-blur-sm shadow-md hover:bg-gray-50 border-gray-300"
+                className="bg-card/95 backdrop-blur-sm shadow-md hover:bg-muted border-border"
               >
                 <Camera className="h-4 w-4 mr-2" />
                 Photos

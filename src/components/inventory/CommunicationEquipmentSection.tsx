@@ -148,16 +148,16 @@ const CommunicationEquipmentSection: React.FC<CommunicationEquipmentSectionProps
 
           <div className="flex items-center gap-2">
             <div className="flex gap-1 text-xs">
-              <Badge className="bg-green-100 text-green-800">
+              <Badge className="bg-muted text-foreground">
                 {availableCount} available
               </Badge>
               {deployedCount > 0 && (
-                <Badge className="bg-blue-100 text-blue-800">
+                <Badge className="bg-muted text-foreground">
                   {deployedCount} deployed
                 </Badge>
               )}
               {redTaggedCount > 0 && (
-                <Badge className="bg-red-100 text-red-800">
+                <Badge className="bg-muted text-destructive">
                   {redTaggedCount} red-tagged
                 </Badge>
               )}
@@ -178,21 +178,21 @@ const CommunicationEquipmentSection: React.FC<CommunicationEquipmentSectionProps
               {equipment.map(item => {
                 const isDeleting = deletingItems.has(item.id);
                 return (
-                  <div key={item.id} className="flex justify-between items-center text-sm p-2 bg-gray-50 rounded">
+                  <div key={item.id} className="flex justify-between items-center text-sm p-2 bg-card rounded">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{item.equipmentId}</span>
-                      <span className="text-gray-600">{item.name}</span>
+                      <span className="text-corporate-silver">{item.name}</span>
                       {item.serialNumber && (
-                        <span className="text-xs text-gray-500">S/N: {item.serialNumber}</span>
+                        <span className="text-xs text-corporate-silver">S/N: {item.serialNumber}</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge 
                         variant={item.status === 'available' ? 'default' : 'outline'}
                         className={`text-xs ${
-                          item.status === 'available' ? 'bg-green-100 text-green-800' :
-                          item.status === 'deployed' ? 'bg-blue-100 text-blue-800' :
-                          'bg-red-100 text-red-800'
+                          item.status === 'available' ? 'bg-muted text-foreground' :
+                          item.status === 'deployed' ? 'bg-muted text-foreground' :
+                          'bg-muted text-destructive'
                         }`}
                       >
                         {item.status}
@@ -215,7 +215,7 @@ const CommunicationEquipmentSection: React.FC<CommunicationEquipmentSectionProps
                           variant="outline"
                           onClick={() => handleDelete(item)}
                           disabled={item.status === 'deployed' || isDeleting}
-                          className="h-6 w-6 p-0 text-red-600 hover:text-red-700"
+                          className="h-6 w-6 p-0 text-destructive hover:text-destructive"
                           title="Delete equipment"
                         >
                           {isDeleting ? (
@@ -231,7 +231,7 @@ const CommunicationEquipmentSection: React.FC<CommunicationEquipmentSectionProps
               })}
             </div>
           ) : (
-            <div className="text-center py-6 text-gray-500">
+            <div className="text-center py-6 text-corporate-silver">
               <Package className="h-8 w-8 mx-auto mb-2 opacity-50" />
               <p>No {equipmentType.name.toLowerCase()} items yet</p>
             </div>

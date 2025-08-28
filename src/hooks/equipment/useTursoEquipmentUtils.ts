@@ -1,7 +1,14 @@
 import { useMemo } from 'react';
-import { IndividualEquipment, EquipmentType, StorageLocation } from '@/types/inventory';
+import { IndividualEquipment } from '@/types/inventory';
 import { safeArray } from '@/utils/safeDataAccess';
 
+/**
+ * Equipment utility functions for Turso database
+ * Used by InventoryProvider to provide utility methods
+ * 
+ * IMPORTANT: This hook MUST NOT use useInventory() or any context
+ * as it's used by the InventoryProvider itself
+ */
 export const useTursoEquipmentUtils = (individualEquipment: IndividualEquipment[]) => {
   // Get equipment by ID
   const getEquipmentById = useMemo(() => (id: string): IndividualEquipment | undefined => {
@@ -33,6 +40,13 @@ export const useTursoEquipmentUtils = (individualEquipment: IndividualEquipment[
     return safeArray(individualEquipment).filter(eq => eq.status === 'available');
   }, [individualEquipment]);
 
+  // Get available equipment by type
+  const getAvailableEquipmentByType = useMemo(() => (typeId: string): IndividualEquipment[] => {
+    return safeArray(individualEquipment).filter(eq => 
+      eq.status === 'available' && eq.equipmentTypeId === typeId
+    );
+  }, [individualEquipment]);
+
   // Get deployed equipment
   const getDeployedEquipment = useMemo(() => (): IndividualEquipment[] => {
     return safeArray(individualEquipment).filter(eq => eq.status === 'deployed');
@@ -59,7 +73,7 @@ export const useTursoEquipmentUtils = (individualEquipment: IndividualEquipment[
     };
 
     safeArray(individualEquipment).forEach(eq => {
-      if (eq.status && counts.hasOwnProperty(eq.status)) {
+      if (eq.status && Object.prototype.hasOwnProperty.call(counts, eq.status)) {
         counts[eq.status]++;
       }
     });
@@ -150,6 +164,7 @@ export const useTursoEquipmentUtils = (individualEquipment: IndividualEquipment[
     getEquipmentByStatus,
     getEquipmentByLocation,
     getAvailableEquipment,
+    getAvailableEquipmentByType,
     getDeployedEquipment,
     getMaintenanceEquipment,
     getRedTaggedEquipment,

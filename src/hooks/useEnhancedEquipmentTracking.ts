@@ -1,21 +1,21 @@
 
 import { useState } from 'react';
 import { Node, Edge } from '@xyflow/react';
-import { useInventoryData } from './useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 import { toast } from 'sonner';
 import { useEquipmentUsageCalculator, EquipmentUsage } from './equipment/useEquipmentUsageCalculator';
 import { useEquipmentTypeManager } from './equipment/useEquipmentTypeManager';
-import { useEquipmentAllocator } from './equipment/useEquipmentAllocator';
-import { useEquipmentReturner } from './equipment/useEquipmentReturner';
+import { useEquipmentAllocatorV2 } from './equipment/useEquipmentAllocatorV2';
+import { useEquipmentReturnerV2 } from './equipment/useEquipmentReturnerV2';
 
 export const useEnhancedEquipmentTracking = (jobId: string, nodes: Node[], edges: Edge[]) => {
-  const { data, updateEquipmentItems } = useInventoryData();
+  const { data, refreshData } = useInventory();
   const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(false);
 
   const { calculateEquipmentUsage } = useEquipmentUsageCalculator(nodes, edges);
   const { ensureEquipmentTypesExist } = useEquipmentTypeManager();
-  const { performEquipmentAllocation, createAuditEntries, cleanupDuplicateDeployments } = useEquipmentAllocator(jobId);
-  const { returnAllJobEquipment, returnEquipmentToLocation } = useEquipmentReturner(jobId);
+  const { performEquipmentAllocation, createAuditEntries, cleanupDuplicateDeployments } = useEquipmentAllocatorV2(jobId);
+  const { returnAllJobEquipment, returnEquipmentToLocation } = useEquipmentReturnerV2(jobId);
 
   const autoAllocateEquipment = (locationId: string, usage?: EquipmentUsage) => {
     if (!locationId) {
@@ -46,8 +46,8 @@ export const useEnhancedEquipmentTracking = (jobId: string, nodes: Node[], edges
     // Perform allocation
     const allocatedItems = performEquipmentAllocation(locationId, currentUsage, updatedItems);
 
-    // Update inventory
-    updateEquipmentItems(updatedItems);
+    // Refresh inventory to get updated data
+    await refreshData();
     
     // Create audit entries
     createAuditEntries(allocatedItems, locationId);

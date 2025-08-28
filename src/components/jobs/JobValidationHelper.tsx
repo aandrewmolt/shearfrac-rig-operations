@@ -183,9 +183,9 @@ const JobValidationHelper: React.FC<JobValidationHelperProps> = ({
     <div className="space-y-2">
       {/* Real-time system status */}
       {snapshot.criticalAlerts > 0 && (
-        <Alert className="border-red-200 bg-red-50">
-          <AlertTriangle className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-red-800">
+        <Alert className="border-red-200 bg-muted">
+          <AlertTriangle className="h-4 w-4 text-destructive" />
+          <AlertDescription className="text-destructive">
             <div className="font-medium mb-1">System Alerts:</div>
             <div className="text-sm">{snapshot.criticalAlerts} critical inventory issues detected</div>
           </AlertDescription>
@@ -194,9 +194,9 @@ const JobValidationHelper: React.FC<JobValidationHelperProps> = ({
 
       {/* Equipment Issues */}
       {issues.length > 0 && (
-        <Alert className="border-red-200 bg-red-50">
-          <AlertTriangle className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-red-800">
+        <Alert className="border-red-200 bg-muted">
+          <AlertTriangle className="h-4 w-4 text-destructive" />
+          <AlertDescription className="text-destructive">
             <div className="flex items-center gap-2 font-medium mb-1">
               Equipment Issues
               <Badge variant="destructive" className="text-xs">{issues.length}</Badge>
@@ -212,12 +212,12 @@ const JobValidationHelper: React.FC<JobValidationHelperProps> = ({
 
       {/* Warnings */}
       {warnings.length > 0 && (
-        <Alert className="border-yellow-200 bg-yellow-50">
-          <Info className="h-4 w-4 text-yellow-600" />
-          <AlertDescription className="text-yellow-800">
+        <Alert className="border-border bg-muted">
+          <Info className="h-4 w-4 text-foreground" />
+          <AlertDescription className="text-foreground">
             <div className="flex items-center gap-2 font-medium mb-1">
               Warnings
-              <Badge variant="outline" className="text-xs border-yellow-300">{warnings.length}</Badge>
+              <Badge variant="outline" className="text-xs border-border">{warnings.length}</Badge>
             </div>
             <ul className="text-sm space-y-1">
               {warnings.map((warning, index) => (
@@ -230,12 +230,12 @@ const JobValidationHelper: React.FC<JobValidationHelperProps> = ({
 
       {/* Suggestions */}
       {suggestions.length > 0 && (
-        <Alert className="border-blue-200 bg-blue-50">
-          <Info className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-blue-800">
+        <Alert className="border-border bg-muted">
+          <Info className="h-4 w-4 text-foreground" />
+          <AlertDescription className="text-foreground">
             <div className="flex items-center gap-2 font-medium mb-1">
               Optimization Suggestions
-              <Badge variant="outline" className="text-xs border-blue-300">{suggestions.length}</Badge>
+              <Badge variant="outline" className="text-xs border-border">{suggestions.length}</Badge>
             </div>
             <ul className="text-sm space-y-1">
               {suggestions.map((suggestion, index) => (
@@ -248,12 +248,12 @@ const JobValidationHelper: React.FC<JobValidationHelperProps> = ({
 
       {/* Success Status */}
       {successes.length > 0 && issues.length === 0 && (
-        <Alert className="border-green-200 bg-green-50">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800">
+        <Alert className="border-border bg-muted">
+          <CheckCircle className="h-4 w-4 text-foreground" />
+          <AlertDescription className="text-foreground">
             <div className="flex items-center gap-2 font-medium mb-1">
               Equipment Status: Optimal
-              <Badge className="text-xs bg-green-100 text-green-800 border-green-300">
+              <Badge className="text-xs bg-muted text-foreground border-border">
                 <Clock className="h-3 w-3 mr-1" />
                 Live
               </Badge>
@@ -270,9 +270,9 @@ const JobValidationHelper: React.FC<JobValidationHelperProps> = ({
 
       {/* Relevant system alerts */}
       {relevantAlerts.length > 0 && (
-        <Alert className="border-purple-200 bg-purple-50">
-          <Info className="h-4 w-4 text-purple-600" />
-          <AlertDescription className="text-purple-800">
+        <Alert className="border-accent bg-accent/10">
+          <Info className="h-4 w-4 text-accent" />
+          <AlertDescription className="text-accent">
             <div className="font-medium mb-1">System Monitoring:</div>
             <ul className="text-sm space-y-1">
               {relevantAlerts.slice(0, 2).map((alert, index) => (

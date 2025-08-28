@@ -1,6 +1,14 @@
 import { tursoDb } from '@/services/tursoDb';
 import { EquipmentType, StorageLocation, IndividualEquipment } from '@/types/inventory';
+import { unifiedEventSystem } from '@/services/unifiedEventSystem';
 
+/**
+ * Direct database mutations for equipment
+ * Used by InventoryProvider for mutation operations
+ * 
+ * IMPORTANT: This hook MUST NOT use useInventory() or any context
+ * as it's used by the InventoryProvider itself
+ */
 export const useTursoEquipmentMutations = () => {
   // Equipment Type Mutations
   const addEquipmentType = async (data: Omit<EquipmentType, 'id'>) => {
@@ -90,13 +98,21 @@ export const useTursoEquipmentMutations = () => {
         id,
         equipmentId: data.equipmentId,
         name: data.name,
-        typeId: data.typeId,
-        locationId: data.locationId,
+        typeId: data.typeId || data.equipmentTypeId,
+        locationId: data.locationId || data.storageLocationId,
         status: data.status || 'available',
+        jobId: data.jobId,
+        serialNumber: data.serialNumber,
+        purchaseDate: data.purchaseDate,
+        warrantyExpiry: data.warrantyExpiry,
+        notes: data.notes,
+        redTagReason: data.redTagReason,
+        redTagPhoto: data.redTagPhoto,
         lastUpdated: new Date()
       };
       
       await tursoDb.addIndividualEquipment(equipment);
+      unifiedEventSystem.emit('equipmentAdded', equipment);
       return equipment;
     } catch (error) {
       console.error('Error adding individual equipment:', error);
@@ -106,10 +122,8 @@ export const useTursoEquipmentMutations = () => {
 
   const updateIndividualEquipment = async (id: string, updateData: Partial<IndividualEquipment>) => {
     try {
-      await tursoDb.updateIndividualEquipment(id, {
-        ...updateData,
-        lastUpdated: new Date()
-      });
+      await tursoDb.updateIndividualEquipment(id, updateData);
+      unifiedEventSystem.emit('equipmentUpdated', { id, ...updateData });
       return { id, ...updateData };
     } catch (error) {
       console.error('Error updating individual equipment:', error);
@@ -120,6 +134,7 @@ export const useTursoEquipmentMutations = () => {
   const deleteIndividualEquipment = async (id: string) => {
     try {
       await tursoDb.deleteIndividualEquipment(id);
+      unifiedEventSystem.emit('equipmentDeleted', { id });
       return true;
     } catch (error) {
       console.error('Error deleting individual equipment:', error);
@@ -127,17 +142,31 @@ export const useTursoEquipmentMutations = () => {
     }
   };
 
-  // Batch operations
-  const batchUpdateEquipment = async (updates: Array<{ id: string; data: Partial<IndividualEquipment> }>) => {
+  // Bulk Operations
+  const addBulkIndividualEquipment = async (equipmentList: Omit<IndividualEquipment, 'id'>[]) => {
     try {
       const results = [];
-      for (const update of updates) {
-        const result = await updateIndividualEquipment(update.id, update.data);
+      for (const equipment of equipmentList) {
+        const result = await addIndividualEquipment(equipment);
         results.push(result);
       }
       return results;
     } catch (error) {
-      console.error('Error in batch equipment update:', error);
+      console.error('Error adding bulk individual equipment:', error);
+      throw error;
+    }
+  };
+
+  const updateBulkIndividualEquipment = async (updates: Array<{id: string, data: Partial<IndividualEquipment>}>) => {
+    try {
+      const results = [];
+      for (const { id, data } of updates) {
+        const result = await updateIndividualEquipment(id, data);
+        results.push(result);
+      }
+      return results;
+    } catch (error) {
+      console.error('Error updating bulk individual equipment:', error);
       throw error;
     }
   };
@@ -153,12 +182,13 @@ export const useTursoEquipmentMutations = () => {
     updateStorageLocation,
     deleteStorageLocation,
     
-    // Individual Equipment operations
+    // Individual Equipment operations  
     addIndividualEquipment,
     updateIndividualEquipment,
     deleteIndividualEquipment,
     
-    // Batch operations
-    batchUpdateEquipment
+    // Bulk operations
+    addBulkIndividualEquipment,
+    updateBulkIndividualEquipment,
   };
 };

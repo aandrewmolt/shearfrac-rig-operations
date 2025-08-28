@@ -1,10 +1,10 @@
 
 import { useCallback } from 'react';
-import { useInventoryData } from '@/hooks/useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 import { ValidationIssue, ValidationResult } from '@/types/validation';
 
 export const useEquipmentValidator = () => {
-  const { data } = useInventoryData();
+  const { data } = useInventory();
 
   const validateEquipmentConsistency = useCallback((): ValidationResult => {
     const issues: ValidationIssue[] = [];

@@ -5,7 +5,7 @@ import { useInventory } from '@/contexts/InventoryContext';
 import { useEquipmentDeletion } from '@/hooks/inventory/useEquipmentDeletion';
 import { toast } from 'sonner';
 import EquipmentTypeManagerHeader from './EquipmentTypeManagerHeader';
-import EquipmentTypeGrid from './EquipmentTypeGrid';
+import EquipmentTypeTable from './EquipmentTypeTable';
 import { EquipmentType, CreateEquipmentTypeInput } from '@/types/types';
 
 const EquipmentTypeManager = () => {
@@ -29,12 +29,16 @@ const EquipmentTypeManager = () => {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'cables': return 'bg-blue-100 text-blue-800';
-      case 'gauges': return 'bg-green-100 text-green-800';
-      case 'adapters': return 'bg-yellow-100 text-yellow-800';
-      case 'communication': return 'bg-purple-100 text-purple-800';
-      case 'power': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'control-units': return 'bg-primary/20 text-primary';
+      case 'it-equipment': return 'bg-info/20 text-info';
+      case 'cables': return 'bg-warning/20 text-warning';
+      case 'gauges': return 'bg-success/20 text-success';
+      case 'adapters': return 'bg-accent/20 text-accent';
+      case 'communication': return 'bg-info/20 text-info';
+      case 'power': return 'bg-destructive/20 text-destructive';
+      case 'safety': return 'bg-warning/20 text-warning';
+      case 'tools': return 'bg-accent/20 text-accent';
+      default: return 'bg-muted text-foreground';
     }
   };
 
@@ -79,7 +83,7 @@ const EquipmentTypeManager = () => {
   };
 
   return (
-    <Card className="bg-white shadow-lg">
+    <Card className="bg-card shadow-lg">
       <EquipmentTypeManagerHeader
         filteredTypesCount={filteredTypes.length}
         searchTerm={searchTerm}
@@ -92,7 +96,7 @@ const EquipmentTypeManager = () => {
         onCancel={handleCancel}
       />
       
-      <EquipmentTypeGrid
+      <EquipmentTypeTable
         filteredTypes={filteredTypes}
         data={data}
         canDeleteEquipmentType={canDeleteEquipmentType}

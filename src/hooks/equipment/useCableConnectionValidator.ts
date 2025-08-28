@@ -1,6 +1,6 @@
 
 import { Node } from '@xyflow/react';
-import { useInventoryData } from '@/hooks/useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 
 export interface CableConnectionRule {
   cableTypeId: string;
@@ -13,7 +13,7 @@ export interface CableConnectionRule {
 }
 
 export const useCableConnectionValidator = () => {
-  const { data } = useInventoryData();
+  const { data } = useInventory();
 
   const getCableConnectionRules = (): CableConnectionRule[] => {
     return data.equipmentTypes

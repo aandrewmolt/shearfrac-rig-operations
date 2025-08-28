@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Calendar, MapPin, Monitor, Satellite, Square, AlertTriangle, CheckCircle, Tablet } from 'lucide-react';
-import { useTrackedEquipment } from '@/hooks/useTrackedEquipment';
-import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
+import { useEquipmentCRUDManager } from '@/hooks/equipment/managers/useEquipmentCRUDManager';
+import { useUnifiedEquipmentSync } from '@/hooks/useUnifiedEquipmentSync';
 import { useInventory } from '@/contexts/InventoryContext';
 import { JobEquipmentAssignment } from '@/types/equipment';
 
@@ -47,13 +47,13 @@ export const UnifiedEquipmentSelectionDialog: React.FC<UnifiedEquipmentSelection
   variant = 'enhanced'
 }) => {
   const { data } = useInventory();
-  const { getAvailableEquipment, getEquipmentHistory } = useTrackedEquipment();
+  const { getAvailableEquipmentByType, getEquipmentByStatus } = useEquipmentCRUDManager();
   const { 
     validateEquipmentAvailability, 
     getEquipmentStatus, 
     conflicts, 
     resolveConflict 
-  } = useInventoryMapperSync();
+  } = useUnifiedEquipmentSync();
   
   const [selectedShearstreamBoxes, setSelectedShearstreamBoxes] = useState<string[]>([]);
   const [selectedStarlink, setSelectedStarlink] = useState<string>('');
@@ -66,29 +66,6 @@ export const UnifiedEquipmentSelectionDialog: React.FC<UnifiedEquipmentSelection
   const [validationResults, setValidationResults] = useState<Record<string, boolean>>({});
   const [isValidating, setIsValidating] = useState(false);
   const [currentConflicts, setCurrentConflicts] = useState<{ equipmentId: string; currentJobId: string; currentJobName: string }[]>([]);
-
-  // Get available equipment based on variant
-  const getAvailableEquipmentByType = (typeName: string) => {
-    if (variant === 'basic' || variant === 'compact') {
-      // Use inventory context for basic variants
-      const equipmentType = data.equipmentTypes.find(type => type.name === typeName);
-      if (!equipmentType) return [];
-      
-      return data.individualEquipment.filter(eq => 
-        eq.typeId === equipmentType.id && 
-        eq.status === 'available'
-      );
-    } else {
-      // Use tracked equipment for enhanced variant
-      const typeMap: Record<string, string> = {
-        'ShearStream Box': 'shearstream-box',
-        'Starlink': 'starlink',
-        'Customer Computer': 'customer-computer',
-        'Customer Tablet': 'customer-computer', // Tablets are treated as computers
-      };
-      return getAvailableEquipment(typeMap[typeName] || typeName.toLowerCase());
-    }
-  };
 
   const availableSSBoxes = getAvailableEquipmentByType('ShearStream Box');
   const availableStarlinks = getAvailableEquipmentByType('Starlink');
@@ -225,7 +202,7 @@ export const UnifiedEquipmentSelectionDialog: React.FC<UnifiedEquipmentSelection
   const getEquipmentStatusBadge = (equipmentId: string) => {
     if (variant === 'basic' || variant === 'compact') {
       return (
-        <Badge variant="outline" className="ml-2 text-xs bg-green-50 text-green-700 border-green-200">
+        <Badge variant="outline" className="ml-2 text-xs bg-muted text-foreground border-border">
           Available
         </Badge>
       );
@@ -236,7 +213,7 @@ export const UnifiedEquipmentSelectionDialog: React.FC<UnifiedEquipmentSelection
     switch (status) {
       case 'available':
         return (
-          <Badge variant="outline" className="ml-2 text-xs bg-green-50 text-green-700 border-green-200">
+          <Badge variant="outline" className="ml-2 text-xs bg-muted text-foreground border-border">
             <CheckCircle className="w-3 h-3 mr-1" />
             Available
           </Badge>
@@ -246,14 +223,14 @@ export const UnifiedEquipmentSelectionDialog: React.FC<UnifiedEquipmentSelection
         const conflict = currentConflicts.find(c => c.equipmentId === equipmentId);
         if (conflict) {
           return (
-            <Badge variant="outline" className="ml-2 text-xs bg-red-50 text-red-700 border-red-200">
+            <Badge variant="outline" className="ml-2 text-xs bg-muted text-destructive border-red-200">
               <AlertTriangle className="w-3 h-3 mr-1" />
               In use by {conflict.currentJobName}
             </Badge>
           );
         }
         return (
-          <Badge variant="outline" className="ml-2 text-xs bg-yellow-50 text-yellow-700 border-yellow-200">
+          <Badge variant="outline" className="ml-2 text-xs bg-muted text-foreground border-border">
             <AlertTriangle className="w-3 h-3 mr-1" />
             {status === 'allocated' ? 'Allocated' : 'Deployed'}
           </Badge>
@@ -298,9 +275,9 @@ export const UnifiedEquipmentSelectionDialog: React.FC<UnifiedEquipmentSelection
         <div className="space-y-6">
           {/* Conflict Alert - Enhanced variant only */}
           {variant === 'enhanced' && currentConflicts.length > 0 && (
-            <Alert className="border-red-200 bg-red-50">
-              <AlertTriangle className="h-4 w-4 text-red-600" />
-              <AlertDescription className="text-red-800">
+            <Alert className="border-red-200 bg-muted">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              <AlertDescription className="text-destructive">
                 <div className="font-semibold mb-2">Equipment Conflicts Detected</div>
                 {currentConflicts.map((conflict, index) => (
                   <div key={index} className="flex items-center justify-between mb-2">
@@ -339,7 +316,7 @@ export const UnifiedEquipmentSelectionDialog: React.FC<UnifiedEquipmentSelection
                   <SelectTrigger>
                     <SelectValue placeholder="Select ShearStream Box" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white z-50">
+                  <SelectContent className="bg-card z-50">
                     {availableSSBoxes
                       .filter(eq => !selectedShearstreamBoxes.includes(eq.id) || selectedShearstreamBoxes[index] === eq.id)
                       .map(equipment => {
@@ -388,7 +365,7 @@ export const UnifiedEquipmentSelectionDialog: React.FC<UnifiedEquipmentSelection
                 <SelectTrigger>
                   <SelectValue placeholder="Select Starlink" />
                 </SelectTrigger>
-                <SelectContent className="bg-white z-50">
+                <SelectContent className="bg-card z-50">
                   {availableStarlinks.map(equipment => {
                     const lastDeployment = getLastDeployment(equipment.id);
                     const equipmentId = equipment.equipmentId || equipment.id;
@@ -440,7 +417,7 @@ export const UnifiedEquipmentSelectionDialog: React.FC<UnifiedEquipmentSelection
                     <SelectTrigger>
                       <SelectValue placeholder="Select Computer or Tablet" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white z-50">
+                    <SelectContent className="bg-card z-50">
                       {allCustomerDevices
                         .filter(eq => !selectedCustomerComputers.includes(eq.id) || selectedCustomerComputers[index] === eq.id)
                         .map(equipment => {
@@ -487,8 +464,8 @@ export const UnifiedEquipmentSelectionDialog: React.FC<UnifiedEquipmentSelection
             </div>
           )}
 
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-blue-800">
+          <div className="bg-muted p-3 rounded-lg">
+            <p className="text-sm text-foreground">
               <strong>Note:</strong> Selected equipment will be marked as deployed and 
               {variant === 'enhanced' ? ' tracked throughout the job lifecycle. Custom names are used only for this job while maintaining equipment identity.' : ' assigned to this job.'}
             </p>

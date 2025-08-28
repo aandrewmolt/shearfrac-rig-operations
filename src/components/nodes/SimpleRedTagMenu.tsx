@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { 
-  AlertTriangle, MoreVertical, Wrench, CheckCircle, XCircle, Package 
+  AlertTriangle, MoreVertical, Wrench, CheckCircle, XCircle, Package, RefreshCw 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -12,7 +12,9 @@ import { useInventory } from '@/contexts/InventoryContext';
 import { tursoDb } from '@/services/tursoDb';
 import { toast } from '@/hooks/use-toast';
 import { EquipmentRemovalDialog } from '@/components/equipment/EquipmentRemovalDialog';
+import { QuickEquipmentReplace } from '@/components/equipment/QuickEquipmentReplace';
 import { useEquipmentUsageTracking } from '@/hooks/equipment/useEquipmentUsageTracking';
+import { useReactFlow } from '@xyflow/react';
 
 interface SimpleRedTagMenuProps {
   equipmentId: string;
@@ -32,9 +34,11 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
   onRemoveEquipment
 }) => {
   const { data: inventoryData, refreshData } = useInventory();
-  const { createRedTagEvent, endUsageSession, startUsageSession } = useEquipmentUsageTracking();
+  const { createRedTagEvent, endUsageSession } = useEquipmentUsageTracking();
+  const { setNodes } = useReactFlow();
   const [open, setOpen] = useState(false);
   const [showRemovalDialog, setShowRemovalDialog] = useState(false);
+  const [showReplaceDialog, setShowReplaceDialog] = useState(false);
   
   const equipment = inventoryData.individualEquipment.find(
     eq => eq.equipmentId === equipmentId
@@ -209,6 +213,32 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
     }
   };
 
+  const handleSwap = () => {
+    setOpen(false);
+    setShowReplaceDialog(true);
+  };
+
+  const handleReplaced = (newEquipmentId: string, newEquipmentName: string) => {
+    // Update the node with the new equipment
+    setNodes((nodes) => 
+      nodes.map((node) => {
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              equipmentId: newEquipmentId,
+              equipmentName: newEquipmentName,
+              assigned: true
+            }
+          };
+        }
+        return node;
+      })
+    );
+    setShowReplaceDialog(false);
+  };
+
   return (
     <div 
       className="absolute top-1 right-1"
@@ -226,6 +256,19 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-56 p-1" align="end">
+          {/* Swap option - show if equipment exists and we have type info */}
+          {equipment && equipment.typeId && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start"
+              onClick={handleSwap}
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Swap Equipment
+            </Button>
+          )}
+          
           {/* Always show remove option */}
           <Button
             variant="ghost"
@@ -243,7 +286,7 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full justify-start text-red-600"
+                className="w-full justify-start text-destructive"
                 onClick={handleRedTag}
               >
                 <AlertTriangle className="mr-2 h-4 w-4" />
@@ -285,7 +328,7 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start text-green-600"
+              className="w-full justify-start text-foreground"
               onClick={handleClearStatus}
             >
               <CheckCircle className="mr-2 h-4 w-4" />
@@ -300,9 +343,22 @@ export const SimpleRedTagMenu: React.FC<SimpleRedTagMenuProps> = ({
         onOpenChange={setShowRemovalDialog}
         equipmentId={fallbackEquipment.equipmentId}
         equipmentName={fallbackEquipment.name || fallbackEquipment.equipmentId}
-          nodeType={nodeType}
-          onConfirm={handleRemovalConfirm}
+        nodeType={nodeType}
+        onConfirm={handleRemovalConfirm}
       />
+      
+      {equipment && equipment.typeId && jobId && (
+        <QuickEquipmentReplace
+          open={showReplaceDialog}
+          onOpenChange={setShowReplaceDialog}
+          nodeId={nodeId}
+          nodeType={nodeType}
+          equipmentTypeId={equipment.typeId}
+          jobId={jobId}
+          jobName={jobName}
+          onReplaced={handleReplaced}
+        />
+      )}
     </div>
   );
 };

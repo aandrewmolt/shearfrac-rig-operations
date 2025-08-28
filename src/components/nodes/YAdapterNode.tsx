@@ -4,6 +4,7 @@ import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { Square, RotateCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import NodeDeleteButton from './NodeDeleteButton';
 import { SimpleRedTagMenu } from './SimpleRedTagMenu';
 
@@ -96,7 +97,7 @@ const YAdapterNode: React.FC<YAdapterNodeProps> = ({ id, data, selected }) => {
   };
 
   return (
-    <Card className="bg-yellow-500 text-gray-900 p-3 border-2 border-yellow-400 min-w-[100px] text-center relative">
+    <Card className="bg-gradient-to-br from-yellow-500/20 to-amber-500/20 text-foreground p-3 border-2 border-yellow-600/50 min-w-[120px] text-center relative shadow-md">
       <Handle
         type="target"
         position={Position.Left}
@@ -110,10 +111,22 @@ const YAdapterNode: React.FC<YAdapterNodeProps> = ({ id, data, selected }) => {
       />
       
       <div className="flex flex-col items-center gap-1">
-        <Square className="h-5 w-5 rotate-45" />
-        <h3 className="font-bold text-sm">{data.label}</h3>
+        <div className="relative">
+          <Square className="h-6 w-6 rotate-45 fill-yellow-500/30 stroke-yellow-600" strokeWidth={2} />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-[10px] font-bold text-yellow-700">Y</span>
+          </div>
+        </div>
+        <h3 className="font-bold text-sm text-yellow-100">{data.label || 'Y-Adapter'}</h3>
         {isAssigned && data.equipmentId && (
-          <p className="text-xs text-yellow-700 font-medium">{data.equipmentId}</p>
+          <Badge variant="secondary" className="text-xs bg-yellow-600/20 text-yellow-100 border-yellow-600/50">
+            {data.equipmentId}
+          </Badge>
+        )}
+        {!isAssigned && (
+          <Badge variant="outline" className="text-xs opacity-60">
+            Not Assigned
+          </Badge>
         )}
       </div>
 
@@ -122,7 +135,7 @@ const YAdapterNode: React.FC<YAdapterNodeProps> = ({ id, data, selected }) => {
         onClick={swapPortNumbers}
         size="sm"
         variant="ghost"
-        className="absolute -top-2 left-1/2 -translate-x-1/2 h-6 w-6 p-0 bg-white hover:bg-gray-100 border border-gray-300 rounded-full"
+        className="absolute -top-2 left-1/2 -translate-x-1/2 h-6 w-6 p-0 bg-card hover:bg-muted border border-border rounded-full"
         title="Swap port numbers"
         style={{ zIndex: 1 }}
       >

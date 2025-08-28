@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Package, AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import { useInventory } from '@/contexts/InventoryContext';
-import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
+import { useUnifiedEquipmentSync } from '@/hooks/useUnifiedEquipmentSync';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface EnhancedEquipmentSelectorProps {
@@ -29,7 +29,7 @@ const EnhancedEquipmentSelector: React.FC<EnhancedEquipmentSelectorProps> = ({
     validateEquipmentAvailability, 
     allocateEquipment,
     conflicts 
-  } = useInventoryMapperSync();
+  } = useUnifiedEquipmentSync();
 
   const filteredEquipment = useMemo(() => {
     return data.individualEquipment
@@ -83,13 +83,13 @@ const EnhancedEquipmentSelector: React.FC<EnhancedEquipmentSelectorProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'available':
-        return 'bg-green-100 text-green-800';
+        return 'bg-muted text-foreground';
       case 'allocated':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-muted text-foreground';
       case 'deployed':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-muted text-foreground';
       default:
-        return 'bg-red-100 text-red-800';
+        return 'bg-muted text-destructive';
     }
   };
 
@@ -113,12 +113,12 @@ const EnhancedEquipmentSelector: React.FC<EnhancedEquipmentSelectorProps> = ({
                   key={equipmentId}
                   className={`p-3 rounded-lg border transition-colors cursor-pointer ${
                     isSelected
-                      ? 'border-blue-500 bg-blue-50'
+                      ? 'border-blue-500 bg-status-info/20'
                       : conflict
-                      ? 'border-red-300 bg-red-50'
+                      ? 'border-red-300 bg-status-danger/20'
                       : isAvailable
-                      ? 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                      : 'border-gray-200 bg-gray-100 opacity-60 cursor-not-allowed'
+                      ? 'border-border hover:border-border hover:bg-card'
+                      : 'border-border bg-card opacity-60 cursor-not-allowed'
                   }`}
                   onClick={() => isAvailable && handleSelect(equipment)}
                 >
@@ -128,9 +128,9 @@ const EnhancedEquipmentSelector: React.FC<EnhancedEquipmentSelectorProps> = ({
                       <div>
                         <div className="font-medium">
                           {equipment.name || equipment.equipmentType?.name}
-                          <span className="text-sm text-gray-500 ml-2">({equipment.equipmentId})</span>
+                          <span className="text-sm text-corporate-silver ml-2">({equipment.equipmentId})</span>
                         </div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-corporate-silver">
                           {equipment.equipmentType?.category}
                         </div>
                       </div>

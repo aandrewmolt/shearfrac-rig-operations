@@ -59,19 +59,19 @@ const MaintenanceSchedulePanel: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'due': return 'bg-red-100 text-red-800';
-      case 'soon': return 'bg-yellow-100 text-yellow-800';
-      case 'good': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'due': return 'bg-muted text-destructive';
+      case 'soon': return 'bg-muted text-foreground';
+      case 'good': return 'bg-muted text-foreground';
+      default: return 'bg-muted text-foreground';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'high': return 'bg-muted text-destructive';
+      case 'medium': return 'bg-muted text-foreground';
+      case 'low': return 'bg-muted text-foreground';
+      default: return 'bg-muted text-foreground';
     }
   };
 
@@ -114,21 +114,21 @@ const MaintenanceSchedulePanel: React.FC = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-3 bg-red-50 rounded-lg">
-            <div className="text-2xl font-bold text-red-600">{maintenanceStats.due}</div>
-            <div className="text-sm text-red-700">Due Now</div>
+          <div className="text-center p-3 bg-muted rounded-lg">
+            <div className="text-2xl font-bold text-destructive">{maintenanceStats.due}</div>
+            <div className="text-sm text-destructive">Due Now</div>
           </div>
-          <div className="text-center p-3 bg-yellow-50 rounded-lg">
-            <div className="text-2xl font-bold text-yellow-600">{maintenanceStats.soon}</div>
-            <div className="text-sm text-yellow-700">Due Soon</div>
+          <div className="text-center p-3 bg-muted rounded-lg">
+            <div className="text-2xl font-bold text-foreground">{maintenanceStats.soon}</div>
+            <div className="text-sm text-foreground">Due Soon</div>
           </div>
-          <div className="text-center p-3 bg-green-50 rounded-lg">
-            <div className="text-2xl font-bold text-green-600">{maintenanceStats.good}</div>
-            <div className="text-sm text-green-700">Up to Date</div>
+          <div className="text-center p-3 bg-muted rounded-lg">
+            <div className="text-2xl font-bold text-foreground">{maintenanceStats.good}</div>
+            <div className="text-sm text-foreground">Up to Date</div>
           </div>
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-2xl font-bold text-gray-600">{maintenanceStats.expired}</div>
-            <div className="text-sm text-gray-700">Warranty Expired</div>
+          <div className="text-center p-3 bg-muted rounded-lg">
+            <div className="text-2xl font-bold text-muted-foreground">{maintenanceStats.expired}</div>
+            <div className="text-sm text-muted-foreground">Warranty Expired</div>
           </div>
         </div>
 
@@ -147,8 +147,8 @@ const MaintenanceSchedulePanel: React.FC = () => {
         </div>
 
         {maintenanceItems.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <CheckCircle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+          <div className="text-center py-8 text-muted-foreground">
+            <CheckCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
             <p>No equipment matching the selected filter</p>
           </div>
         ) : (
@@ -193,9 +193,9 @@ const MaintenanceSchedulePanel: React.FC = () => {
                     {item.warrantyExpiry ? (
                       <div className="flex items-center gap-1">
                         {item.warrantyStatus === 'expired' ? (
-                          <AlertTriangle className="h-3 w-3 text-red-500" />
+                          <AlertTriangle className="h-3 w-3 text-destructive" />
                         ) : (
-                          <Clock className="h-3 w-3 text-green-500" />
+                          <Clock className="h-3 w-3 text-success" />
                         )}
                         {item.warrantyExpiry.toLocaleDateString()}
                       </div>

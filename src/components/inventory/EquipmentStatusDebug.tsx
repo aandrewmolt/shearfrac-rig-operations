@@ -28,7 +28,7 @@ const EquipmentStatusDebug: React.FC = () => {
   );
 
   return (
-    <Card className="bg-white shadow-lg">
+    <Card className="bg-card shadow-lg">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Bug className="h-5 w-5" />
@@ -38,7 +38,7 @@ const EquipmentStatusDebug: React.FC = () => {
       <CardContent className="space-y-4">
         {/* Status Summary */}
         <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Status Distribution</h4>
+          <h4 className="text-sm font-medium text-corporate-silver mb-2">Status Distribution</h4>
           <div className="space-y-1 text-sm">
             {Object.entries(statusCounts).map(([status, count]) => (
               <div key={status} className="flex justify-between items-center">
@@ -56,15 +56,15 @@ const EquipmentStatusDebug: React.FC = () => {
         {/* Problematic Equipment */}
         {problematicEquipment.length > 0 && (
           <div>
-            <h4 className="text-sm font-medium text-red-600 mb-2 flex items-center gap-1">
+            <h4 className="text-sm font-medium text-destructive mb-2 flex items-center gap-1">
               <AlertTriangle className="h-4 w-4" />
               Equipment Without Status ({problematicEquipment.length})
             </h4>
             <div className="space-y-1 text-xs max-h-32 overflow-auto">
               {problematicEquipment.map(eq => (
-                <div key={eq.id} className="flex justify-between bg-red-50 p-1 rounded">
+                <div key={eq.id} className="flex justify-between bg-status-danger/20 p-1 rounded">
                   <span>{eq.equipmentId} - {eq.name}</span>
-                  <span className="text-red-600">Status: {String(eq.status) || 'null/empty'}</span>
+                  <span className="text-destructive">Status: {String(eq.status) || 'null/empty'}</span>
                 </div>
               ))}
             </div>
@@ -74,14 +74,14 @@ const EquipmentStatusDebug: React.FC = () => {
         {/* Should Be Available */}
         {shouldBeAvailable.length > 0 && (
           <div>
-            <h4 className="text-sm font-medium text-yellow-600 mb-2">
+            <h4 className="text-sm font-medium text-foreground mb-2">
               Equipment That Should Be Available ({shouldBeAvailable.length})
             </h4>
             <div className="space-y-1 text-xs max-h-32 overflow-auto">
               {shouldBeAvailable.map(eq => (
-                <div key={eq.id} className="flex justify-between bg-yellow-50 p-1 rounded">
+                <div key={eq.id} className="flex justify-between bg-status-warning/20 p-1 rounded">
                   <span>{eq.equipmentId} - {eq.name}</span>
-                  <span className="text-yellow-600">Status: {eq.status || 'none'}</span>
+                  <span className="text-foreground">Status: {eq.status || 'none'}</span>
                 </div>
               ))}
             </div>
@@ -91,7 +91,7 @@ const EquipmentStatusDebug: React.FC = () => {
         {/* Quick Fix Button */}
         {(problematicEquipment.length > 0 || shouldBeAvailable.length > 0) && (
           <div className="pt-2 border-t">
-            <p className="text-sm text-red-600 mb-2">
+            <p className="text-sm text-destructive mb-2">
               Found {problematicEquipment.length + shouldBeAvailable.length} equipment items with incorrect status!
             </p>
             <Button
@@ -115,7 +115,7 @@ const EquipmentStatusDebug: React.FC = () => {
                 'Auto-Fix Equipment Status'
               )}
             </Button>
-            <p className="text-xs text-gray-600 mt-2">
+            <p className="text-xs text-corporate-silver mt-2">
               This will update all equipment without proper status to 'available'.
             </p>
           </div>
@@ -123,7 +123,7 @@ const EquipmentStatusDebug: React.FC = () => {
 
         {/* All Good */}
         {problematicEquipment.length === 0 && shouldBeAvailable.length === 0 && (
-          <div className="text-center py-4 text-green-600">
+          <div className="text-center py-4 text-foreground">
             ✓ All equipment has proper status values
           </div>
         )}

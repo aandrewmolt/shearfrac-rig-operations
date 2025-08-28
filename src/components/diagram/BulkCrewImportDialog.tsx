@@ -276,15 +276,15 @@ export function BulkCrewImportDialog({
                 </Select>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded">
+              <div className="bg-card p-4 rounded">
                 <p className="text-sm font-medium mb-2">Will create:</p>
                 {templateType === 'client' ? (
-                  <ul className="text-sm text-gray-600 space-y-1">
+                  <ul className="text-sm text-muted-foreground space-y-1">
                     <li>• Company Man (Day Shift) - {client}</li>
                     <li>• Company Man (Night Shift) - {client}</li>
                   </ul>
                 ) : (
-                  <ul className="text-sm text-gray-600 space-y-1">
+                  <ul className="text-sm text-muted-foreground space-y-1">
                     <li>• Engineer (Day Shift)</li>
                     <li>• E-Tech (Day Shift)</li>
                     <li>• Engineer (Night Shift)</li>
@@ -355,7 +355,7 @@ export function BulkCrewImportDialog({
                         <div
                           key={member.id}
                           className={cn(
-                            "flex items-center justify-between p-2 rounded hover:bg-gray-50",
+                            "flex items-center justify-between p-2 rounded hover:bg-muted",
                             importMode === 'company' && !selectedMembers.has(member.id) && "opacity-50"
                           )}
                         >
@@ -368,7 +368,7 @@ export function BulkCrewImportDialog({
                             )}
                             <div>
                               <p className="font-medium">{member.name}</p>
-                              <p className="text-sm text-gray-600">{member.title}</p>
+                              <p className="text-sm text-muted-foreground">{member.title}</p>
                             </div>
                           </div>
                           <Badge variant={member.shift === 'days' ? 'default' : 'secondary'}>

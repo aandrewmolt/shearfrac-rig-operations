@@ -70,10 +70,15 @@ const EquipmentTypeForm: React.FC<EquipmentTypeFormProps> = ({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="control-units">Control Units</SelectItem>
+            <SelectItem value="it-equipment">IT Equipment</SelectItem>
             <SelectItem value="cables">Cables</SelectItem>
             <SelectItem value="gauges">Gauges</SelectItem>
             <SelectItem value="adapters">Adapters</SelectItem>
             <SelectItem value="communication">Communication</SelectItem>
+            <SelectItem value="power">Power</SelectItem>
+            <SelectItem value="safety">Safety</SelectItem>
+            <SelectItem value="tools">Tools</SelectItem>
             <SelectItem value="other">Other</SelectItem>
           </SelectContent>
         </Select>
@@ -95,7 +100,7 @@ const EquipmentTypeForm: React.FC<EquipmentTypeFormProps> = ({
           onChange={(e) => setFormData({ ...formData, defaultIdPrefix: e.target.value })}
           placeholder="e.g., SS-, SL-, CC-"
         />
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           This will be used to auto-generate IDs like {formData.defaultIdPrefix}001
         </p>
       </div>

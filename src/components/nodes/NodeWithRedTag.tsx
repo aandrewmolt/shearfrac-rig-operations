@@ -212,8 +212,8 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
 
   // Apply red tag styling to the wrapper
   const wrapperClassName = `relative ${className} ${
-    isRedTagged ? 'ring-2 ring-red-500 ring-offset-2' : 
-    isMaintenance ? 'ring-2 ring-yellow-500 ring-offset-2' : ''
+    isRedTagged ? 'ring-2 ring-destructive ring-offset-2' : 
+    isMaintenance ? 'ring-2 ring-warning ring-offset-2' : ''
   }`;
 
   return (
@@ -234,11 +234,11 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
         {(isRedTagged || isMaintenance) && (
           <div className="absolute -top-3 -right-3 z-20">
             {isRedTagged ? (
-              <div className="bg-red-500 rounded-full p-1">
+              <div className="bg-destructive rounded-full p-1">
                 <AlertTriangle className="h-4 w-4 text-white animate-pulse" />
               </div>
             ) : (
-              <div className="bg-yellow-500 rounded-full p-1">
+              <div className="bg-warning rounded-full p-1">
                 <Wrench className="h-4 w-4 text-white animate-pulse" />
               </div>
             )}
@@ -254,12 +254,12 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
                   data-menu-trigger
                   variant="ghost" 
                   size="sm" 
-                  className="h-6 w-6 p-0 bg-gray-800/80 hover:bg-gray-700 border border-gray-600"
+                  className="h-6 w-6 p-0 bg-muted/80 hover:bg-muted border border-border"
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
                 >
-                  <MoreVertical className="h-4 w-4 text-white" />
+                  <MoreVertical className="h-4 w-4 text-foreground" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -272,7 +272,7 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
                   <>
                     <DropdownMenuItem 
                       onClick={() => setShowRedTagDialog(true)}
-                      className="text-red-600"
+                      className="text-destructive"
                     >
                       <AlertTriangle className="mr-2 h-4 w-4" />
                       Red Tag & Replace
@@ -288,7 +288,7 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
                 {isRedTagged && (
                   <DropdownMenuItem 
                     onClick={handleClearRedTag}
-                    className="text-green-600"
+                    className="text-foreground"
                   >
                     <CheckCircle className="mr-2 h-4 w-4" />
                     Clear Red Tag
@@ -298,7 +298,7 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
                 {isMaintenance && (
                   <DropdownMenuItem 
                     onClick={handleClearRedTag}
-                    className="text-green-600"
+                    className="text-foreground"
                   >
                     <CheckCircle className="mr-2 h-4 w-4" />
                     Complete Maintenance
@@ -364,12 +364,12 @@ export const NodeWithRedTag: React.FC<NodeWithRedTagProps> = ({
             </div>
             
             {availableReplacements.length > 0 && (
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <Label className="text-blue-900">Available Replacements</Label>
-                <p className="text-sm text-blue-700 mb-2">
+              <div className="p-3 bg-muted rounded-lg">
+                <Label className="text-primary">Available Replacements</Label>
+                <p className="text-sm text-foreground mb-2">
                   {availableReplacements.length} replacement(s) available
                 </p>
-                <div className="text-xs text-blue-600">
+                <div className="text-xs text-foreground">
                   Equipment will be removed from node. You can assign a replacement after.
                 </div>
               </div>

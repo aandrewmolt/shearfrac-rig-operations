@@ -43,7 +43,7 @@ const EquipmentUsageSummary: React.FC<EquipmentUsageSummaryProps> = ({
         <Activity className="h-4 w-4" />
         Equipment Required from Diagram
       </h4>
-      <div className="space-y-2 p-3 bg-blue-50 rounded-lg">
+      <div className="space-y-2 p-3 bg-muted rounded-lg">
         {Object.entries(equipmentUsage.cables).map(([typeId, details]) => (
           <div key={typeId} className="flex justify-between text-sm">
             <span className="truncate">{details.typeName}:</span>

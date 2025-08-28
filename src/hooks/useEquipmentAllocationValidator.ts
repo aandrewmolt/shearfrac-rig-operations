@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { useInventoryData } from './useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 import { toast } from 'sonner';
 
 export interface EquipmentAllocationIssue {
@@ -13,7 +13,7 @@ export interface EquipmentAllocationIssue {
 }
 
 export const useEquipmentAllocationValidator = () => {
-  const { data, updateEquipmentItems } = useInventoryData();
+  const { data, updateEquipmentItems } = useInventory();
   const [validationResults, setValidationResults] = useState<EquipmentAllocationIssue[]>([]);
   const [isValidating, setIsValidating] = useState(false);
 

@@ -53,22 +53,22 @@ const FloatingDiagramControls: React.FC<FloatingDiagramControlsProps> = ({
   if (isMobile) {
     return (
       <div className="fixed bottom-0 left-0 right-0 z-20 pb-safe">
-        <Card className="bg-white/95 backdrop-blur-sm border-t shadow-lg rounded-t-lg mx-2 mb-2">
+        <Card className="bg-card backdrop-blur-md border-t border-border shadow-2xl rounded-t-lg mx-2 mb-2">
           <CardContent className="p-3">
           <div className="flex flex-col gap-3">
             {/* Cable Type Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-gray-600 min-w-fit">Cable:</span>
+              <span className="text-xs font-semibold text-foreground min-w-fit">Cable:</span>
               <Select value={selectedCableType} onValueChange={setSelectedCableType}>
-                <SelectTrigger className="h-9 flex-1 text-sm">
+                <SelectTrigger className="h-9 flex-1 text-sm bg-background border-border hover:bg-muted transition-colors">
                   <SelectValue placeholder="Select cable type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-card border-border">
                   {availableCableTypes.map((cable) => (
-                    <SelectItem key={cable.id} value={cable.id}>
-                      <div className="flex items-center justify-between w-full">
-                        <span>{cable.name}</span>
-                        <Badge variant="outline" className="ml-2 text-xs">
+                    <SelectItem key={cable.id} value={cable.id} className="hover:bg-muted">
+                      <div className="flex items-center justify-between w-full gap-2">
+                        <span className="text-foreground">{cable.name}</span>
+                        <Badge variant="secondary" className="ml-2 text-xs bg-primary/20 text-primary border-0">
                           {cable.availableCount}
                         </Badge>
                       </div>
@@ -83,30 +83,30 @@ const FloatingDiagramControls: React.FC<FloatingDiagramControlsProps> = ({
               <Button
                 onClick={addYAdapter}
                 size="sm"
-                variant="outline"
-                className="h-9 text-xs"
+                variant="secondary"
+                className="h-9 text-xs bg-muted hover:bg-muted/80 border-border"
               >
-                <Zap className="h-3 w-3 mr-1" />
+                <Zap className="h-3 w-3 mr-1 text-primary" />
                 Y-Adapter
               </Button>
               
               <Button
                 onClick={onAddShearstreamBox}
                 size="sm"
-                variant="outline"
-                className="h-9 text-xs"
+                variant="secondary"
+                className="h-9 text-xs bg-muted hover:bg-muted/80 border-border"
               >
-                <Plus className="h-3 w-3 mr-1" />
+                <Plus className="h-3 w-3 mr-1 text-primary" />
                 SS Box
               </Button>
               
               <Button
                 onClick={addCustomerComputer}
                 size="sm"
-                variant="outline"
-                className="h-9 text-xs"
+                variant="secondary"
+                className="h-9 text-xs bg-muted hover:bg-muted/80 border-border"
               >
-                <Monitor className="h-3 w-3 mr-1" />
+                <Monitor className="h-3 w-3 mr-1 text-primary" />
                 Computer
               </Button>
             </div>
@@ -119,23 +119,23 @@ const FloatingDiagramControls: React.FC<FloatingDiagramControlsProps> = ({
 
   // Desktop layout: Floating top bar
   return (
-    <Card className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 bg-white/95 backdrop-blur-sm border shadow-lg">
+    <Card className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 bg-card backdrop-blur-md border-border shadow-2xl">
       <CardContent className="p-3">
         <div className="flex items-center gap-4">
           {/* Cable Type Selector */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-gray-600">Cable:</span>
+            <span className="text-xs font-semibold text-foreground">Cable:</span>
             <Select value={selectedCableType} onValueChange={setSelectedCableType}>
-              <SelectTrigger className="h-8 w-32 text-xs">
+              <SelectTrigger className="h-8 w-36 text-xs bg-background border-border hover:bg-muted transition-colors">
                 <SelectValue placeholder="Select cable" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-card border-border">
                 {availableCableTypes.map((cable) => (
-                  <SelectItem key={cable.id} value={cable.id} className="text-xs">
-                    <div className="flex items-center justify-between w-full">
-                      <span>{cable.name}</span>
-                      <Badge variant="outline" className="ml-2 text-xs">
-                        {cable.availableCount} available
+                  <SelectItem key={cable.id} value={cable.id} className="text-xs hover:bg-muted">
+                    <div className="flex items-center justify-between w-full gap-2">
+                      <span className="text-foreground">{cable.name}</span>
+                      <Badge variant="secondary" className="ml-2 text-xs bg-primary/20 text-primary border-0">
+                        {cable.availableCount}
                       </Badge>
                     </div>
                   </SelectItem>
@@ -145,39 +145,39 @@ const FloatingDiagramControls: React.FC<FloatingDiagramControlsProps> = ({
           </div>
 
           {/* Divider */}
-          <div className="h-6 w-px bg-gray-300" />
+          <div className="h-6 w-px bg-border/50" />
 
           {/* Quick Action Buttons */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-gray-600">Add:</span>
+            <span className="text-xs font-semibold text-foreground">Add:</span>
             
             <Button
               onClick={addYAdapter}
               size="sm"
-              variant="outline"
-              className="h-8 text-xs px-3"
+              variant="secondary"
+              className="h-8 text-xs px-3 bg-muted hover:bg-muted/80 border-border"
             >
-              <Zap className="h-3 w-3 mr-1" />
+              <Zap className="h-3 w-3 mr-1 text-primary" />
               Y-Adapter
             </Button>
             
             <Button
               onClick={onAddShearstreamBox}
               size="sm"
-              variant="outline"
-              className="h-8 text-xs px-3"
+              variant="secondary"
+              className="h-8 text-xs px-3 bg-muted hover:bg-muted/80 border-border"
             >
-              <Plus className="h-3 w-3 mr-1" />
+              <Plus className="h-3 w-3 mr-1 text-primary" />
               SS Box
             </Button>
             
             <Button
               onClick={addCustomerComputer}
               size="sm"
-              variant="outline"
-              className="h-8 text-xs px-3"
+              variant="secondary"
+              className="h-8 text-xs px-3 bg-muted hover:bg-muted/80 border-border"
             >
-              <Monitor className="h-3 w-3 mr-1" />
+              <Monitor className="h-3 w-3 mr-1 text-primary" />
               Computer
             </Button>
           </div>

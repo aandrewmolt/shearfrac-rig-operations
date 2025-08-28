@@ -125,24 +125,24 @@ const ValidationDialog: React.FC<ValidationDialogProps> = ({
               <CardContent>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div className="space-y-1">
-                    <div className="text-2xl font-bold text-green-600">
+                    <div className="text-2xl font-bold text-foreground">
                       {lastValidation.isValid ? '✓' : lastValidation.summary.totalIssues}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-corporate-silver">
                       {lastValidation.isValid ? 'All Good' : 'Total Issues'}
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-2xl font-bold text-red-600">
+                    <div className="text-2xl font-bold text-destructive">
                       {lastValidation.summary.criticalIssues}
                     </div>
-                    <div className="text-sm text-gray-600">Critical</div>
+                    <div className="text-sm text-corporate-silver">Critical</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-2xl font-bold text-blue-600">
+                    <div className="text-2xl font-bold text-foreground">
                       {lastValidation.summary.autoFixableIssues}
                     </div>
-                    <div className="text-sm text-gray-600">Auto-Fixable</div>
+                    <div className="text-sm text-corporate-silver">Auto-Fixable</div>
                   </div>
                 </div>
               </CardContent>
@@ -172,8 +172,8 @@ const ValidationDialog: React.FC<ValidationDialogProps> = ({
                               {issue.type.replace('_', ' ').toUpperCase()}
                             </Badge>
                           </div>
-                          <p className="text-sm text-gray-700">{issue.message}</p>
-                          <div className="text-xs text-gray-500">
+                          <p className="text-sm text-corporate-silver">{issue.message}</p>
+                          <div className="text-xs text-corporate-silver">
                             Expected: {issue.expectedValue} | Actual: {issue.actualValue}
                           </div>
                           <div className="text-xs">
@@ -191,9 +191,9 @@ const ValidationDialog: React.FC<ValidationDialogProps> = ({
           )}
 
           {lastValidation?.isValid && (
-            <Card className="border-green-200 bg-green-50">
+            <Card className="border-border bg-status-success/20">
               <CardContent className="pt-6">
-                <div className="flex items-center gap-2 text-green-700">
+                <div className="flex items-center gap-2 text-foreground">
                   <CheckCircle className="h-5 w-5" />
                   <span className="font-medium">All equipment data is consistent!</span>
                 </div>

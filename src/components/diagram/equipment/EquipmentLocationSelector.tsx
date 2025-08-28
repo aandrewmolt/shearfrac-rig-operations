@@ -31,14 +31,14 @@ const EquipmentLocationSelector: React.FC<EquipmentLocationSelectorProps> = ({
             <SelectItem key={location.id} value={location.id}>
               {location.name}
               {location.isDefault && (
-                <span className="ml-2 text-xs text-blue-600">(Default)</span>
+                <span className="ml-2 text-xs text-foreground">(Default)</span>
               )}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
       {selectedLocation && (
-        <p className="text-xs text-gray-600">
+        <p className="text-xs text-muted-foreground">
           Equipment will be allocated from this location
         </p>
       )}

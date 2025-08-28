@@ -5,7 +5,7 @@ import { Edge, Node, Connection, EdgeChange, NodeChange } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
 import { useJobDiagramCore } from '@/hooks/useJobDiagramCore';
-import { useJobDiagramSave } from '@/hooks/useJobDiagramSave';
+import { useUnifiedSave } from '@/hooks/useUnifiedSave';
 import { useExtrasOnLocation } from '@/hooks/useExtrasOnLocation';
 import { useWellConfiguration } from '@/hooks/useWellConfiguration';
 import { useJobDiagramActions } from '@/hooks/useJobDiagramActions';
@@ -13,7 +13,7 @@ import { useJobDiagramEquipmentHandlers } from '@/hooks/useJobDiagramEquipmentHa
 import { useStarlinkCustomerComputerHandlers } from '@/hooks/useStarlinkCustomerComputerHandlers';
 import { useRobustEquipmentTracking } from '@/hooks/useRobustEquipmentTracking';
 import { useEquipmentValidation } from '@/hooks/equipment/useEquipmentValidation';
-import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
+import { useUnifiedEquipmentSync } from '@/hooks/useUnifiedEquipmentSync';
 import { useEquipmentUsageAnalyzer } from '@/hooks/equipment/useEquipmentUsageAnalyzer';
 import { useEdgeMigration } from '@/hooks/useEdgeMigration';
 import { useNodeDeletion } from '@/hooks/useNodeDeletion';
@@ -28,8 +28,8 @@ import FloatingDiagramControls from '@/components/diagram/FloatingDiagramControl
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Camera, Package, AlertTriangle, Menu, CameraIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { toast } from '@/hooks/use-toast';
 import JobPhotoPanel from '@/components/diagram/JobPhotoPanel';
 import CompactJobEquipmentPanel from '@/components/diagram/CompactJobEquipmentPanel';
 import CableAllocationDialog from '@/components/diagram/CableAllocationDialog';
@@ -52,18 +52,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
   const [yAdapterDialogOpen, setYAdapterDialogOpen] = useState(false);
 
   // Initialize inventory mapper sync
-  const {
-    isValidating: isSyncValidating,
-    conflicts,
-    allocations,
-    validateEquipmentAvailability,
-    allocateEquipment,
-    releaseEquipment,
-    resolveConflict,
-    syncInventoryStatus,
-    getEquipmentStatus,
-    getJobEquipment
-  } = useInventoryMapperSync();
+  // Placeholder for sync operations - will be defined after nodes/edges are available
 
   const {
     reactFlowWrapper,
@@ -97,6 +86,48 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     updateWellsideGaugeName,
   } = useJobDiagramCore(job, inventoryData?.individualEquipment);
 
+  // Initialize unified equipment sync system (replaces 4 separate sync systems)
+  const {
+    syncEquipmentStatus,
+    allocateEquipment,
+    returnEquipment: releaseEquipment,
+    validateEquipmentAvailability,
+    syncAllNodesEquipment,
+    deployExtraEquipment,
+    conflicts,
+    resolveConflict,
+    syncStatus,
+    manualSync: unifiedSyncEquipment
+  } = useUnifiedEquipmentSync({
+    jobId: job.id,
+    nodes,
+    edges,
+    setNodes,
+    setEdges,
+    onEquipmentChange: (equipmentId, change) => {
+      console.log(`Equipment ${equipmentId} changed:`, change);
+    },
+    onConflictDetected: (conflict) => {
+      console.warn('Equipment conflict detected:', conflict);
+      toast.warning(`Equipment ${conflict.equipmentId} has a conflict`);
+    },
+    onSyncComplete: () => {
+      console.log('Equipment sync completed - triggering save');
+    }
+  });
+
+  // The sync function is available as unifiedSyncEquipment
+  
+  // Cloud conflicts tracking
+  const cloudConflicts = conflicts || [];
+  const hasCloudConflicts = cloudConflicts.length > 0;
+  const triggerBatchSync = () => {
+    // Trigger sync to resolve conflicts
+    if (unifiedSyncEquipment) {
+      unifiedSyncEquipment();
+    }
+  };
+
   // Initialize individual equipment allocation tracking - AFTER nodes and edges are defined
   const {
     allocatedEquipment,
@@ -108,6 +139,45 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     isEquipmentAllocated,
     getAvailableEquipmentForType
   } = useAllocatedEquipment(job.id, nodes, edges);
+
+  // Initialize extras on location first (needed by save hook)
+  const {
+    extrasOnLocation,
+    handleAddExtra,
+    handleRemoveExtra,
+  } = useExtrasOnLocation();
+
+  // Initialize unified save system
+  const { saveNow, saveBatched } = useUnifiedSave({ 
+    jobId: job.id, 
+    isInitialized 
+  });
+
+  // Helper to create job data for saves
+  const createSaveData = useCallback(() => ({
+    ...job,
+    nodes,
+    edges,
+    mainBoxName,
+    satelliteName,
+    wellsideGaugeName,
+    companyComputerNames: customerComputerNames,
+    selectedCableType,
+    equipmentAssignment: {
+      shearstreamBoxIds: selectedShearstreamBoxes,
+      starlinkId: selectedStarlink,
+      customerComputerIds: selectedCustomerComputers
+    },
+    extrasOnLocation
+  }), [
+    job, nodes, edges, mainBoxName, satelliteName, wellsideGaugeName, 
+    customerComputerNames, selectedCableType, selectedShearstreamBoxes, 
+    selectedStarlink, selectedCustomerComputers, extrasOnLocation
+  ]);
+  
+  // Real-time equipment sync now handled by unified sync system
+  
+  // Universal sync now handled by unified sync system
   
   // Disabled auto-allocation to prevent conflicts with manual allocation
   // useAutoEquipmentAllocation({
@@ -116,28 +186,6 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
   //   jobId: job.id,
   //   jobName: job.name
   // });
-
-  const {
-    extrasOnLocation,
-    handleAddExtra,
-    handleRemoveExtra,
-  } = useExtrasOnLocation();
-
-  const { manualSave, immediateSave } = useJobDiagramSave({
-    job,
-    nodes,
-    edges,
-    isInitialized,
-    mainBoxName,
-    satelliteName,
-    wellsideGaugeName,
-    customerComputerNames,
-    selectedCableType,
-    selectedShearstreamBoxes,
-    selectedStarlink,
-    selectedCustomerComputers,
-    extrasOnLocation,
-  });
 
   // Equipment tracking and validation
   const {
@@ -168,7 +216,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     if (isDirectConnection) {
       // Direct connections don't need cable selection
       onConnect(connection);
-      setTimeout(() => immediateSave(), 100);
+      setTimeout(() => saveNow(createSaveData(), 'direct connection created'), 100);
     } else {
       // For cable connections, create a temporary edge and open the dialog
       const tempEdge: Edge = {
@@ -187,7 +235,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
       // Store the connection params for later use
       setCableAllocationDialog({ isOpen: true, edge: tempEdge });
     }
-  }, [nodes, onConnect, immediateSave, selectedCableType, setCableAllocationDialog]);
+  }, [nodes, onConnect, saveNow, createSaveData, selectedCableType, setCableAllocationDialog]);
 
   // Enhanced edges change handler to detect Y→Well toggles
   const enhancedOnEdgesChange = useCallback((changes: EdgeChange[]) => {
@@ -200,9 +248,9 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     );
     
     if (hasEdgeUpdate) {
-      setTimeout(() => immediateSave(), 100);
+      setTimeout(() => saveBatched(createSaveData(), 'edge changes'), 100);
     }
-  }, [onEdgesChange, immediateSave]);
+  }, [onEdgesChange, saveBatched, createSaveData]);
 
   // Enhanced nodes change handler to detect COM port changes
   const enhancedOnNodesChange = useCallback((changes: NodeChange[]) => {
@@ -214,9 +262,9 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     );
     
     if (hasMainBoxUpdate) {
-      setTimeout(() => immediateSave(), 100);
+      setTimeout(() => saveBatched(createSaveData(), 'node changes'), 100);
     }
-  }, [onNodesChange, immediateSave]);
+  }, [onNodesChange, saveBatched, createSaveData]);
 
   const {
     updateWellName,
@@ -274,7 +322,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     validateEquipmentAvailability,
     allocateEquipment,
     releaseEquipment,
-    onSave: immediateSave,
+    onSave: () => saveNow(createSaveData(), 'well configuration save'),
   });
 
   // Add Starlink and Customer Computer handlers
@@ -307,10 +355,29 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
         console.log('Detected edges with old cable type IDs, running migration...');
         migrateEdges(edges, setEdges);
         // Save after migration
-        setTimeout(() => immediateSave(), 500);
+        setTimeout(() => saveBatched(createSaveData(), 'edge migration'), 500);
       }
     }
-  }, [isInitialized, edges, migrateEdges, setEdges, immediateSave]);
+  }, [isInitialized, edges, migrateEdges, setEdges, saveBatched, createSaveData]);
+  
+  // Sync equipment status ONCE when job is first loaded
+  React.useEffect(() => {
+    // Only run once when first initialized
+    if (isInitialized && nodes.length > 0) {
+      // Check all nodes for equipment that needs syncing
+      const equipmentToSync = nodes
+        .filter(node => node.data?.equipmentId && node.data?.assigned)
+        .map(node => node.data.equipmentId);
+      
+      if (equipmentToSync.length > 0) {
+        console.log('One-time equipment sync for loaded job:', equipmentToSync);
+        // Just sync the inventory status once to load current state
+        if (unifiedSyncEquipment) {
+          unifiedSyncEquipment(); // Use unified sync system directly
+        }
+      }
+    }
+  }, [isInitialized]); // Only depend on initialization state
   
   // Get equipment status for UI indicators
   const usage = getEquipmentUsage();
@@ -333,7 +400,8 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     setSelectedCustomerComputers,
     releaseEquipment,
     jobId: job.id,
-    immediateSave,
+    saveNow,
+    createSaveData,
   });
 
   // Equipment allocation handlers
@@ -349,15 +417,42 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     
     if (node) {
       // Existing node allocation
+      const equipment = inventoryData.individualEquipment.find(e => e.id === equipmentId);
+      if (!equipment) {
+        toast.error('Equipment not found');
+        return;
+      }
+      
       const success = await allocateEquipmentToNode(node.id, equipmentId);
       if (success) {
-        // Update node data with allocated equipment
+        // Update node data with allocated equipment - use actual equipment ID, not database ID
         setNodes(nodes => nodes.map(n => 
           n.id === node.id 
-            ? { ...n, data: { ...n.data, equipmentId: equipmentId } }
+            ? { 
+                ...n, 
+                data: { 
+                  ...n.data, 
+                  equipmentId: equipment.equipmentId, // Use actual equipment ID
+                  label: equipment.equipmentId,
+                  equipmentName: equipment.name,
+                  assigned: true
+                } 
+              }
             : n
         ));
-        immediateSave();
+        
+        // Sync with inventory mapper if available
+        if (allocateEquipment) {
+          await allocateEquipment(equipment.equipmentId, job.id);
+        }
+        
+        // Sync equipment status
+        if (syncEquipmentStatus) {
+          await syncEquipmentStatus(equipment.equipmentId, 'deployed', job.id);
+        }
+        
+        saveNow(createSaveData(), 'equipment allocated to node');
+        toast.success(`${equipment.equipmentId} assigned successfully`);
       }
     } else if (nodeType && position) {
       // New node creation with equipment
@@ -367,25 +462,37 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
       if (nodeType === 'shearstreamBox') {
         addShearstreamBoxWithEquipment(equipmentId, equipment.equipmentId);
         // Wait for node to be created then allocate equipment
-        setTimeout(() => {
+        setTimeout(async () => {
           const newNodes = nodes.filter(n => n.type === 'mainBox');
           const newNodeId = `main-box-${newNodes.length}`;
-          allocateEquipmentToNode(newNodeId, equipmentId);
+          await allocateEquipmentToNode(newNodeId, equipmentId);
+          
+          // Sync with inventory mapper
+          if (allocateEquipment) {
+            await allocateEquipment(equipment.equipmentId, job.id);
+          }
+          saveNow(createSaveData(), 'equipment allocated to node');
         }, 100);
       } else if (nodeType === 'customerComputer') {
         const isTablet = equipment.typeId === 'customer-tablet';
         addCustomerComputerWithEquipment(equipmentId, equipment.equipmentId, isTablet);
         // Wait for node to be created then allocate equipment
-        setTimeout(() => {
+        setTimeout(async () => {
           const newNodes = nodes.filter(n => n.type === 'customerComputer');
           const newNodeId = `customer-computer-${newNodes.length}`;
-          allocateEquipmentToNode(newNodeId, equipmentId);
+          await allocateEquipmentToNode(newNodeId, equipmentId);
+          
+          // Sync with inventory mapper
+          if (allocateEquipment) {
+            await allocateEquipment(equipment.equipmentId, job.id);
+          }
+          saveNow(createSaveData(), 'equipment allocated to node');
         }, 100);
       }
     }
     
     setNodeAllocationDialog({ isOpen: false, node: null });
-  }, [nodeAllocationDialog, allocateEquipmentToNode, setNodes, immediateSave, inventoryData, nodes, addShearstreamBoxWithEquipment, addCustomerComputerWithEquipment]);
+  }, [nodeAllocationDialog, allocateEquipmentToNode, setNodes, saveNow, createSaveData, inventoryData, nodes, addShearstreamBoxWithEquipment, addCustomerComputerWithEquipment, allocateEquipment, job]);
 
   const handleDeallocateEquipmentFromNode = useCallback(async (nodeId: string) => {
     const success = await deallocateEquipmentFromNode(nodeId);
@@ -393,12 +500,12 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
       // Update node data
       setNodes(nodes => nodes.map(node => 
         node.id === nodeId 
-          ? { ...node, data: { ...node.data, allocatedEquipmentId: undefined } }
+          ? { ...node, data: { ...node.data, equipmentId: undefined } }
           : node
       ));
-      immediateSave();
+      saveNow(createSaveData(), 'equipment deallocated from node');
     }
-  }, [deallocateEquipmentFromNode, setNodes, immediateSave]);
+  }, [deallocateEquipmentFromNode, setNodes, saveNow, createSaveData]);
 
   const handleAllocateCableToEdge = useCallback((edgeId: string) => {
     const edge = edges.find(e => e.id === edgeId);
@@ -410,6 +517,13 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
   const handleConfirmCableAllocation = useCallback(async (cableId: string) => {
     const edge = cableAllocationDialog.edge;
     if (!edge) return;
+    
+    // Get cable equipment details
+    const cable = inventoryData.individualEquipment.find(e => e.id === cableId);
+    if (!cable) {
+      toast.error('Cable not found');
+      return;
+    }
 
     // Check if this is a temporary edge (from new connection)
     if (edge.data?.tempConnection) {
@@ -439,13 +553,28 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
           // Allocate the cable to the new edge
           const success = await allocateCableToEdge(newEdge.id, cableId);
           if (success) {
-            // Update edge data with allocated equipment
+            // Update edge data with allocated equipment - use actual cable ID
             setEdges(edges => edges.map(e => 
               e.id === newEdge.id 
-                ? { ...e, data: { ...e.data, allocatedEquipmentId: cableId } }
+                ? { 
+                    ...e, 
+                    data: { 
+                      ...e.data, 
+                      equipmentId: cable.equipmentId, // Use actual cable ID
+                      cableLabel: cable.equipmentId,
+                      cableName: cable.name
+                    } 
+                  }
                 : e
             ));
-            immediateSave();
+            
+            // Sync with inventory mapper
+            if (allocateEquipment) {
+              await allocateEquipment(cable.equipmentId, job.id);
+            }
+            
+            saveNow(createSaveData(), 'equipment allocated to node');
+            toast.success(`Cable ${cable.equipmentId} assigned successfully`);
           }
         }
       }, 100);
@@ -453,17 +582,32 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
       // Normal cable allocation for existing edge
       const success = await allocateCableToEdge(edge.id, cableId);
       if (success) {
-        // Update edge data
+        // Update edge data with actual cable ID
         setEdges(edges => edges.map(e => 
           e.id === edge.id 
-            ? { ...e, data: { ...e.data, allocatedEquipmentId: cableId } }
+            ? { 
+                ...e, 
+                data: { 
+                  ...e.data, 
+                  equipmentId: cable.equipmentId, // Use actual cable ID
+                  cableLabel: cable.equipmentId,
+                  cableName: cable.name
+                } 
+              }
             : e
         ));
-        immediateSave();
+        
+        // Sync with inventory mapper
+        if (allocateEquipment) {
+          await allocateEquipment(cable.equipmentId, job.id);
+        }
+        
+        saveNow(createSaveData(), 'equipment allocated to node');
+        toast.success(`Cable ${cable.equipmentId} assigned successfully`);
       }
     }
     setCableAllocationDialog({ isOpen: false, edge: null });
-  }, [cableAllocationDialog.edge, allocateCableToEdge, setEdges, immediateSave, onConnect, edges]);
+  }, [cableAllocationDialog.edge, allocateCableToEdge, setEdges, saveNow, createSaveData, onConnect, edges, inventoryData, allocateEquipment, job]);
 
   const handleDeallocateCableFromEdge = useCallback(async (edgeId: string) => {
     const success = await deallocateCableFromEdge(edgeId);
@@ -471,12 +615,12 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
       // Update edge data
       setEdges(edges => edges.map(edge => 
         edge.id === edgeId 
-          ? { ...edge, data: { ...edge.data, allocatedEquipmentId: undefined } }
+          ? { ...edge, data: { ...edge.data, equipmentId: undefined } }
           : edge
       ));
-      immediateSave();
+      saveNow(createSaveData(), 'cable deallocated from edge');
     }
-  }, [deallocateCableFromEdge, setEdges, immediateSave]);
+  }, [deallocateCableFromEdge, setEdges, saveNow, createSaveData]);
 
 
   return (
@@ -484,12 +628,25 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
       {/* Action Buttons */}
       <div className="absolute top-2 left-2 md:top-4 md:left-4 z-20 flex flex-wrap gap-2 max-w-[calc(100%-1rem)]">
         
+        {/* Cloud Sync Status Button */}
+        {hasCloudConflicts && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => triggerBatchSync()}
+            className="bg-yellow-50 border-yellow-500 text-yellow-700"
+          >
+            <AlertTriangle className="h-4 w-4 mr-1" />
+            {cloudConflicts.length} Conflicts
+          </Button>
+        )}
+        
         <Sheet open={isPhotosPanelOpen} onOpenChange={setIsPhotosPanelOpen}>
           <SheetTrigger asChild>
             <Button
               variant="outline"
               size="sm"
-              className="bg-white/95 backdrop-blur-sm shadow-md hover:bg-gray-50 border-gray-300"
+              className="bg-card/95 backdrop-blur-sm shadow-md hover:bg-muted border-border"
             >
               <Camera className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Photos</span>
@@ -505,17 +662,17 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
             <Button
               variant="outline"
               size="sm"
-              className="bg-white/95 backdrop-blur-sm shadow-md hover:bg-gray-50 border-gray-300"
+              className="bg-card/95 backdrop-blur-sm shadow-md hover:bg-muted border-border"
             >
               <Package className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">Equipment</span>
               {totalEquipmentRequired > 0 && (
-                <span className="ml-1 px-1 bg-blue-500 text-white text-xs rounded">
+                <span className="ml-1 px-1 bg-muted0 text-white text-xs rounded">
                   {totalEquipmentRequired}
                 </span>
               )}
               {conflicts.length > 0 && (
-                <span className="ml-1 px-1 bg-red-500 text-white text-xs rounded hidden sm:inline">
+                <span className="ml-1 px-1 bg-muted0 text-white text-xs rounded hidden sm:inline">
                   {conflicts.length}
                 </span>
               )}
@@ -543,7 +700,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
             <Button
               variant="outline"
               size="sm"
-              className="md:hidden fixed bottom-4 left-4 z-20 bg-white/95 backdrop-blur-sm shadow-md hover:bg-gray-50 border-gray-300"
+              className="md:hidden fixed bottom-4 left-4 z-20 bg-card/95 backdrop-blur-sm shadow-md hover:bg-muted border-border"
             >
               <Menu className="h-4 w-4" />
             </Button>
@@ -571,7 +728,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
               onAddCustomerComputer={handleAddCustomerComputerWrapper}
               onRemoveCustomerComputer={handleRemoveCustomerComputer}
               // Pass sync data
-              getEquipmentStatus={getEquipmentStatus}
+              getEquipmentStatus={(id) => syncStatus === 'syncing' ? 'syncing' : 'idle'}
               conflicts={conflicts}
               resolveConflict={resolveConflict}
             />
@@ -602,7 +759,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
             onAddCustomerComputer={handleAddCustomerComputerWrapper}
             onRemoveCustomerComputer={handleRemoveCustomerComputer}
             // Pass sync data
-            getEquipmentStatus={getEquipmentStatus}
+            getEquipmentStatus={(id) => syncStatus === 'syncing' ? 'syncing' : 'idle'}
             conflicts={conflicts}
             resolveConflict={resolveConflict}
           />
@@ -626,7 +783,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
             onConnect={enhancedOnConnect}
             onNodesDelete={onNodesDelete}
             reactFlowWrapper={reactFlowWrapper}
-            immediateSave={immediateSave}
+            immediateSave={() => saveNow(createSaveData(), 'edge deleted')}
           />
         </div>
       </div>

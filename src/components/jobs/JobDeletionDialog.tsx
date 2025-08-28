@@ -72,24 +72,24 @@ export const JobDeletionDialog: React.FC<JobDeletionDialogProps> = ({
         </DialogHeader>
 
         <div className="space-y-4">
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Are you sure you want to delete the job "{jobName}"?
           </p>
           
           {deployedEquipment.length > 0 && (
             <>
-              <div className="border-l-4 border-orange-400 bg-orange-50 p-4 rounded">
-                <p className="text-sm font-medium text-orange-800">
+              <div className="border-l-4 border-border bg-muted p-4 rounded">
+                <p className="text-sm font-medium text-foreground">
                   This job has equipment currently deployed. Please select where to return the equipment:
                 </p>
               </div>
 
               {/* Equipment Summary */}
-              <div className="border rounded-lg p-4 bg-gray-50">
+              <div className="border rounded-lg p-4 bg-muted">
                 <h4 className="font-medium mb-3">Equipment to be returned:</h4>
                 <div className="space-y-2">
                   {deployedEquipment.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-2 bg-white rounded border">
+                    <div key={item.id} className="flex items-center justify-between p-2 bg-card rounded border">
                       <span className="text-sm">{item.typeName}</span>
                       <Badge variant="secondary">{item.quantity}x</Badge>
                     </div>
@@ -121,7 +121,7 @@ export const JobDeletionDialog: React.FC<JobDeletionDialogProps> = ({
           )}
           
           {!hasEquipment && !deployedEquipment.length && (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               This action cannot be undone. All job data including diagrams will be permanently deleted.
             </p>
           )}

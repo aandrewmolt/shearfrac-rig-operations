@@ -64,8 +64,8 @@ const JobDeploymentsSummary = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-gray-500">
-            <Package className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+          <div className="text-center py-8 text-corporate-silver">
+            <Package className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
             <p>No equipment currently deployed to jobs</p>
           </div>
         </CardContent>
@@ -94,12 +94,12 @@ const JobDeploymentsSummary = () => {
             const sourceLocations = new Set(jobEquipment.map(item => item.locationId));
 
             return (
-              <Alert key={jobId} className="bg-blue-50 border-blue-200">
+              <Alert key={jobId} className="bg-primary/5 border-border">
                 <AlertDescription>
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <h3 className="font-semibold text-lg text-blue-900">{jobDetails.name}</h3>
-                    <div className="flex items-center gap-3 text-sm text-blue-700 mt-1">
+                    <h3 className="font-semibold text-lg text-primary">{jobDetails.name}</h3>
+                    <div className="flex items-center gap-3 text-sm text-foreground mt-1">
                       <span>{jobDetails.wellCount} wells</span>
                       {jobDetails.hasWellsideGauge && <span>+ wellside gauge</span>}
                       <div className="flex items-center gap-1">
@@ -109,10 +109,10 @@ const JobDeploymentsSummary = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="default" className="bg-blue-600">
+                    <Badge variant="default">
                       {totalPieces} pieces
                     </Badge>
-                    <Badge variant="outline" className="border-blue-300">
+                    <Badge variant="outline">
                       {uniqueTypes} types
                     </Badge>
                   </div>
@@ -120,17 +120,17 @@ const JobDeploymentsSummary = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {jobEquipment.map(item => (
-                    <div key={item.id} className="flex items-center justify-between p-3 bg-white rounded border border-blue-200">
+                    <div key={item.id} className="flex items-center justify-between p-3 bg-card rounded border">
                       <div className="flex-1">
                         <div className="font-medium text-sm">
                           {item.name || getEquipmentTypeName(item.typeId)}
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-gray-600 mt-1">
+                        <div className="flex items-center gap-2 text-xs text-corporate-silver mt-1">
                           <MapPin className="h-3 w-3" />
                           <span>From: {getLocationName(item.locationId)}</span>
                         </div>
                         {item.equipmentId && (
-                          <div className="text-xs text-gray-500 mt-1">
+                          <div className="text-xs text-corporate-silver mt-1">
                             ID: {item.equipmentId}
                           </div>
                         )}
@@ -142,7 +142,7 @@ const JobDeploymentsSummary = () => {
                 {sourceLocations.size > 1 && (
                   <>
                     <Separator className="my-3" />
-                    <div className="text-sm text-blue-700">
+                    <div className="text-sm text-foreground">
                       <span className="font-medium">Sources:</span> {
                         sourceLocations ? Array.from(sourceLocations).map(locId => getLocationName(locId)).join(', ') : ''
                       }

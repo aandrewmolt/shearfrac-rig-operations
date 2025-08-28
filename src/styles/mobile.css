@@ -127,8 +127,8 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
+  background: #2d2d2d;
+  border-bottom: 1px solid rgba(212, 160, 23, 0.2);
 }
 
 /* Bottom navigation safe area */
@@ -221,7 +221,7 @@
   .table-responsive td:first-child {
     position: sticky;
     left: 0;
-    background: white;
+    background: #2d2d2d;
     z-index: 10;
   }
 }

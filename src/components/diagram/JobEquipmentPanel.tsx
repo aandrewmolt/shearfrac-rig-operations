@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { Package, AlertTriangle, CheckCircle, RefreshCw, Wrench } from 'lucide-react';
 import { useUnifiedInventory } from '@/hooks/useUnifiedInventory';
 import { useRobustEquipmentTracking } from '@/hooks/useRobustEquipmentTracking';
-import { useInventoryMapperSync } from '@/hooks/useInventoryMapperSync';
+import { useUnifiedEquipmentSync } from '@/hooks/useUnifiedEquipmentSync';
 import ExtrasOnLocationPanel from './ExtrasOnLocationPanel';
 import EquipmentLocationSelector from './equipment/EquipmentLocationSelector';
 import EquipmentAvailabilityStatus from './equipment/EquipmentAvailabilityStatus';
@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SyncStatusIndicator } from '@/components/InventoryMapperSync/SyncStatusIndicator';
 import { isEquipmentAtLocation } from '@/utils/equipmentLocation';
+import EquipmentConflictResolver from '@/components/shared/EquipmentConflictResolver';
 
 interface JobEquipmentPanelProps {
   jobId: string;
@@ -43,7 +44,7 @@ const JobEquipmentPanel: React.FC<JobEquipmentPanelProps> = ({
 }) => {
   const { data } = useUnifiedInventory();
   const [selectedLocation, setSelectedLocation] = useState<string>(data.storageLocations[0]?.id || '');
-  const { conflicts, getJobEquipment, isValidating } = useInventoryMapperSync();
+  const { conflicts, getJobEquipment, isValidating } = useUnifiedEquipmentSync();
   
   const {
     performComprehensiveAllocation,
@@ -149,7 +150,7 @@ const JobEquipmentPanel: React.FC<JobEquipmentPanelProps> = ({
 
   return (
     <div className="space-y-4">
-      <Card className="bg-white shadow-lg">
+      <Card className="bg-card shadow-lg">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Package className="h-5 w-5" />
@@ -179,7 +180,7 @@ const JobEquipmentPanel: React.FC<JobEquipmentPanelProps> = ({
           />
 
           {/* Equipment Requirements Summary */}
-          <div className="bg-blue-50 p-3 rounded-lg">
+          <div className="bg-muted p-3 rounded-lg">
             <h4 className="font-medium mb-2 flex items-center gap-2">
               Equipment Required from Diagram
               <Badge variant="outline" className="text-xs">
@@ -221,7 +222,7 @@ const JobEquipmentPanel: React.FC<JobEquipmentPanelProps> = ({
               {usage.directConnections > 0 && (
                 <div className="flex justify-between">
                   <span>Direct Connections:</span>
-                  <span className="font-bold text-green-600">{usage.directConnections}</span>
+                  <span className="font-bold text-foreground">{usage.directConnections}</span>
                 </div>
               )}
             </div>
@@ -252,16 +253,16 @@ const JobEquipmentPanel: React.FC<JobEquipmentPanelProps> = ({
           {/* Equipment Conflicts */}
           {jobConflicts.length > 0 && (
             <>
-              <div className="bg-red-50 p-3 rounded-lg">
-                <h4 className="font-medium mb-2 flex items-center gap-2 text-red-800">
+              <div className="bg-muted p-3 rounded-lg">
+                <h4 className="font-medium mb-2 flex items-center gap-2 text-foreground">
                   <AlertTriangle className="h-4 w-4" />
                   Equipment Conflicts
                 </h4>
                 <div className="space-y-2">
                   {jobConflicts.map((conflict) => (
                     <div key={conflict.equipmentId} className="text-sm">
-                      <div className="font-medium text-red-700">{conflict.equipmentName}</div>
-                      <div className="text-red-600">
+                      <div className="font-medium text-foreground">{conflict.equipmentName}</div>
+                      <div className="text-muted-foreground">
                         {conflict.currentJobId === jobId 
                           ? `Requested by: ${conflict.requestedJobName}`
                           : `Currently deployed to: ${conflict.currentJobName}`
@@ -288,7 +289,7 @@ const JobEquipmentPanel: React.FC<JobEquipmentPanelProps> = ({
                 {deployedEquipment.map(item => {
                   const equipmentType = data.equipmentTypes.find(type => type.id === item.equipmentTypeId);
                   return (
-                    <div key={item.id} className="flex justify-between text-sm p-2 bg-green-50 rounded">
+                    <div key={item.id} className="flex justify-between text-sm p-2 bg-muted rounded">
                       <span>
                         {item.name || item.equipmentId} ({equipmentType?.name || 'Unknown'})
                       </span>
@@ -298,7 +299,7 @@ const JobEquipmentPanel: React.FC<JobEquipmentPanelProps> = ({
                 })}
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">No equipment currently deployed</p>
+              <p className="text-muted-foreground text-sm">No equipment currently deployed</p>
             )}
           </div>
 
@@ -332,7 +333,7 @@ const JobEquipmentPanel: React.FC<JobEquipmentPanelProps> = ({
           <div className="flex gap-2">
             <Button
               onClick={() => validateInventoryConsistency()}
-              className="flex-1 bg-yellow-500 hover:bg-yellow-600"
+              className="flex-1"
               variant="secondary"
               disabled={isProcessing}
             >
@@ -342,6 +343,11 @@ const JobEquipmentPanel: React.FC<JobEquipmentPanelProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      <EquipmentConflictResolver 
+        jobId={jobId}
+        className="mb-4"
+      />
 
       <ExtrasOnLocationPanel
         extrasOnLocation={extrasOnLocation}

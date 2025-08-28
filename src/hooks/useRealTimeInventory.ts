@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { useInventoryData } from './useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 import { toast } from 'sonner';
 
 interface InventoryAlert {
@@ -14,7 +14,7 @@ interface InventoryAlert {
 }
 
 export const useRealTimeInventory = () => {
-  const { data, updateEquipmentItems } = useInventoryData();
+  const { data, updateEquipmentItems } = useInventory();
   const [alerts, setAlerts] = useState<InventoryAlert[]>([]);
   const [lastValidation, setLastValidation] = useState<Date>(() => new Date());
 

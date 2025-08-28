@@ -28,14 +28,14 @@ const EdgeContextMenu: React.FC<EdgeContextMenuProps> = ({
         transform: `translate(-50%, -50%) translate(${labelX + 80}px,${labelY}px)`,
       }}
     >
-      <Card className="flex items-center gap-1 bg-white/95 backdrop-blur-sm border-gray-300 shadow-lg p-1">
+      <Card className="flex items-center gap-1 bg-card/95 backdrop-blur-sm border-border shadow-lg p-1">
         <Button
           size="sm"
           variant="ghost"
-          className="h-6 w-6 p-0 hover:bg-gray-100"
+          className="h-6 w-6 p-0 hover:bg-muted"
           title="More options"
         >
-          <MoreHorizontal className="h-3 w-3 text-gray-600" />
+          <MoreHorizontal className="h-3 w-3 text-muted-foreground" />
         </Button>
         
         {isYToWellConnection && (
@@ -43,7 +43,7 @@ const EdgeContextMenu: React.FC<EdgeContextMenuProps> = ({
             size="sm"
             variant="ghost"
             onClick={onToggle}
-            className="h-6 w-6 p-0 hover:bg-blue-100 hover:text-blue-600"
+            className="h-6 w-6 p-0 hover:bg-muted hover:text-foreground"
             title="Toggle connection type (T)"
           >
             <RotateCcw className="h-3 w-3" />
@@ -54,7 +54,7 @@ const EdgeContextMenu: React.FC<EdgeContextMenuProps> = ({
           size="sm"
           variant="ghost"
           onClick={onDelete}
-          className="h-6 w-6 p-0 hover:bg-red-100 hover:text-red-600"
+          className="h-6 w-6 p-0 hover:bg-muted hover:text-destructive"
           title="Delete connection (Del)"
         >
           <Trash2 className="h-3 w-3" />

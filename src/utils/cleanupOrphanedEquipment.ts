@@ -1,128 +1,123 @@
 import { tursoDb } from '@/services/tursoDb';
-import { validateJobDiagramEquipment, cleanOrphanedEquipmentReferences, logValidationResults } from '@/utils/jobDiagramValidation';
+import { toast } from 'sonner';
 
 /**
- * Cleanup script to remove orphaned equipment references from all job diagrams
- * This script should be run manually to clean up legacy data issues
+ * Clean up equipment that's allocated to non-existent jobs
  */
-export async function cleanupOrphanedEquipmentInAllJobs() {
-  // Get all jobs and inventory data
-    const [jobs, individualEquipment] = await Promise.all([
-      tursoDb.getAllJobs(),
-      tursoDb.getIndividualEquipment(),
-    ]);
-
-    let totalJobsProcessed = 0;
-    let totalJobsWithIssues = 0;
-    let totalEquipmentReferencesRemoved = 0;
-    const jobsWithIssues: string[] = [];
-
-    // Process each job
-    for (const job of jobs) {
-      if (!job.nodes || job.nodes.length === 0) {
-        continue; // Skip jobs without diagram data
+export async function cleanupOrphanedEquipment() {
+  try {
+    // Get all active jobs
+    const jobs = await tursoDb.getJobs();
+    const activeJobIds = new Set(jobs.map(job => job.id));
+    
+    console.log('Active job IDs:', Array.from(activeJobIds));
+    
+    // Get all individual equipment
+    const equipment = await tursoDb.getIndividualEquipment();
+    
+    console.log(`Found ${equipment.length} equipment items to check`);
+    
+    let cleanedCount = 0;
+    
+    // Find equipment allocated to non-existent jobs
+    for (const item of equipment) {
+      if (item.jobId) {
+        console.log(`Equipment ${item.equipmentId} has jobId: ${item.jobId}, exists: ${activeJobIds.has(item.jobId)}`);
       }
-
-      totalJobsProcessed++;
-      
-      // Validate equipment references
-      const validationResult = validateJobDiagramEquipment(job.nodes, individualEquipment);
-      logValidationResults(validationResult, job.name);
-
-      if (!validationResult.isValid) {
-        totalJobsWithIssues++;
-        jobsWithIssues.push(job.name);
-        
-        // Clean orphaned equipment references
-        const { cleanedNodes, removedCount } = cleanOrphanedEquipmentReferences(job.nodes, individualEquipment);
-        totalEquipmentReferencesRemoved += removedCount;
-        
-        if (removedCount > 0) {
-          // Update the job with cleaned nodes
-          await tursoDb.updateJob(job.id, {
-            ...job,
-            nodes: cleanedNodes,
-          });
-        }
-      }
-    }
-
-    return {
-      totalJobsProcessed,
-      totalJobsWithIssues,
-      totalEquipmentReferencesRemoved,
-      jobsWithIssues,
-    };
-}
-
-/**
- * Cleanup script for a specific job by ID
- */
-export async function cleanupOrphanedEquipmentInJob(jobId: number) {
-  const [job, individualEquipment] = await Promise.all([
-      tursoDb.getJobById(jobId),
-      tursoDb.getIndividualEquipment(),
-    ]);
-
-    if (!job) {
-      throw new Error(`Job with ID ${jobId} not found`);
-    }
-
-    if (!job.nodes || job.nodes.length === 0) {
-      return { removedCount: 0 };
-    }
-
-    // Validate and clean
-    const validationResult = validateJobDiagramEquipment(job.nodes, individualEquipment);
-    logValidationResults(validationResult, job.name);
-
-    if (!validationResult.isValid) {
-      const { cleanedNodes, removedCount } = cleanOrphanedEquipmentReferences(job.nodes, individualEquipment);
-      
-      if (removedCount > 0) {
-        await tursoDb.updateJob(jobId, {
-          ...job,
-          nodes: cleanedNodes,
+      if (item.jobId && !activeJobIds.has(item.jobId)) {
+        // Reset equipment to available status and clear job assignment
+        await tursoDb.updateIndividualEquipment(item.id, {
+          status: 'available',
+          jobId: null,
+          location_type: 'storage',
+          notes: item.notes?.includes('Allocated to job') ? '' : item.notes
         });
+        cleanedCount++;
+        console.log(`Cleaned orphaned equipment: ${item.equipmentId} (was assigned to job: ${item.jobId})`);
       }
-      
-      return { removedCount };
+    }
+    
+    if (cleanedCount > 0) {
+      toast.success(`Cleaned up ${cleanedCount} equipment items from deleted jobs`);
+      console.log(`✅ Cleaned up ${cleanedCount} orphaned equipment items`);
     } else {
-      return { removedCount: 0 };
+      console.log('✅ No orphaned equipment found');
     }
+    
+    return cleanedCount;
+  } catch (error) {
+    console.error('Error cleaning up orphaned equipment:', error);
+    toast.error('Failed to clean up orphaned equipment');
+    throw error;
+  }
 }
 
 /**
- * Run a dry run to see what would be cleaned without making changes
+ * Remove duplicate storage locations that match job names
  */
-export async function dryRunCleanupOrphanedEquipment() {
-  const [jobs, individualEquipment] = await Promise.all([
-      tursoDb.getAllJobs(),
-      tursoDb.getIndividualEquipment(),
-    ]);
-
-    let totalJobsWithIssues = 0;
-    let totalEquipmentReferencesToRemove = 0;
-    const issueReport: Array<{ jobName: string; orphanedEquipment: string[] }> = [];
-
-    for (const job of jobs) {
-      if (!job.nodes || job.nodes.length === 0) continue;
-
-      const validationResult = validateJobDiagramEquipment(job.nodes, individualEquipment);
+export async function removeDuplicateJobLocations() {
+  try {
+    const jobs = await tursoDb.getJobs();
+    const storageLocations = await tursoDb.getStorageLocations();
+    
+    let removedCount = 0;
+    
+    // Find storage locations that match job names (these are duplicates)
+    for (const location of storageLocations) {
+      const matchingJob = jobs.find(job => 
+        job.name === location.name || 
+        (job.client && job.pad && location.name === `${job.client} - ${job.pad}`)
+      );
       
-      if (!validationResult.isValid) {
-        totalJobsWithIssues++;
-        totalEquipmentReferencesToRemove += validationResult.orphanedEquipment.length;
-        issueReport.push({
-          jobName: job.name,
-          orphanedEquipment: validationResult.orphanedEquipment,
-        });
+      if (matchingJob && !location.isDefault) {
+        // Move any equipment from the duplicate storage location to the default location
+        const equipment = await tursoDb.getIndividualEquipment();
+        const itemsAtLocation = equipment.filter(eq => eq.locationId === location.id);
+        
+        if (itemsAtLocation.length > 0) {
+          const defaultLocation = storageLocations.find(loc => loc.isDefault);
+          if (defaultLocation) {
+            for (const item of itemsAtLocation) {
+              await tursoDb.updateIndividualEquipment(item.id, {
+                locationId: defaultLocation.id
+              });
+            }
+          }
+        }
+        
+        // Delete the duplicate storage location
+        await tursoDb.deleteStorageLocation(location.id);
+        removedCount++;
+        console.log(`Removed duplicate storage location: ${location.name}`);
       }
     }
+    
+    if (removedCount > 0) {
+      toast.success(`Removed ${removedCount} duplicate job locations from storage`);
+      console.log(`✅ Removed ${removedCount} duplicate job locations`);
+    }
+    
+    return removedCount;
+  } catch (error) {
+    console.error('Error removing duplicate job locations:', error);
+    toast.error('Failed to remove duplicate job locations');
+    throw error;
+  }
+}
 
-    return {
-      totalJobsWithIssues,
-      totalEquipmentReferencesToRemove,
-      issueReport,
-    };
+/**
+ * Run all cleanup operations
+ */
+export async function runFullCleanup() {
+  console.log('🧹 Starting full equipment and location cleanup...');
+  
+  const orphanedCount = await cleanupOrphanedEquipment();
+  const duplicatesCount = await removeDuplicateJobLocations();
+  
+  console.log(`✅ Cleanup complete: ${orphanedCount} orphaned items, ${duplicatesCount} duplicate locations removed`);
+  
+  return {
+    orphanedEquipment: orphanedCount,
+    duplicateLocations: duplicatesCount
+  };
 }

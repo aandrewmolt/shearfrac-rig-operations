@@ -38,11 +38,11 @@ export const SyncStatusIndicator: React.FC = () => {
   const getStatusIcon = () => {
     switch (syncStatus) {
       case 'syncing':
-        return <RefreshCw className="h-4 w-4 text-blue-500 animate-spin" />;
+        return <RefreshCw className="h-4 w-4 text-primary animate-spin" />;
       case 'error':
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
+        return <AlertCircle className="h-4 w-4 text-destructive" />;
       default:
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-success" />;
     }
   };
 
@@ -60,11 +60,11 @@ export const SyncStatusIndicator: React.FC = () => {
   const getStatusColor = () => {
     switch (syncStatus) {
       case 'syncing':
-        return 'text-blue-600';
+        return 'text-foreground';
       case 'error':
-        return 'text-red-600';
+        return 'text-destructive';
       default:
-        return 'text-green-600';
+        return 'text-foreground';
     }
   };
 
@@ -75,7 +75,7 @@ export const SyncStatusIndicator: React.FC = () => {
         <span className={`text-xs font-medium ${getStatusColor()}`}>
           {getStatusText()}
         </span>
-        <span className="text-xs text-gray-500 flex items-center gap-1">
+        <span className="text-xs text-muted-foreground flex items-center gap-1">
           <Clock className="h-3 w-3" />
           {timeSinceSync}
         </span>

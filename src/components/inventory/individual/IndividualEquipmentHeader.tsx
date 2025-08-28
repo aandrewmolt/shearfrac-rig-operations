@@ -32,7 +32,7 @@ const IndividualEquipmentHeader: React.FC<IndividualEquipmentHeaderProps> = ({
                 variant="outline" 
                 size="sm"
                 onClick={onSaveDrafts}
-                className="text-orange-700 border-orange-300 hover:bg-orange-50"
+                className="text-foreground border-border hover:bg-muted"
               >
                 <Save className="h-3 w-3 mr-1" />
                 Save {draftCount} Drafts

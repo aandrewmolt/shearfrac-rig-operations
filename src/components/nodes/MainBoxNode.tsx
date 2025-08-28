@@ -32,7 +32,7 @@ interface MainBoxNodeProps {
 
 const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
   const { getNodes, setNodes, deleteElements } = useReactFlow();
-  const { saveJob } = useJobs();
+  const { saveJob, getJobById } = useJobs();
   const [fracDataPort, setFracDataPort] = useState<string>(data.fracComPort || '');
   const [gaugeDataPort, setGaugeDataPort] = useState<string>(data.gaugeComPort || '');
   const [fracBaudRate, setFracBaudRate] = useState<string>(data.fracBaudRate || '19200');
@@ -55,6 +55,18 @@ const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
       });
       return updatedNodes;
     });
+    
+    // Trigger save if equipment ID or critical data changed
+    if (updates.equipmentId !== undefined || updates.fracComPort !== undefined || 
+        updates.gaugeComPort !== undefined || updates.fracBaudRate !== undefined || 
+        updates.gaugeBaudRate !== undefined) {
+      // Trigger save after state update
+      setTimeout(() => {
+        // Note: MainBoxNode save now handled by unified save system in JobDiagram
+        // Individual node changes are captured by the node change handler
+        console.log('MainBox data updated:', updates);
+      }, 100);
+    }
   };
 
   // Enhanced frac data port change handler
@@ -166,7 +178,7 @@ const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
   };
 
   return (
-    <Card className="bg-slate-900 text-white p-4 border-2 border-slate-600 min-w-[280px] shadow-lg relative">
+    <Card className="bg-muted-foreground text-white p-4 border-2 border-border min-w-[280px] shadow-lg relative">
       {selected && <NodeDeleteButton onDelete={handleDelete} />}
       {isAssigned && data.equipmentId && (
         <SimpleRedTagMenu 
@@ -176,11 +188,11 @@ const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
         />
       )}
       <div className="flex items-center gap-2 mb-4">
-        <Square className="h-5 w-5 text-blue-400" />
+        <Square className="h-5 w-5 text-foreground" />
         <div>
           <h3 className="font-bold text-lg text-white">ShearStream Box</h3>
           {isAssigned && data.equipmentId && (
-            <p className="text-sm text-green-400 font-medium">{data.equipmentId}</p>
+            <p className="text-sm text-success font-medium">{data.equipmentId}</p>
           )}
         </div>
       </div>
@@ -188,14 +200,14 @@ const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
       {/* COM Port Selection with Baud Rates - Enhanced with debugging */}
       <div className="mb-4 space-y-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-slate-200 w-12">Frac:</span>
+          <span className="text-sm font-medium text-muted-foreground w-12">Frac:</span>
           <Select value={fracDataPort} onValueChange={handleFracDataPortChange}>
-            <SelectTrigger className="h-8 text-sm bg-slate-700 border-slate-500 text-white hover:bg-slate-600 flex-1">
+            <SelectTrigger className="h-8 text-sm bg-muted border-border text-white hover:bg-muted/90 flex-1">
               <SelectValue placeholder="COM" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-600">
+            <SelectContent className="bg-muted border-border">
               {fracComPorts.map(port => (
-                <SelectItem key={port.id} value={port.id} className="text-white hover:bg-slate-700">
+                <SelectItem key={port.id} value={port.id} className="text-white hover:bg-muted">
                   {port.label}
                 </SelectItem>
               ))}
@@ -203,12 +215,12 @@ const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
           </Select>
           {fracDataPort !== 'coldbore' && (
             <Select value={fracBaudRate} onValueChange={handleFracBaudRateChange}>
-              <SelectTrigger className="h-8 text-sm bg-slate-700 border-slate-500 text-white hover:bg-slate-600 w-20">
+              <SelectTrigger className="h-8 text-sm bg-muted border-border text-white hover:bg-muted/90 w-20">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-600">
+              <SelectContent className="bg-muted border-border">
                 {baudRates.map(rate => (
-                  <SelectItem key={rate.id} value={rate.id} className="text-white hover:bg-slate-700">
+                  <SelectItem key={rate.id} value={rate.id} className="text-white hover:bg-muted">
                     {rate.label}
                   </SelectItem>
                 ))}
@@ -216,31 +228,31 @@ const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
             </Select>
           )}
           {fracDataPort === 'coldbore' && (
-            <span className="text-xs text-slate-400 italic">API Connection</span>
+            <span className="text-xs text-muted-foreground italic">API Connection</span>
           )}
         </div>
         
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-slate-200 w-12">Gauge:</span>
+          <span className="text-sm font-medium text-muted-foreground w-12">Gauge:</span>
           <Select value={gaugeDataPort} onValueChange={handleGaugeDataPortChange}>
-            <SelectTrigger className="h-8 text-sm bg-slate-700 border-slate-500 text-white hover:bg-slate-600 flex-1">
+            <SelectTrigger className="h-8 text-sm bg-muted border-border text-white hover:bg-muted/90 flex-1">
               <SelectValue placeholder="COM" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-600">
+            <SelectContent className="bg-muted border-border">
               {comPorts.map(port => (
-                <SelectItem key={port.id} value={port.id} className="text-white hover:bg-slate-700">
+                <SelectItem key={port.id} value={port.id} className="text-white hover:bg-muted">
                   {port.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={gaugeBaudRate} onValueChange={handleGaugeBaudRateChange}>
-            <SelectTrigger className="h-8 text-sm bg-slate-700 border-slate-500 text-white hover:bg-slate-600 w-20">
+            <SelectTrigger className="h-8 text-sm bg-muted border-border text-white hover:bg-muted/90 w-20">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-600">
+            <SelectContent className="bg-muted border-border">
               {baudRates.map(rate => (
-                <SelectItem key={rate.id} value={rate.id} className="text-white hover:bg-slate-700">
+                <SelectItem key={rate.id} value={rate.id} className="text-white hover:bg-muted">
                   {rate.label}
                 </SelectItem>
               ))}
@@ -251,10 +263,10 @@ const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
       
       <div className="space-y-2">
         {pressurePorts.map((port, index) => (
-          <div key={port.id} className="flex items-center justify-between bg-slate-700 rounded-md p-3 relative border border-slate-600">
+          <div key={port.id} className="flex items-center justify-between bg-muted rounded-md p-3 relative border border-border">
             <div>
               <span className="font-semibold text-white text-base">{port.label}</span>
-              <span className="text-sm text-slate-300 ml-2">({port.pressure})</span>
+              <span className="text-sm text-muted-foreground ml-2">({port.pressure})</span>
             </div>
             <Handle
               type="source"
@@ -264,7 +276,7 @@ const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
                 right: -8,
                 top: '50%',
                 transform: 'translateY(-50%)',
-                backgroundColor: '#3b82f6',
+                backgroundColor: 'hsl(var(--primary))',
                 border: '2px solid white',
                 width: 12,
                 height: 12,

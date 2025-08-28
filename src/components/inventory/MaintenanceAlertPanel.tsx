@@ -36,9 +36,9 @@ const MaintenanceAlertPanel: React.FC<MaintenanceAlertPanelProps> = ({
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'warranty': return 'text-blue-600';
-      case 'maintenance': return 'text-yellow-600';
-      default: return 'text-red-600';
+      case 'warranty': return 'text-foreground';
+      case 'maintenance': return 'text-foreground';
+      default: return 'text-destructive';
     }
   };
 
@@ -46,7 +46,7 @@ const MaintenanceAlertPanel: React.FC<MaintenanceAlertPanelProps> = ({
     return (
       <Card>
         <CardContent className="p-4">
-          <div className="text-center text-green-600">
+          <div className="text-center text-foreground">
             ✓ No maintenance alerts
           </div>
         </CardContent>
@@ -57,10 +57,10 @@ const MaintenanceAlertPanel: React.FC<MaintenanceAlertPanelProps> = ({
   const displayAlerts = alerts.slice(0, maxDisplay);
 
   return (
-    <Card className={compact ? 'border-orange-200 bg-orange-50' : ''}>
+    <Card className={compact ? 'border-border bg-muted' : ''}>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-orange-600" />
+          <AlertTriangle className="h-4 w-4 text-foreground" />
           Maintenance Alerts
           {criticalAlerts.length > 0 && (
             <Badge variant="destructive" className="text-xs">
@@ -76,13 +76,13 @@ const MaintenanceAlertPanel: React.FC<MaintenanceAlertPanelProps> = ({
             <div
               key={`${alert.equipmentId}-${index}`}
               className={`flex items-start gap-2 p-2 rounded text-sm ${
-                alert.severity === 'error' ? 'bg-red-50 border border-red-200' : 'bg-yellow-50 border border-yellow-200'
+                alert.severity === 'error' ? 'bg-status-danger/20 border border-red-200' : 'bg-status-warning/20 border border-border'
               }`}
             >
               <Icon className={`h-4 w-4 mt-0.5 ${getTypeColor(alert.type)}`} />
               <div className="flex-1">
                 <div className="font-medium">{alert.equipmentName}</div>
-                <div className="text-xs text-gray-600">{alert.message}</div>
+                <div className="text-xs text-corporate-silver">{alert.message}</div>
               </div>
               <Badge
                 variant={alert.severity === 'error' ? 'destructive' : 'outline'}
@@ -95,7 +95,7 @@ const MaintenanceAlertPanel: React.FC<MaintenanceAlertPanelProps> = ({
         })}
         
         {alerts.length > maxDisplay && (
-          <div className="text-center text-xs text-gray-500 pt-2">
+          <div className="text-center text-xs text-corporate-silver pt-2">
             +{alerts.length - maxDisplay} more alerts
           </div>
         )}

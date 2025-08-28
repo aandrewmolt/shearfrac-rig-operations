@@ -11,7 +11,7 @@ const EquipmentMigrationButton = () => {
     <Button 
       onClick={migrateEquipmentNaming}
       variant="outline"
-      className="bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100"
+      className="bg-muted border-border text-foreground hover:bg-muted"
     >
       <RefreshCw className="mr-2 h-4 w-4" />
       Fix Equipment IDs

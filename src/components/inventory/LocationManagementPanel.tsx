@@ -79,7 +79,7 @@ const LocationManagementPanel = () => {
   };
 
   return (
-    <Card className="bg-white shadow-lg">
+    <Card className="bg-card shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -88,7 +88,7 @@ const LocationManagementPanel = () => {
           </CardTitle>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Location
               </Button>
@@ -140,14 +140,14 @@ const LocationManagementPanel = () => {
             <div key={location.id} className="flex items-center justify-between p-3 border rounded-lg">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-gray-500" />
+                  <MapPin className="h-4 w-4 text-corporate-silver" />
                   <span className="font-medium">{location.name}</span>
                   {location.isDefault && (
                     <Badge variant="outline" className="text-xs">Default</Badge>
                   )}
                 </div>
                 {location.address && (
-                  <p className="text-sm text-gray-600 mt-1">{location.address}</p>
+                  <p className="text-sm text-corporate-silver mt-1">{location.address}</p>
                 )}
               </div>
               <div className="flex items-center gap-2">
@@ -165,8 +165,8 @@ const LocationManagementPanel = () => {
         
         {data.storageLocations.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-500">No storage locations found.</p>
-            <p className="text-sm text-gray-400 mt-1">Create your first storage location to get started.</p>
+            <p className="text-corporate-silver">No storage locations found.</p>
+            <p className="text-sm text-muted-foreground mt-1">Create your first storage location to get started.</p>
           </div>
         )}
 

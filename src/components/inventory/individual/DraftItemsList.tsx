@@ -11,14 +11,14 @@ const DraftItemsList: React.FC<DraftItemsListProps> = ({ draftItems }) => {
   if (draftItems.length === 0) return null;
 
   return (
-    <Card className="border-orange-200 bg-orange-50">
+    <Card className="border-border bg-muted">
       <CardContent className="p-3">
-        <div className="text-xs text-orange-700 mb-2">Draft Items (not saved):</div>
+        <div className="text-xs text-foreground mb-2">Draft Items (not saved):</div>
         <div className="space-y-1">
           {draftItems.map((item, index) => (
-            <div key={index} className="flex justify-between text-xs p-1 bg-white rounded border">
+            <div key={index} className="flex justify-between text-xs p-1 bg-card rounded border">
               <span>{item.equipmentId}</span>
-              <Badge variant="outline" className="text-xs px-1 border-orange-300">
+              <Badge variant="outline" className="text-xs px-1 border-border">
                 draft
               </Badge>
             </div>

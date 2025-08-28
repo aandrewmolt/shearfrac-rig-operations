@@ -34,17 +34,17 @@ const getActionIcon = (action: string) => {
     case 'created':
       return <Package className="h-4 w-4" />;
     case 'deployed':
-      return <TrendingUp className="h-4 w-4 text-blue-500" />;
+      return <TrendingUp className="h-4 w-4 text-primary" />;
     case 'returned':
-      return <TrendingDown className="h-4 w-4 text-green-500" />;
+      return <TrendingDown className="h-4 w-4 text-success" />;
     case 'maintenance':
-      return <Wrench className="h-4 w-4 text-orange-500" />;
+      return <Wrench className="h-4 w-4 text-warning" />;
     case 'red-tagged':
-      return <AlertTriangle className="h-4 w-4 text-red-500" />;
+      return <AlertTriangle className="h-4 w-4 text-destructive" />;
     case 'status-change':
-      return <CheckCircle className="h-4 w-4 text-purple-500" />;
+      return <CheckCircle className="h-4 w-4 text-accent" />;
     case 'location-change':
-      return <MapPin className="h-4 w-4 text-indigo-500" />;
+      return <MapPin className="h-4 w-4 text-primary" />;
     default:
       return <Clock className="h-4 w-4" />;
   }
@@ -53,19 +53,19 @@ const getActionIcon = (action: string) => {
 const getActionColor = (action: string) => {
   switch (action) {
     case 'deployed':
-      return 'bg-blue-50 text-blue-700 border-blue-200';
+      return 'bg-muted text-foreground border-border';
     case 'returned':
-      return 'bg-green-50 text-green-700 border-green-200';
+      return 'bg-muted text-foreground border-border';
     case 'maintenance':
-      return 'bg-orange-50 text-orange-700 border-orange-200';
+      return 'bg-muted text-foreground border-border';
     case 'red-tagged':
-      return 'bg-red-50 text-red-700 border-red-200';
+      return 'bg-muted text-destructive border-destructive';
     case 'status-change':
-      return 'bg-purple-50 text-purple-700 border-purple-200';
+      return 'bg-muted text-accent border-border';
     case 'location-change':
-      return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+      return 'bg-muted text-primary border-border';
     default:
-      return 'bg-gray-50 text-gray-700 border-gray-200';
+      return 'bg-muted text-muted-foreground border-border';
   }
 };
 
@@ -178,7 +178,7 @@ export const UnifiedEquipmentHistoryDialog: React.FC<UnifiedEquipmentHistoryDial
               </div>
               
               {equipment.notes && (
-                <div className="mt-4 p-2 bg-gray-50 rounded text-sm">
+                <div className="mt-4 p-2 bg-muted rounded text-sm">
                   <strong>Notes:</strong> {equipment.notes}
                 </div>
               )}
@@ -197,11 +197,11 @@ export const UnifiedEquipmentHistoryDialog: React.FC<UnifiedEquipmentHistoryDial
 
               {isLoading ? (
                 <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground mx-auto"></div>
                   <p className="mt-2 text-sm text-muted-foreground">Loading history...</p>
                 </div>
               ) : error ? (
-                <div className="text-center py-8 text-red-500">
+                <div className="text-center py-8 text-destructive">
                   <AlertTriangle className="h-8 w-8 mx-auto mb-2" />
                   <p>Error loading history: {error}</p>
                 </div>
@@ -276,7 +276,7 @@ export const UnifiedEquipmentHistoryDialog: React.FC<UnifiedEquipmentHistoryDial
                                     )}
                                     
                                     {entry.notes && (
-                                      <div className="mt-2 p-2 bg-white/50 rounded">
+                                      <div className="mt-2 p-2 bg-card/50 rounded">
                                         <p className="text-muted-foreground">Notes:</p>
                                         <p>{entry.notes}</p>
                                       </div>
@@ -299,7 +299,7 @@ export const UnifiedEquipmentHistoryDialog: React.FC<UnifiedEquipmentHistoryDial
           {variant === 'basic' && (
             <div>
               <h3 className="text-lg font-semibold mb-3">Deployment History</h3>
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-muted-foreground">
                 <Clock className="mx-auto h-12 w-12 mb-2" />
                 <p>History tracking available in enhanced view</p>
               </div>

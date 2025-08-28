@@ -46,7 +46,7 @@ const JobPhotoPanel: React.FC<JobPhotoPanelProps> = ({ jobId, jobName }) => {
 
   if (isLoading) {
     return (
-      <div className="p-4 text-center text-sm text-gray-500">
+      <div className="p-4 text-center text-sm text-muted-foreground">
         Loading photos...
       </div>
     );
@@ -56,7 +56,7 @@ const JobPhotoPanel: React.FC<JobPhotoPanelProps> = ({ jobId, jobName }) => {
     <div className="h-full flex flex-col">
       <div className="p-4 border-b">
         <h3 className="font-semibold text-lg mb-1">Job Photos</h3>
-        <p className="text-sm text-gray-600">{jobName}</p>
+        <p className="text-sm text-muted-foreground">{jobName}</p>
         
         <div className="mt-3">
           {!showNewSectionForm ? (
@@ -108,10 +108,10 @@ const JobPhotoPanel: React.FC<JobPhotoPanelProps> = ({ jobId, jobName }) => {
       <ScrollArea className="flex-1">
         <div className="p-4">
           {allSections.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <FolderOpen className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+            <div className="text-center py-8 text-muted-foreground">
+              <FolderOpen className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
               <p className="text-sm">No photo sections yet</p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Create your first section to start uploading photos
               </p>
             </div>
@@ -126,7 +126,7 @@ const JobPhotoPanel: React.FC<JobPhotoPanelProps> = ({ jobId, jobName }) => {
                     <AccordionTrigger className="px-3 py-2 text-sm">
                       <div className="flex items-center justify-between w-full">
                         <span className="font-medium">{section}</span>
-                        <span className="text-xs text-gray-500 mr-2">
+                        <span className="text-xs text-muted-foreground mr-2">
                           {sectionPhotos.length} photo{sectionPhotos.length !== 1 ? 's' : ''}
                           {isNewSection && ' (new)'}
                         </span>

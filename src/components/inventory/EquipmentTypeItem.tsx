@@ -42,7 +42,7 @@ const EquipmentTypeItem: React.FC<EquipmentTypeItemProps> = ({
   };
 
   return (
-    <Card key={type.id} className="border border-gray-200">
+    <Card key={type.id} className="border border-border">
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-2">
           <h3 className="font-medium text-sm">{type.name}</h3>
@@ -59,7 +59,7 @@ const EquipmentTypeItem: React.FC<EquipmentTypeItemProps> = ({
               variant="ghost"
               onClick={() => onDelete(type.id, type.name)}
               disabled={!canDelete}
-              className={canDelete ? "hover:text-red-600" : "opacity-50 cursor-not-allowed"}
+              className={canDelete ? "hover:text-destructive" : "opacity-50 cursor-not-allowed"}
               title={getDeleteTooltip()}
             >
               {!canDelete && <AlertTriangle className="h-3 w-3 mr-1 text-amber-500" />}
@@ -74,7 +74,7 @@ const EquipmentTypeItem: React.FC<EquipmentTypeItemProps> = ({
           </Badge>
           
           {!canDelete && deleteDetails && deleteDetails.length > 0 && (
-            <div className="text-xs bg-amber-50 border border-amber-200 rounded p-2">
+            <div className="text-xs bg-muted border border-amber-200 rounded p-2">
               <div className="flex items-center gap-1 text-amber-700 font-medium mb-1">
                 <Info className="h-3 w-3" />
                 Cannot delete - has linked equipment:
@@ -91,7 +91,7 @@ const EquipmentTypeItem: React.FC<EquipmentTypeItemProps> = ({
           )}
           
           {totalItems > 0 && (
-            <div className="text-xs text-blue-600 font-medium">
+            <div className="text-xs text-foreground font-medium">
               {equipmentCounts.equipmentItems > 0 && (
                 <div>{equipmentCounts.equipmentItems} item records ({equipmentCounts.totalQuantity} total)</div>
               )}
@@ -102,16 +102,16 @@ const EquipmentTypeItem: React.FC<EquipmentTypeItemProps> = ({
           )}
           
           {type.description && (
-            <p className="text-xs text-gray-600">{type.description}</p>
+            <p className="text-xs text-muted-foreground">{type.description}</p>
           )}
           
           {type.defaultIdPrefix && (
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-muted-foreground">
               Prefix: {type.defaultIdPrefix}
             </div>
           )}
           
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-muted-foreground">
             Individual Tracking: Yes
           </div>
         </div>

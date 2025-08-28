@@ -1,7 +1,7 @@
 
 import { useCallback } from 'react';
 import { Connection, addEdge, Node, Edge } from '@xyflow/react';
-import { useInventoryData } from './useInventoryData';
+import { useInventory } from '@/contexts/InventoryContext';
 import { useCableTypeService } from './cables/useCableTypeService';
 import { useCableConnectionValidator } from './equipment/useCableConnectionValidator';
 import { migrateCableTypeId } from '@/utils/consolidated/migrationUtils';
@@ -12,7 +12,7 @@ export const useDiagramConnections = (
   nodes: Node[],
   setEdges: (updater: (edges: Edge[]) => Edge[]) => void
 ) => {
-  const { data } = useInventoryData();
+  const { data } = useInventory();
   const { getCableColor, getCableDisplayName } = useCableTypeService(data.equipmentTypes);
   const { validateConnection, getValidCablesForConnection } = useCableConnectionValidator();
 
@@ -124,7 +124,7 @@ export const useDiagramConnections = (
               cableTypeId: migratedCableType || '100ft-cable',
               sourceHandle: params.sourceHandle,
               targetHandle: params.targetHandle,
-              allocatedEquipmentId: undefined, // Will be set when individual cable is allocated
+              equipmentId: undefined, // Will be set when individual cable is allocated
             },
             style: {
               stroke: cableColor,
@@ -198,7 +198,7 @@ export const useDiagramConnections = (
           connectionType: 'cable',
           sourceHandle: params.sourceHandle,
           targetHandle: params.targetHandle,
-          allocatedEquipmentId: undefined, // Will be set when individual cable is allocated
+          equipmentId: undefined, // Will be set when individual cable is allocated
         },
         style: {
           stroke: cableColor,

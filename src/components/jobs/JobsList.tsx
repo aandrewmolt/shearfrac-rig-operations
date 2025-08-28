@@ -49,10 +49,10 @@ const JobsList: React.FC<JobsListProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'active': return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'completed': return 'bg-green-100 text-green-800 border-green-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'pending': return 'bg-muted text-foreground border-border';
+      case 'active': return 'bg-muted text-foreground border-border';
+      case 'completed': return 'bg-muted text-foreground border-border';
+      default: return 'bg-muted text-foreground border-border';
     }
   };
 
@@ -94,19 +94,19 @@ const JobsList: React.FC<JobsListProps> = ({
   return (
     <div className="space-y-4">
       {/* Connection Status */}
-      <div className="flex items-center justify-between bg-white rounded-lg p-3 sm:p-4 border">
+      <div className="flex items-center justify-between bg-card rounded-lg p-3 sm:p-4 border">
         <div className="flex items-center gap-2">
           {isOnline ? (
             <>
-              <Wifi className="h-4 sm:h-5 w-4 sm:w-5 text-green-500" />
-              <span className="text-xs sm:text-sm font-medium text-green-600">
+              <Wifi className="h-4 sm:h-5 w-4 sm:w-5 text-success" />
+              <span className="text-xs sm:text-sm font-medium text-foreground">
                 {isMobile ? 'Connected' : 'Connected to Turso'}
               </span>
             </>
           ) : (
             <>
-              <WifiOff className="h-4 sm:h-5 w-4 sm:w-5 text-red-500" />
-              <span className="text-xs sm:text-sm font-medium text-red-600">
+              <WifiOff className="h-4 sm:h-5 w-4 sm:w-5 text-destructive" />
+              <span className="text-xs sm:text-sm font-medium text-destructive">
                 {isMobile ? 'Offline' : 'No Internet Connection'}
               </span>
             </>
@@ -147,7 +147,7 @@ const JobsList: React.FC<JobsListProps> = ({
                       {job.name}
                     </CardTitle>
                     {job.client && (
-                      <p className="text-xs sm:text-sm text-gray-600 mt-1 truncate">
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-1 truncate">
                         {job.client}
                       </p>
                     )}
@@ -201,7 +201,7 @@ const JobsList: React.FC<JobsListProps> = ({
                               onDeleteJob(job);
                             }
                           }}
-                          className="text-red-600"
+                          className="text-destructive"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete Job
@@ -215,11 +215,11 @@ const JobsList: React.FC<JobsListProps> = ({
               <CardContent className="space-y-3">
                 {/* Job Details */}
                 <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm">
-                  <div className="flex items-center gap-1.5 text-gray-600">
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
                     <Cable className="h-3 sm:h-4 w-3 sm:w-4" />
                     <span>{job.wellCount || 0} Wells</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-gray-600">
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
                     <Calendar className="h-3 sm:h-4 w-3 sm:w-4" />
                     <span className="truncate">{formatDate(job.createdAt)}</span>
                   </div>
@@ -229,8 +229,8 @@ const JobsList: React.FC<JobsListProps> = ({
                 {deployedEquipment.length > 0 && (
                   <div className="pt-2 border-t">
                     <div className="flex items-center gap-1.5 mb-2">
-                      <Package className="h-3 sm:h-4 w-3 sm:w-4 text-gray-500" />
-                      <span className="text-xs sm:text-sm font-medium text-gray-700">
+                      <Package className="h-3 sm:h-4 w-3 sm:w-4 text-muted-foreground" />
+                      <span className="text-xs sm:text-sm font-medium text-muted-foreground">
                         Equipment ({deployedEquipment.length})
                       </span>
                     </div>
