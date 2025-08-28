@@ -11,6 +11,41 @@ export const isEdgeSyncEnabled = () => {
   return SYNC_PROVIDER === 'vercel-turso' && API_BASE;
 };
 
+// Health check for sync service
+export const checkSyncHealth = async (): Promise<{ healthy: boolean; message: string }> => {
+  if (!isEdgeSyncEnabled()) {
+    return { healthy: false, message: 'Sync not configured' };
+  }
+  
+  // Check if we're in development mode
+  const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
+  if (isDevelopment) {
+    // In development, edge functions don't work - show appropriate message
+    return { 
+      healthy: false, 
+      message: 'Edge functions only work in production (Vercel)' 
+    };
+  }
+  
+  try {
+    // Try to fetch from the test endpoint
+    const response = await fetch(`${API_BASE}/test-turso`);
+    if (!response.ok) {
+      return { healthy: false, message: `Server error: ${response.status}` };
+    }
+    
+    const data = await response.json();
+    if (data.success) {
+      return { healthy: true, message: 'Connected to database' };
+    } else {
+      return { healthy: false, message: data.message || 'Database connection failed' };
+    }
+  } catch (error) {
+    return { healthy: false, message: 'Cannot reach sync service' };
+  }
+};
+
 // Helper to make API requests with proper error handling
 async function apiRequest(
   endpoint: string, 

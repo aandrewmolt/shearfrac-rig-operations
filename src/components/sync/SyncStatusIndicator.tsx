@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Cloud, CloudOff, RefreshCw, AlertCircle, Check } from 'lucide-react';
-import edgeSync from '@/services/edgeFunctionSync';
+import { Cloud, CloudOff, RefreshCw, AlertCircle, Check, XCircle } from 'lucide-react';
+import edgeSync, { checkSyncHealth } from '@/services/edgeFunctionSync';
 import { toast } from 'sonner';
 
 export function SyncStatusIndicator() {
@@ -10,6 +10,35 @@ export function SyncStatusIndicator() {
   const [queueLength, setQueueLength] = useState(0);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
+  const [syncHealthy, setSyncHealthy] = useState(false);
+  const [healthMessage, setHealthMessage] = useState('Checking...');
+  const [checking, setChecking] = useState(true);
+  const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
+  // Check sync health
+  useEffect(() => {
+    const checkHealth = async () => {
+      setChecking(true);
+      try {
+        const health = await checkSyncHealth();
+        setSyncHealthy(health.healthy);
+        setHealthMessage(health.message);
+      } catch (error) {
+        setSyncHealthy(false);
+        setHealthMessage('Cannot reach sync service');
+      } finally {
+        setChecking(false);
+      }
+    };
+    
+    // Check immediately
+    checkHealth();
+    
+    // Check periodically
+    const healthInterval = setInterval(checkHealth, 30000); // Every 30 seconds
+    
+    return () => clearInterval(healthInterval);
+  }, []);
   
   useEffect(() => {
     // Monitor online status
@@ -71,20 +100,48 @@ export function SyncStatusIndicator() {
   
   return (
     <div className="flex items-center gap-2">
-      {/* Online/Offline Status */}
-      <Badge variant={isOnline ? 'success' : 'secondary'} className="flex items-center gap-1">
-        {isOnline ? (
+      {/* Connection Status */}
+      <Badge 
+        variant={checking ? 'secondary' : (syncHealthy ? 'success' : (isDevelopment ? 'secondary' : 'destructive'))} 
+        className="flex items-center gap-1"
+      >
+        {checking ? (
           <>
-            <Cloud className="h-3 w-3" />
-            Online
+            <RefreshCw className="h-3 w-3 animate-spin" />
+            Checking...
+          </>
+        ) : syncHealthy ? (
+          <>
+            <Check className="h-3 w-3" />
+            Connected
+          </>
+        ) : isDevelopment ? (
+          <>
+            <CloudOff className="h-3 w-3" />
+            Local Mode
           </>
         ) : (
           <>
-            <CloudOff className="h-3 w-3" />
-            Offline
+            <XCircle className="h-3 w-3" />
+            Disconnected
           </>
         )}
       </Badge>
+      
+      {/* Network Status */}
+      {!isOnline && (
+        <Badge variant="secondary" className="flex items-center gap-1">
+          <CloudOff className="h-3 w-3" />
+          Offline
+        </Badge>
+      )}
+      
+      {/* Health Message - show when not healthy and not checking */}
+      {!checking && !syncHealthy && (
+        <span className="text-xs text-muted-foreground">
+          {healthMessage}
+        </span>
+      )}
       
       {/* Queue Status */}
       {queueLength > 0 && (
@@ -94,34 +151,36 @@ export function SyncStatusIndicator() {
         </Badge>
       )}
       
-      {/* Sync Button */}
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={handleManualSync}
-        disabled={syncing || !isOnline}
-        className="h-8"
-      >
-        {syncing ? (
-          <>
-            <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
-            Syncing...
-          </>
-        ) : queueLength > 0 ? (
-          <>
-            <RefreshCw className="h-3 w-3 mr-1" />
-            Sync Now
-          </>
-        ) : (
-          <>
-            <Check className="h-3 w-3 mr-1" />
-            Synced
-          </>
-        )}
-      </Button>
+      {/* Sync Button - only show if healthy */}
+      {syncHealthy && (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={handleManualSync}
+          disabled={syncing || !isOnline || !syncHealthy}
+          className="h-8"
+        >
+          {syncing ? (
+            <>
+              <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+              Syncing...
+            </>
+          ) : queueLength > 0 ? (
+            <>
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Sync Now
+            </>
+          ) : (
+            <>
+              <Check className="h-3 w-3 mr-1" />
+              Synced
+            </>
+          )}
+        </Button>
+      )}
       
       {/* Last Sync Time */}
-      {lastSyncTime && (
+      {lastSyncTime && syncHealthy && (
         <span className="text-xs text-muted-foreground">
           Last sync: {lastSyncTime.toLocaleTimeString()}
         </span>
