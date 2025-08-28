@@ -28,34 +28,21 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Optimize bundle size
+    // Disable manual chunks to prevent dynamic import issues
     rollupOptions: {
       output: {
-        manualChunks: {
-          // React core
-          'react-vendor': ['react', 'react-dom'],
-          
-          // React ecosystem
-          'react-libs': ['react-router-dom', '@tanstack/react-query'],
-          
-          // UI library
-          'ui-libs': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select', '@radix-ui/react-tabs', '@radix-ui/react-tooltip', '@radix-ui/react-popover'],
-          
-          // Flow diagram
-          'flow-libs': ['@xyflow/react'],
-          
-          // Database & charts
-          'data-libs': ['@libsql/client', 'uuid', 'recharts', 'html2canvas'],
-          
-          // Utilities
-          'utils': ['clsx', 'tailwind-merge', 'class-variance-authority', 'lucide-react', 'sonner']
-        }
+        // Let Vite handle chunking automatically
+        manualChunks: undefined,
+        // Ensure consistent file names
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     },
     // Increase chunk size warning limit
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
     
     // Enable source maps for debugging
-    sourcemap: mode === 'development'
+    sourcemap: false
   }
 }));

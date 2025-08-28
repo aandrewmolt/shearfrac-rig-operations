@@ -1,5 +1,5 @@
 
-import { useEffect, Suspense, lazy } from "react";
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,16 +12,16 @@ import { LocalModeBanner } from "./components/LocalModeBanner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { SafeWrapper } from "./components/SafeWrapper";
 
-// Lazy load page components for better bundle splitting
-const Index = lazy(() => import("./pages/Index"));
-const CableJobs = lazy(() => import("./pages/CableJobs"));
-const Inventory = lazy(() => import("./pages/Inventory"));
-const InventorySettings = lazy(() => import("./pages/InventorySettings"));
-const EquipmentInventory = lazy(() => import("./pages/EquipmentInventory"));
-const MainDashboard = lazy(() => import("./pages/MainDashboard"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const InitDatabase = lazy(() => import("./pages/InitDatabase"));
-const ContactsPage = lazy(() => import("./contacts/components/ContactsPage").then(module => ({ default: module.ContactsPage })));
+// Import pages directly to avoid dynamic import issues in production
+import Index from "./pages/Index";
+import CableJobs from "./pages/CableJobs";
+import Inventory from "./pages/Inventory";
+import InventorySettings from "./pages/InventorySettings";
+import EquipmentInventory from "./pages/EquipmentInventory";
+import MainDashboard from "./pages/MainDashboard";
+import NotFound from "./pages/NotFound";
+import InitDatabase from "./pages/InitDatabase";
+import { ContactsPage } from "./contacts/components/ContactsPage";
 // Import these dynamically to avoid module initialization issues
 import { DATABASE_MODE } from "./utils/consolidated/databaseUtils";
 import { logEnvironmentStatus } from "./utils/validateEnvironment";
@@ -99,15 +99,7 @@ function App() {
                   <BrowserRouter>
                     <div className="min-h-screen bg-gradient-corporate">
                       <LocalModeBanner />
-                      <Suspense fallback={
-                        <div className="min-h-screen flex items-center justify-center bg-gradient-corporate">
-                          <div className="text-center">
-                            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                            <p className="text-foreground">Loading...</p>
-                          </div>
-                        </div>
-                      }>
-                        <Routes>
+                      <Routes>
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/dashboard" element={<MainDashboard />} />
                   <Route path="/jobs" element={<CableJobs />} />
@@ -118,8 +110,7 @@ function App() {
                   <Route path="/init-database" element={<InitDatabase />} />
                   <Route path="/404" element={<NotFound />} />
                   <Route path="*" element={<Navigate to="/404" replace />} />
-                        </Routes>
-                      </Suspense>
+                      </Routes>
                       <RealtimeConnectionMonitor />
                     </div>
                   </BrowserRouter>
