@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useEquipmentSelectionManager } from './managers/useEquipmentSelectionManager';
+import { useEquipmentCRUDManager } from './managers/useEquipmentCRUDManager';
 import type { Node } from '@xyflow/react';
 
 interface Job {
@@ -38,6 +39,7 @@ interface UseEquipmentSelectionProps {
  */
 export const useEquipmentSelection = (props: UseEquipmentSelectionProps) => {
   const selectionManager = useEquipmentSelectionManager(props.job);
+  const { updateIndividualEquipment } = useEquipmentCRUDManager();
   
   // Legacy API wrapper - adapt the V2 manager to match original interface
   const handleEquipmentSelect = useCallback(async (
@@ -47,8 +49,40 @@ export const useEquipmentSelection = (props: UseEquipmentSelectionProps) => {
   ) => {
     console.log(`handleEquipmentSelect called:`, { equipmentId, equipmentType, index });
     
-    const onSuccess = (selectedId: string) => {
+    const onSuccess = async (selectedId: string) => {
       console.log(`Equipment selection success:`, { selectedId, equipmentType, index });
+      
+      // First, update the previous equipment if there was one
+      if (index !== undefined) {
+        const previousId = equipmentType === 'shearstream-box' ? props.selectedShearstreamBoxes[index] :
+                          equipmentType === 'customer-computer' ? props.selectedCustomerComputers[index] :
+                          equipmentType === 'starlink' ? props.selectedStarlink : null;
+        
+        if (previousId && previousId !== selectedId) {
+          // Mark previous equipment as available
+          try {
+            await updateIndividualEquipment(previousId, { 
+              status: 'available',
+              jobId: null,
+              nodeId: null
+            });
+          } catch (error) {
+            console.error('Failed to release previous equipment:', error);
+          }
+        }
+      }
+      
+      // Mark new equipment as deployed
+      try {
+        await updateIndividualEquipment(selectedId, { 
+          status: 'deployed',
+          jobId: props.job.id,
+          nodeId: index !== undefined ? `${equipmentType}-${index + 1}` : equipmentType
+        });
+      } catch (error) {
+        console.error('Failed to deploy equipment:', error);
+      }
+      
       // Update the appropriate state based on equipment type
       switch (equipmentType) {
         case 'shearstream-box':
@@ -58,9 +92,28 @@ export const useEquipmentSelection = (props: UseEquipmentSelectionProps) => {
             updatedBoxes[index] = selectedId;
             props.setSelectedShearstreamBoxes(updatedBoxes);
             
+            // Update the node data with the new equipment
+            props.setNodes((nds) => {
+              return nds.map((node) => {
+                // Find the main box node by index (main-box-1, main-box-2, etc.)
+                if (node.type === 'mainBox' && node.data.boxNumber === index + 1) {
+                  return {
+                    ...node,
+                    data: {
+                      ...node.data,
+                      label: selectedId, // Update the label to show the equipment ID
+                      equipmentId: selectedId,
+                      assigned: true
+                    }
+                  };
+                }
+                return node;
+              });
+            });
+            
             // Update the node name if function is provided
             if (props.updateMainBoxName) {
-              const nodeId = `shearstream-box-${index + 1}`;
+              const nodeId = `main-box-${index + 1}`;
               props.updateMainBoxName(nodeId, selectedId, props.setNodes);
             }
           } else {
@@ -108,7 +161,7 @@ export const useEquipmentSelection = (props: UseEquipmentSelectionProps) => {
       props.validateEquipmentAvailability,
       props.allocateEquipment
     );
-  }, [selectionManager, props]);
+  }, [selectionManager, props, updateIndividualEquipment]);
 
   const handleEquipmentAssignment = useCallback((assignments: {
     shearstreamBoxes?: string[];
