@@ -53,12 +53,33 @@ export const useEquipmentCRUDManager = () => {
   }, [data.individualEquipment]);
 
   // Get available equipment by type
-  const getAvailableEquipmentByType = useCallback((typeId: string): IndividualEquipment[] => {
-    return safeArray(data.individualEquipment).filter(eq => 
-      eq.typeId === typeId && 
-      ['available', 'allocated'].includes(eq.status)
+  const getAvailableEquipmentByType = useCallback((typeNameOrId: string): IndividualEquipment[] => {
+    // Find the equipment type by name or ID
+    const equipmentType = data.equipmentTypes.find(t => 
+      t.id === typeNameOrId || t.name === typeNameOrId
     );
-  }, [data.individualEquipment]);
+    
+    // Filter equipment that matches the type and is available
+    return safeArray(data.individualEquipment).filter(eq => {
+      // Check multiple fields for type matching since different parts of the app use different field names
+      const typeMatches = eq.typeId === typeNameOrId || 
+                         eq.typeId === equipmentType?.id ||
+                         eq.equipmentTypeId === typeNameOrId ||
+                         eq.equipmentTypeId === equipmentType?.id ||
+                         eq.Type === typeNameOrId || // Some equipment has Type field with the name
+                         eq.Type === equipmentType?.name ||
+                         // Also check by equipment ID prefix for common types
+                         (typeNameOrId === 'ShearStream Box' && eq.equipmentId?.startsWith('SS')) ||
+                         (typeNameOrId === 'Starlink' && eq.equipmentId?.startsWith('SL')) ||
+                         (typeNameOrId === 'Customer Computer' && eq.equipmentId?.startsWith('CC')) ||
+                         (typeNameOrId === 'Customer Tablet' && eq.equipmentId?.startsWith('CT'));
+      
+      // Only show available equipment (not deployed, maintenance, red-tagged, or retired)
+      const isAvailable = eq.status === 'available';
+      
+      return typeMatches && isAvailable;
+    });
+  }, [data.individualEquipment, data.equipmentTypes]);
 
   // ==== EQUIPMENT TYPE CRUD (from useTursoEquipmentMutations) ====
 
