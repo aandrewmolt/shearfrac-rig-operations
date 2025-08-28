@@ -31,11 +31,11 @@
   ],
   "functions": {
     "api/sync/*.ts": {
-      "runtime": "edge",
+      "runtime": "nodejs20.x",
       "maxDuration": 30
     },
     "api/cron/*.ts": {
-      "runtime": "edge",
+      "runtime": "nodejs20.x",
       "maxDuration": 60
     }
   }
