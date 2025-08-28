@@ -3,14 +3,12 @@
  * Handles synchronization with Vercel Edge Functions for Turso database
  */
 
-const API_BASE = import.meta.env.VITE_SYNC_API_BASE || '/api/sync';
+const API_BASE = import.meta.env.VITE_SYNC_API_BASE || '/api';
 const SYNC_PROVIDER = import.meta.env.VITE_SYNC_PROVIDER || 'vercel-turso';
 
 // Check if edge functions are configured
 export const isEdgeSyncEnabled = () => {
-  // Temporarily disable edge sync until API functions are working
-  return false;
-  // return SYNC_PROVIDER === 'vercel-turso' && API_BASE;
+  return SYNC_PROVIDER === 'vercel-turso' && API_BASE;
 };
 
 // Helper to make API requests with proper error handling
@@ -44,17 +42,17 @@ async function apiRequest(
 export const equipmentSync = {
   // Get all equipment
   async getAll() {
-    return apiRequest('/equipment');
+    return apiRequest('/sync-equipment');
   },
 
   // Get equipment by ID
   async getById(id: string) {
-    return apiRequest(`/equipment?equipmentId=${id}`);
+    return apiRequest(`/sync-equipment?id=${id}`);
   },
 
   // Get deployed equipment for a job
   async getDeployedForJob(jobId: string) {
-    return apiRequest(`/equipment?type=deployed&jobId=${jobId}`);
+    return apiRequest(`/sync-equipment?type=deployed&jobId=${jobId}`);
   },
 
   // Create new equipment
@@ -65,7 +63,7 @@ export const equipmentSync = {
     locationId: string;
     status?: string;
   }) {
-    return apiRequest('/equipment', {
+    return apiRequest('/sync-equipment', {
       method: 'POST',
       body: JSON.stringify(equipment),
     });
@@ -73,7 +71,7 @@ export const equipmentSync = {
 
   // Update equipment
   async update(id: string, updates: Record<string, any>) {
-    return apiRequest(`/equipment?id=${id}`, {
+    return apiRequest(`/sync-equipment?id=${id}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
     });
@@ -81,7 +79,7 @@ export const equipmentSync = {
 
   // Allocate equipment to job
   async allocate(equipmentId: string, jobId: string, nodeId?: string) {
-    return apiRequest('/equipment?action=allocate', {
+    return apiRequest('/sync-equipment?action=allocate', {
       method: 'POST',
       body: JSON.stringify({ equipmentId, jobId, nodeId }),
     });
@@ -89,7 +87,7 @@ export const equipmentSync = {
 
   // Deallocate equipment from job
   async deallocate(equipmentId: string) {
-    return apiRequest('/equipment?action=deallocate', {
+    return apiRequest('/sync-equipment?action=deallocate', {
       method: 'POST',
       body: JSON.stringify({ equipmentId }),
     });
@@ -97,7 +95,7 @@ export const equipmentSync = {
 
   // Batch update equipment status
   async batchUpdateStatus(equipmentIds: string[], status: string, jobId?: string) {
-    return apiRequest('/equipment?action=sync-status', {
+    return apiRequest('/sync-equipment?action=sync-status', {
       method: 'POST',
       body: JSON.stringify({ equipmentIds, status, jobId }),
     });
@@ -105,7 +103,7 @@ export const equipmentSync = {
 
   // Delete equipment (soft delete)
   async delete(id: string) {
-    return apiRequest(`/equipment?id=${id}`, {
+    return apiRequest(`/sync-equipment?id=${id}`, {
       method: 'DELETE',
     });
   },
