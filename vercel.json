@@ -5,7 +5,7 @@
   "installCommand": "npm install",
   "rewrites": [
     {
-      "source": "/((?!assets/).*)",
+      "source": "/((?!api/|assets/).*)",
       "destination": "/index.html"
     }
   ],
@@ -19,24 +19,5 @@
         }
       ]
     }
-  ],
-  "github": {
-    "silent": false
-  },
-  "crons": [
-    {
-      "path": "/api/cron/sync",
-      "schedule": "0 */5 * * *"
-    }
-  ],
-  "functions": {
-    "api/sync/*.ts": {
-      "runtime": "nodejs20.x",
-      "maxDuration": 30
-    },
-    "api/cron/*.ts": {
-      "runtime": "nodejs20.x",
-      "maxDuration": 60
-    }
-  }
+  ]
 }

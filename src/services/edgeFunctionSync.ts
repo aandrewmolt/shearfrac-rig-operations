@@ -8,7 +8,9 @@ const SYNC_PROVIDER = import.meta.env.VITE_SYNC_PROVIDER || 'vercel-turso';
 
 // Check if edge functions are configured
 export const isEdgeSyncEnabled = () => {
-  return SYNC_PROVIDER === 'vercel-turso' && API_BASE;
+  // Temporarily disable edge sync until API functions are working
+  return false;
+  // return SYNC_PROVIDER === 'vercel-turso' && API_BASE;
 };
 
 // Helper to make API requests with proper error handling
