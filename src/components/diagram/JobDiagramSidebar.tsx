@@ -16,6 +16,8 @@ interface JobDiagramSidebarProps {
   selectedShearstreamBoxes: string[];
   selectedStarlink: string;
   selectedCustomerComputers: string[];
+  selectedWellGauges?: Record<string, string>;
+  selectedYAdapters?: string[];
   updateWellName: (wellId: string, newName: string) => void;
   updateWellColor: (wellId: string, newColor: string) => void;
   updateWellsideGaugeName: (name: string) => void;
@@ -24,7 +26,7 @@ interface JobDiagramSidebarProps {
   extrasOnLocation: ExtrasOnLocationItem[];
   onAddExtra: (equipmentTypeId: string, quantity: number, reason: string, notes?: string, individualEquipmentId?: string) => void;
   onRemoveExtra: (extraId: string) => void;
-  onEquipmentSelect: (type: 'shearstream-box' | 'starlink' | 'customer-computer', equipmentId: string, index?: number) => void;
+  onEquipmentSelect: (type: 'shearstream-box' | 'starlink' | 'customer-computer' | 'well-gauge' | 'y-adapter' | 'pressure-gauge-1502' | 'pressure-gauge-abra' | 'pressure-gauge-pencil', equipmentId: string, index?: number, nodeId?: string) => void;
   onAddShearstreamBox: () => void;
   onRemoveShearstreamBox: (index: number) => void;
   onAddStarlink: () => void;
@@ -42,6 +44,8 @@ const JobDiagramSidebar: React.FC<JobDiagramSidebarProps> = ({
   selectedShearstreamBoxes,
   selectedStarlink,
   selectedCustomerComputers,
+  selectedWellGauges = {},
+  selectedYAdapters = [],
   updateWellName,
   updateWellColor,
   updateWellsideGaugeName,
@@ -64,6 +68,7 @@ const JobDiagramSidebar: React.FC<JobDiagramSidebarProps> = ({
   // Get well and wellside gauge nodes for configuration
   const wellNodes = nodes.filter(node => node.type === 'well');
   const wellsideGaugeNode = nodes.find(node => node.type === 'wellsideGauge');
+  const yAdapterNodes = nodes.filter(node => node.type === 'yAdapter');
   
   // Calculate counts from nodes
   const shearstreamBoxCount = nodes.filter(node => node.type === 'mainBox').length;
@@ -87,8 +92,12 @@ const JobDiagramSidebar: React.FC<JobDiagramSidebarProps> = ({
         selectedShearstreamBoxes={selectedShearstreamBoxes}
         selectedStarlink={selectedStarlink}
         selectedCustomerComputers={selectedCustomerComputers}
+        selectedWellGauges={selectedWellGauges}
+        selectedYAdapters={selectedYAdapters}
         customerComputerCount={customerComputerCount}
         shearstreamBoxCount={shearstreamBoxCount}
+        wellNodes={wellNodes}
+        yAdapterNodes={yAdapterNodes}
         onEquipmentSelect={onEquipmentSelect}
         onAddShearstreamBox={onAddShearstreamBox}
         onRemoveShearstreamBox={onRemoveShearstreamBox}

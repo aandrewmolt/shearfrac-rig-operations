@@ -12,7 +12,7 @@ import { ensureSchemaInitialized } from '@/lib/turso/initializeSchema';
  * as it's used by the InventoryProvider itself
  */
 export const useEquipmentQueries = () => {
-  // Equipment Types Query
+  // Equipment Types Query with caching
   const { data: equipmentTypes = [], isLoading: typesLoading, refetch: refetchTypes } = useQuery({
     queryKey: ['equipment-types'],
     queryFn: async () => {
@@ -34,9 +34,14 @@ export const useEquipmentQueries = () => {
         return [];
       }
     },
+    staleTime: 60000, // Types don't change often - 1 minute
+    cacheTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
-  // Storage Locations Query
+  // Storage Locations Query with caching
   const { data: storageLocations = [], isLoading: locationsLoading, refetch: refetchLocations } = useQuery({
     queryKey: ['storage-locations'],
     queryFn: async () => {
@@ -53,9 +58,14 @@ export const useEquipmentQueries = () => {
         return [];
       }
     },
+    staleTime: 60000, // Locations don't change often - 1 minute
+    cacheTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
-  // Individual Equipment Query
+  // Individual Equipment Query with proper caching
   const { data: individualEquipment = [], isLoading: individualLoading, refetch: refetchIndividual } = useQuery({
     queryKey: ['individual-equipment'],
     queryFn: async () => {
@@ -83,6 +93,12 @@ export const useEquipmentQueries = () => {
         return [];
       }
     },
+    // Add caching and deduplication
+    staleTime: 30000, // Data is fresh for 30 seconds
+    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    refetchInterval: false, // Don't auto-refetch
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnMount: false, // Don't refetch on mount if data exists
   });
 
   const refetch = async () => {

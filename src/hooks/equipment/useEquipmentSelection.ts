@@ -44,13 +44,20 @@ export const useEquipmentSelection = (props: UseEquipmentSelectionProps) => {
   // Legacy API wrapper - adapt the V2 manager to match original interface
   const handleEquipmentSelect = useCallback(async (
     equipmentId: string,
-    equipmentType: 'shearstream-box' | 'starlink' | 'customer-computer',
-    index?: number
+    equipmentType: 'shearstream-box' | 'starlink' | 'customer-computer' | 'well-gauge' | 'y-adapter' | 'pressure-gauge-1502' | 'pressure-gauge-abra' | 'pressure-gauge-pencil',
+    index?: number,
+    nodeId?: string
   ) => {
-    console.log(`handleEquipmentSelect called:`, { equipmentId, equipmentType, index });
+    console.log(`handleEquipmentSelect called:`, { equipmentId, equipmentType, index, nodeId });
     
     const onSuccess = async (selectedId: string) => {
       console.log(`Equipment selection success:`, { selectedId, equipmentType, index });
+      
+      // If empty string or __none__, handle deselection
+      if (!selectedId || selectedId === '__none__') {
+        console.log('Deselecting equipment');
+        selectedId = '';
+      }
       
       // First, update the previous equipment if there was one
       if (index !== undefined) {
@@ -95,15 +102,23 @@ export const useEquipmentSelection = (props: UseEquipmentSelectionProps) => {
             // Update the node data with the new equipment
             props.setNodes((nds) => {
               return nds.map((node) => {
-                // Find the main box node by index (main-box-1, main-box-2, etc.)
-                if (node.type === 'mainBox' && node.data.boxNumber === index + 1) {
+                // Find the main box node by ID or by box number
+                const nodeId = `main-box-${index + 1}`;
+                const isTargetNode = node.id === nodeId || 
+                                    (node.type === 'mainBox' && node.data.boxNumber === index + 1) ||
+                                    (node.type === 'mainBox' && node.id === 'main-box' && index === 0);
+                
+                if (isTargetNode) {
+                  console.log(`Updating node ${node.id} with equipment ${selectedId}`);
                   return {
                     ...node,
                     data: {
                       ...node.data,
                       label: selectedId, // Update the label to show the equipment ID
                       equipmentId: selectedId,
-                      assigned: true
+                      equipmentName: selectedId,
+                      assigned: true,
+                      boxNumber: node.data.boxNumber || (index + 1) // Ensure boxNumber is set
                     }
                   };
                 }
@@ -123,6 +138,26 @@ export const useEquipmentSelection = (props: UseEquipmentSelectionProps) => {
         case 'starlink':
           props.setSelectedStarlink(selectedId);
           
+          // Update the satellite node directly
+          props.setNodes((nds) => {
+            return nds.map((node) => {
+              if (node.type === 'satellite' || node.id === 'satellite') {
+                console.log(`Updating satellite node ${node.id} with equipment ${selectedId}`);
+                return {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    label: selectedId,
+                    equipmentId: selectedId,
+                    equipmentName: selectedId,
+                    assigned: true
+                  }
+                };
+              }
+              return node;
+            });
+          });
+          
           // Update the satellite node name if function is provided
           if (props.updateSatelliteName) {
             props.updateSatelliteName(selectedId, props.setNodes);
@@ -135,6 +170,27 @@ export const useEquipmentSelection = (props: UseEquipmentSelectionProps) => {
             updatedComputers[index] = selectedId;
             props.setSelectedCustomerComputers(updatedComputers);
             
+            // Update the customer computer node directly
+            props.setNodes((nds) => {
+              return nds.map((node) => {
+                const nodeId = `customer-computer-${index + 1}`;
+                if (node.id === nodeId || (node.type === 'customerComputer' && node.id === `customer-computer-${index + 1}`)) {
+                  console.log(`Updating customer computer node ${node.id} with equipment ${selectedId}`);
+                  return {
+                    ...node,
+                    data: {
+                      ...node.data,
+                      label: selectedId,
+                      equipmentId: selectedId,
+                      equipmentName: selectedId,
+                      assigned: true
+                    }
+                  };
+                }
+                return node;
+              });
+            });
+            
             // Update the node name if function is provided
             if (props.updateCustomerComputerName) {
               const nodeId = `customer-computer-${index + 1}`;
@@ -142,6 +198,55 @@ export const useEquipmentSelection = (props: UseEquipmentSelectionProps) => {
             }
           } else {
             props.setSelectedCustomerComputers([...props.selectedCustomerComputers, selectedId]);
+          }
+          break;
+        case 'y-adapter':
+          // Update Y-adapter node directly
+          if (nodeId) {
+            props.setNodes((nds) => {
+              return nds.map((node) => {
+                if (node.id === nodeId || node.type === 'yAdapter') {
+                  console.log(`Updating Y-adapter node ${node.id} with equipment ${selectedId}`);
+                  return {
+                    ...node,
+                    data: {
+                      ...node.data,
+                      label: selectedId,
+                      equipmentId: selectedId,
+                      equipmentName: selectedId,
+                      assigned: true
+                    }
+                  };
+                }
+                return node;
+              });
+            });
+          }
+          break;
+        case 'well-gauge':
+        case 'pressure-gauge-1502':
+        case 'pressure-gauge-abra':
+        case 'pressure-gauge-pencil':
+          // Update well node with gauge equipment
+          if (nodeId) {
+            props.setNodes((nds) => {
+              return nds.map((node) => {
+                if (node.id === nodeId || (node.type === 'well' && node.id === nodeId)) {
+                  console.log(`Updating well node ${node.id} with gauge ${selectedId}`);
+                  return {
+                    ...node,
+                    data: {
+                      ...node.data,
+                      equipmentId: selectedId,
+                      equipmentName: selectedId,
+                      gaugeType: equipmentType,
+                      assigned: true
+                    }
+                  };
+                }
+                return node;
+              });
+            });
           }
           break;
       }

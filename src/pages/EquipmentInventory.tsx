@@ -45,13 +45,13 @@ const EquipmentInventory = () => {
   // Show loading state while data is being initialized
   if (isLoading || isInitializing) {
     return (
-      <div className="h-screen bg-gradient-corporate flex flex-col">
+      <div className="h-screen bg-gradient-to-br from-background to-muted flex flex-col">
         <AppHeader />
         <div className="flex-1 p-4 overflow-hidden">
           <div className="max-w-7xl mx-auto h-full flex items-center justify-center">
             <div className="flex items-center">
               <Loader2 className="h-8 w-8 animate-spin mr-2" />
-              <span className="text-base sm:text-lg">Loading inventory system...</span>
+              <span className="text-base sm:text-lg text-foreground">Loading inventory system...</span>
             </div>
           </div>
         </div>
@@ -64,17 +64,15 @@ const EquipmentInventory = () => {
       <AppHeader />
       <div className="flex-1 p-3 sm:p-4 overflow-hidden">
         <div className="max-w-full lg:max-w-7xl mx-auto h-full flex flex-col">
-          <div className="mb-3 sm:mb-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-corporate-light uppercase tracking-wider text-center sm:text-left">
-                Equipment Inventory Management
-              </h1>
-            </div>
-            <p className="text-sm sm:text-base text-corporate-silver text-center sm:text-left">
-              Comprehensive equipment tracking and management system.
+          <div className="mb-3 sm:mb-6 text-center">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground uppercase tracking-wider">
+              Equipment Inventory Management
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">
+              Comprehensive equipment tracking and management system
             </p>
             {isInitializing && (
-              <div className="mt-2 text-xs sm:text-sm text-foreground text-center sm:text-left">
+              <div className="mt-2 text-xs sm:text-sm text-foreground">
                 Setting up default equipment types and storage locations...
               </div>
             )}
@@ -85,7 +83,7 @@ const EquipmentInventory = () => {
             {isMobile ? (
               <div className="mb-4">
                 <Select value={activeTab} onValueChange={setActiveTab}>
-                  <SelectTrigger className="w-full h-12">
+                  <SelectTrigger className="w-full h-12 bg-card border-border">
                     <div className="flex items-center gap-2">
                       {(() => {
                         const currentTab = tabItems.find(t => t.value === activeTab);
@@ -99,7 +97,7 @@ const EquipmentInventory = () => {
                       })()}
                     </div>
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-card border-border">
                     {tabItems.map((tab) => {
                       const Icon = tab.icon;
                       return (
@@ -117,7 +115,7 @@ const EquipmentInventory = () => {
             ) : (
               /* Desktop Scrollable Tabs */
               <div className="relative mb-6">
-                <TabsList className="w-full overflow-x-auto flex h-auto p-1 bg-muted rounded-lg">
+                <TabsList className="w-full overflow-x-auto flex h-auto p-1 bg-muted rounded-lg justify-center">
                   <div className="flex gap-1 min-w-max">
                     {tabItems.map((tab) => {
                       const Icon = tab.icon;
@@ -127,7 +125,7 @@ const EquipmentInventory = () => {
                           value={tab.value}
                           className={cn(
                             "flex items-center gap-2 px-3 py-2 whitespace-nowrap",
-                            "data-[state=active]:bg-accent-gold data-[state=active]:text-corporate-dark data-[state=active]:shadow-sm"
+                            "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
                           )}
                         >
                           <Icon className="h-4 w-4" />

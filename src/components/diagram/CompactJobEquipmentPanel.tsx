@@ -15,7 +15,7 @@ import {
   Zap,
   AlertCircle
 } from 'lucide-react';
-import { useUnifiedInventory } from '@/hooks/useUnifiedInventory';
+import { useInventory } from '@/contexts/InventoryContext';
 import { useRobustEquipmentTracking } from '@/hooks/useRobustEquipmentTracking';
 import { useUnifiedEquipmentSync } from '@/hooks/useUnifiedEquipmentSync';
 import { Node, Edge } from '@xyflow/react';
@@ -25,6 +25,10 @@ import { useEquipmentDebugger } from '@/hooks/equipment/useEquipmentDebugger';
 import { useEquipmentCleanup } from '@/hooks/equipment/useEquipmentCleanup';
 import { isEquipmentAtLocation } from '@/utils/equipmentLocation';
 import { extractNodeEquipment, getEquipmentSummaryFromNodes } from '@/hooks/equipment/utils/nodeEquipmentExtractor';
+import { 
+  filterEquipment, 
+  getAvailableEquipmentCount
+} from '@/utils/equipmentNormalizer';
 
 interface CompactJobEquipmentPanelProps {
   jobId: string;
@@ -39,7 +43,7 @@ const CompactJobEquipmentPanel: React.FC<CompactJobEquipmentPanelProps> = ({
   nodes,
   edges,
 }) => {
-  const { data, getInventorySummary, getDeployedEquipment } = useUnifiedInventory();
+  const { data, getDeployedEquipment } = useInventory();
   
   // Find "Midland Office" or default location as the initial selection
   const defaultLocation = data.storageLocations.find(loc => 
@@ -92,8 +96,8 @@ const CompactJobEquipmentPanel: React.FC<CompactJobEquipmentPanelProps> = ({
   const nodeEquipment = extractNodeEquipment(nodes);
   const equipmentSummary = getEquipmentSummaryFromNodes(nodes);
   
-  // Get deployed equipment using unified inventory method
-  const deployedEquipment = getDeployedEquipment(jobId);
+  // Get deployed equipment using unified inventory method - filter by jobId
+  const deployedEquipment = getDeployedEquipment().filter(item => item.jobId === jobId);
   
   const isConsistent = validateInventoryConsistency();
   

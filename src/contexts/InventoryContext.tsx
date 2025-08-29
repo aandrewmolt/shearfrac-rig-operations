@@ -9,6 +9,7 @@ import { useInventoryRealtime } from './inventory/useInventoryRealtime';
 import { useInventoryUtils } from './inventory/useInventoryUtils';
 import { safeArray, safeFilter } from '@/utils/safeDataAccess';
 import { getEquipmentDisplayLocation, filterEquipmentByLocation, groupEquipmentByLocation } from '@/utils/equipmentLocation';
+import { normalizeEquipmentArray } from '@/utils/equipmentNormalizer';
 
 const InventoryContext = createContext<InventoryContextType | undefined>(undefined);
 
@@ -36,11 +37,14 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     item => !optimisticDeletes.has(item.id)
   );
 
-  // Combined data object with filtered equipment - NO LOCAL STORAGE
+  // Normalize equipment data for consistent field names
+  const normalizedEquipment = normalizeEquipmentArray(filteredIndividualEquipment);
+
+  // Combined data object with filtered and normalized equipment - NO LOCAL STORAGE
   const data: InventoryData = {
     equipmentTypes: safeArray(equipmentTypes),
     storageLocations: safeArray(storageLocations),
-    individualEquipment: safeArray(filteredIndividualEquipment),
+    individualEquipment: safeArray(normalizedEquipment),
     equipmentItems: safeArray([]), // Empty array for backward compatibility
     lastSync: new Date(),
   };

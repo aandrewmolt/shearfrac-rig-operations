@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Monitor, Satellite, Square, Plus, X, AlertCircle, CheckCircle, RefreshCw, Tablet } from 'lucide-react';
+import { Monitor, Satellite, Square, Plus, X, AlertCircle, CheckCircle, RefreshCw, Tablet, Zap } from 'lucide-react';
 import { useInventory } from '@/contexts/InventoryContext';
 import { useEquipmentQueries } from '@/hooks/useEquipmentQueries';
 import { IndividualEquipment } from '@/types/inventory';
@@ -14,9 +14,13 @@ interface UnifiedEquipmentSelectionPanelProps {
   selectedShearstreamBoxes: string[];
   selectedStarlink?: string;
   selectedCustomerComputers: string[];
+  selectedWellGauges?: Record<string, string>; // wellId -> equipmentId
+  selectedYAdapters?: string[];
   customerComputerCount: number;
   shearstreamBoxCount: number;
-  onEquipmentSelect: (type: 'shearstream-box' | 'starlink' | 'customer-computer', equipmentId: string, index?: number) => void;
+  wellNodes?: Array<{ id: string; data: { label?: string; gaugeType?: string } }>;
+  yAdapterNodes?: Array<{ id: string; data: { label?: string } }>;
+  onEquipmentSelect: (type: 'shearstream-box' | 'starlink' | 'customer-computer' | 'well-gauge' | 'y-adapter' | 'pressure-gauge-1502' | 'pressure-gauge-abra' | 'pressure-gauge-pencil', equipmentId: string, index?: number, nodeId?: string) => void;
   onAddShearstreamBox: () => void;
   onRemoveShearstreamBox: (index: number) => void;
   onAddStarlink?: () => void;
@@ -32,8 +36,12 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
   selectedShearstreamBoxes,
   selectedStarlink,
   selectedCustomerComputers,
+  selectedWellGauges = {},
+  selectedYAdapters = [],
   customerComputerCount,
   shearstreamBoxCount,
+  wellNodes = [],
+  yAdapterNodes = [],
   onEquipmentSelect,
   onAddShearstreamBox,
   onRemoveShearstreamBox,
@@ -58,6 +66,10 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
       starlinks: available.filter(eq => eq.equipmentId.startsWith('SL')),
       computers: available.filter(eq => eq.equipmentId.startsWith('CC')),
       tablets: available.filter(eq => eq.equipmentId.startsWith('CT')),
+      pressureGauges1502: available.filter(eq => eq.equipmentId.startsWith('PG1502')),
+      pressureGaugesAbra: available.filter(eq => eq.equipmentId.startsWith('AG')),
+      pressureGaugesPencil: available.filter(eq => eq.equipmentId.startsWith('PG')),
+      yAdapters: available.filter(eq => eq.equipmentId.startsWith('Y-')),
     };
   }, [data.individualEquipment]);
 
@@ -561,6 +573,124 @@ export const UnifiedEquipmentSelectionPanel: React.FC<UnifiedEquipmentSelectionP
                     Selected: {getSelectedEquipment(selectedCustomerComputers[index])?.equipmentId}
                   </div>
                 )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Wells Gauge Selection */}
+        {wellNodes.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Square className="h-3 w-3" />
+              <Label className="text-sm font-medium">
+                Well Pressure Gauges ({wellNodes.length} wells)
+              </Label>
+            </div>
+            {wellNodes.map((wellNode, index) => (
+              <div key={wellNode.id} className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    {wellNode.data.label || `Well ${index + 1}`}
+                  </Badge>
+                  {wellNode.data.gaugeType && (
+                    <Badge variant="secondary" className="text-xs">
+                      {wellNode.data.gaugeType.replace('pressure-gauge-', '')}
+                    </Badge>
+                  )}
+                </div>
+                {wellNode.data.gaugeType && (
+                  <Select
+                    value={selectedWellGauges[wellNode.id] || ''}
+                    onValueChange={(value) => {
+                      if (value === '__none__') {
+                        onEquipmentSelect(wellNode.data.gaugeType as 'pressure-gauge-1502' | 'pressure-gauge-abra' | 'pressure-gauge-pencil', '', undefined, wellNode.id);
+                      } else {
+                        onEquipmentSelect(wellNode.data.gaugeType as 'pressure-gauge-1502' | 'pressure-gauge-abra' | 'pressure-gauge-pencil', value, undefined, wellNode.id);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="h-8">
+                      <SelectValue placeholder={`Select ${wellNode.data.gaugeType?.replace('pressure-gauge-', '')} gauge...`} />
+                    </SelectTrigger>
+                    <SelectContent className="bg-card z-50">
+                      <SelectItem value="__none__">None (No Selection)</SelectItem>
+                      {(() => {
+                        const gaugeType = wellNode.data.gaugeType;
+                        let gauges: IndividualEquipment[] = [];
+                        if (gaugeType === 'pressure-gauge-1502') {
+                          gauges = availableEquipment.pressureGauges1502;
+                        } else if (gaugeType === 'pressure-gauge-abra') {
+                          gauges = availableEquipment.pressureGaugesAbra;
+                        } else if (gaugeType === 'pressure-gauge-pencil') {
+                          gauges = availableEquipment.pressureGaugesPencil;
+                        }
+                        
+                        return gauges.map(equipment => (
+                          <SelectItem key={equipment.id} value={equipment.equipmentId}>
+                            <div className="flex items-center">
+                              <span>{equipment.equipmentId}</span>
+                              {getStatusBadge(equipment.equipmentId)}
+                            </div>
+                          </SelectItem>
+                        ));
+                      })()}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Y-Adapters Selection */}
+        {yAdapterNodes.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Zap className="h-3 w-3" />
+              <Label className="text-sm font-medium">
+                Y-Adapters ({availableEquipment.yAdapters.length} available, {yAdapterNodes.length} in use)
+              </Label>
+            </div>
+            {yAdapterNodes.map((yNode, index) => (
+              <div key={yNode.id} className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    {yNode.data.label || `Y-Adapter ${index + 1}`}
+                  </Badge>
+                </div>
+                <Select
+                  value={selectedYAdapters[index] || ''}
+                  onValueChange={(value) => {
+                    if (value === '__none__') {
+                      onEquipmentSelect('y-adapter', '', index, yNode.id);
+                    } else {
+                      onEquipmentSelect('y-adapter', value, index, yNode.id);
+                    }
+                  }}
+                >
+                  <SelectTrigger className="h-8">
+                    <SelectValue placeholder="Select Y-Adapter..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card z-50">
+                    <SelectItem value="__none__">None (No Selection)</SelectItem>
+                    {availableEquipment.yAdapters
+                      .filter(eq => {
+                        const selectedInOtherSlots = selectedYAdapters.some((selectedId, idx) => 
+                          idx !== index && selectedId === eq.equipmentId
+                        );
+                        return !selectedInOtherSlots;
+                      })
+                      .map(equipment => (
+                      <SelectItem key={equipment.id} value={equipment.equipmentId}>
+                        <div className="flex items-center">
+                          <span>{equipment.equipmentId}</span>
+                          {getStatusBadge(equipment.equipmentId)}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             ))}
           </div>

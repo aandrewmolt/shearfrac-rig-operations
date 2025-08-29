@@ -156,8 +156,14 @@ class TursoDatabase {
     return this.equipmentService.getIndividualEquipment();
   }
 
-  async createIndividualEquipment(equipment: Partial<IndividualEquipment> & { equipmentId: string; equipmentTypeId: string; storageLocationId: string }) {
-    return this.equipmentService.createIndividualEquipment(equipment);
+  async createIndividualEquipment(equipment: Partial<IndividualEquipment> & { equipmentId: string; equipmentTypeId?: string; typeId?: string; storageLocationId?: string; locationId?: string }) {
+    // Normalize field names for database
+    const normalizedEquipment = {
+      ...equipment,
+      equipmentTypeId: equipment.equipmentTypeId || equipment.typeId,
+      storageLocationId: equipment.storageLocationId || equipment.locationId
+    };
+    return this.equipmentService.createIndividualEquipment(normalizedEquipment);
   }
 
   async updateIndividualEquipment(id: string, updates: Partial<IndividualEquipment>) {

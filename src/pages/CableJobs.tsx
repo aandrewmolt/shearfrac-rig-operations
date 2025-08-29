@@ -33,7 +33,6 @@ const CableJobs = () => {
   const [jobToDelete, setJobToDelete] = useState<{ id: string; name: string } | null>(null);
   
   const { jobs, isLoading, saveJob, deleteJob, getJobById } = useJobs();
-  // const inventoryData = useUnifiedInventory();
   const { ensureJobLocationExists } = useJobStorageIntegration();
   const { endAllJobUsageSessions } = useJobEquipmentTracking();
   const { data: inventoryData, updateIndividualEquipment } = useInventory();
@@ -221,7 +220,7 @@ const CableJobs = () => {
 
   if (selectedJob) {
     return (
-      <div className="min-h-screen bg-gradient-corporate">
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted">
         <AppHeader />
         <div className="p-3 sm:p-4">
           <div className="max-w-full lg:max-w-6xl mx-auto">
@@ -237,7 +236,7 @@ const CableJobs = () => {
               </div>
               <Button 
                 onClick={() => saveJob({ ...selectedJob })}
-                className="bg-success hover:bg-success/90 w-full sm:w-auto h-10"
+                className="bg-primary hover:bg-primary/90 w-full sm:w-auto h-10"
               >
                 Save Job
               </Button>
@@ -255,19 +254,17 @@ const CableJobs = () => {
       
       <div className="p-3 sm:p-4">
         <div className="max-w-full lg:max-w-6xl mx-auto">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
-            <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-1 sm:mb-2 text-center sm:text-left">
-                Jobs
-              </h1>
-              <p className="text-sm sm:text-base text-muted-foreground text-center sm:text-left">
-                Create and manage job diagrams. All diagrams are saved and accessible to your entire team.
-              </p>
-            </div>
-            <div className="flex gap-2 w-full sm:w-auto">
+          <div className="mb-4 sm:mb-6 text-center">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-1 sm:mb-2">
+              Jobs Management
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Create and manage job diagrams. All diagrams are saved and accessible to your entire team.
+            </p>
+            <div className="flex justify-center mt-4">
               <Button 
                 onClick={() => setShowCreateDialog(true)}
-                className="bg-primary hover:bg-primary/90 flex-1 sm:flex-initial h-10"
+                className="bg-primary hover:bg-primary/90 h-10"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 New Job
@@ -284,7 +281,7 @@ const CableJobs = () => {
                   placeholder="Search jobs..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 h-10"
+                  className="flex-1 h-10 bg-background border-input"
                 />
                 <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
                   <SheetTrigger asChild>
@@ -302,7 +299,7 @@ const CableJobs = () => {
                       )}
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="bottom" className="h-auto max-h-[80vh]" id="mobile-filters-panel">
+                  <SheetContent side="bottom" className="h-auto max-h-[80vh] bg-card" id="mobile-filters-panel">
                     <SheetHeader>
                       <SheetTitle>Filter & Sort</SheetTitle>
                     </SheetHeader>
@@ -379,7 +376,7 @@ const CableJobs = () => {
               </div>
               
               {/* Active filters display */}
-                      {hasActiveFilters && (
+              {hasActiveFilters && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {filterClient !== 'all' && (
                     <Badge variant="secondary" className="text-xs">
@@ -415,19 +412,19 @@ const CableJobs = () => {
           ) : (
             // Desktop Filters
             <div className="bg-card rounded-lg border border-border p-4 mb-6 space-y-4">
-              <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex flex-col lg:flex-row gap-4 items-center">
                 {/* Search */}
-                <div className="flex-1">
+                <div className="flex-1 w-full">
                   <Input
                     placeholder="Search jobs by name or client..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full"
+                    className="w-full bg-background border-input"
                   />
                 </div>
 
                 {/* Filters */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 justify-center">
                   {/* Client Filter */}
                   <Select value={filterClient} onValueChange={setFilterClient}>
                     <SelectTrigger className="w-[180px]">
@@ -471,7 +468,7 @@ const CableJobs = () => {
 
               {/* Active filters summary */}
               {hasActiveFilters && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                   <Filter className="h-4 w-4" />
                   <span>
                     Showing {filteredAndSortedJobs.length} of {jobs?.length ?? 0} jobs

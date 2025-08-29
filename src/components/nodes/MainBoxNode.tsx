@@ -154,6 +154,19 @@ const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
   ];
 
   const isAssigned = !!data.equipmentId;
+  
+  // Debug logging to understand equipment ID display issues
+  React.useEffect(() => {
+    console.log(`MainBoxNode ${id} render debug:`, {
+      equipmentId: data.equipmentId,
+      assigned: data.assigned,
+      isAssigned,
+      label: data.label,
+      equipmentName: data.equipmentName,
+      allNodeData: data
+    });
+  }, [id, data.equipmentId, data.assigned, data.label, data.equipmentName, isAssigned, data]);
+  
   const handleDelete = () => {
     deleteElements({ nodes: [{ id }] });
   };

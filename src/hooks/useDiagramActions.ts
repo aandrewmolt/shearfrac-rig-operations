@@ -264,9 +264,18 @@ export const useDiagramActions = (
       data: { 
         label: equipmentName,
         equipmentId: equipmentId,
-        assigned: true
+        equipmentName: equipmentName,
+        assigned: true,
+        color: '#eab308', // Default yellow color for Y-adapters
+        jobId: null,
+        customName: null,
+        fracComPort: null,
+        gaugeComPort: null,
+        fracBaudRate: null,
+        gaugeBaudRate: null
       },
       deletable: true,
+      draggable: true, // Make it draggable like other nodes
     };
     
     setNodes((nds) => [...nds, newYAdapter]);

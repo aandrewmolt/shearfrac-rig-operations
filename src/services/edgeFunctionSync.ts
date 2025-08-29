@@ -73,21 +73,21 @@ async function apiRequest(
   }
 }
 
-// Equipment sync functions
+// Equipment sync functions (using v3 API with normalization)
 export const equipmentSync = {
   // Get all equipment
   async getAll() {
-    return apiRequest('/sync-equipment-v2');
+    return apiRequest('/sync-equipment-v3');
   },
 
   // Get equipment by ID
   async getById(id: string) {
-    return apiRequest(`/sync-equipment-v2?id=${id}`);
+    return apiRequest(`/sync-equipment-v3?id=${id}`);
   },
 
   // Get deployed equipment for a job
   async getDeployedForJob(jobId: string) {
-    return apiRequest(`/sync-equipment-v2?type=deployed&jobId=${jobId}`);
+    return apiRequest(`/sync-equipment-v3?type=deployed&jobId=${jobId}`);
   },
 
   // Create new equipment
@@ -98,7 +98,7 @@ export const equipmentSync = {
     locationId: string;
     status?: string;
   }) {
-    return apiRequest('/sync-equipment-v2', {
+    return apiRequest('/sync-equipment-v3', {
       method: 'POST',
       body: JSON.stringify(equipment),
     });
@@ -106,7 +106,7 @@ export const equipmentSync = {
 
   // Update equipment
   async update(id: string, updates: Record<string, any>) {
-    return apiRequest(`/sync-equipment-v2?id=${id}`, {
+    return apiRequest(`/sync-equipment-v3?id=${id}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
     });
@@ -114,7 +114,7 @@ export const equipmentSync = {
 
   // Allocate equipment to job
   async allocate(equipmentId: string, jobId: string, nodeId?: string) {
-    return apiRequest('/sync-equipment-v2?action=allocate', {
+    return apiRequest('/sync-equipment-v3?action=allocate', {
       method: 'POST',
       body: JSON.stringify({ equipmentId, jobId, nodeId }),
     });
@@ -122,7 +122,7 @@ export const equipmentSync = {
 
   // Deallocate equipment from job
   async deallocate(equipmentId: string) {
-    return apiRequest('/sync-equipment-v2?action=deallocate', {
+    return apiRequest('/sync-equipment-v3?action=deallocate', {
       method: 'POST',
       body: JSON.stringify({ equipmentId }),
     });
@@ -130,7 +130,7 @@ export const equipmentSync = {
 
   // Batch update equipment status
   async batchUpdateStatus(equipmentIds: string[], status: string, jobId?: string) {
-    return apiRequest('/sync-equipment-v2?action=sync-status', {
+    return apiRequest('/sync-equipment-v3?action=sync-status', {
       method: 'POST',
       body: JSON.stringify({ equipmentIds, status, jobId }),
     });
@@ -138,7 +138,7 @@ export const equipmentSync = {
 
   // Delete equipment (soft delete)
   async delete(id: string) {
-    return apiRequest(`/sync-equipment-v2?id=${id}`, {
+    return apiRequest(`/sync-equipment-v3?id=${id}`, {
       method: 'DELETE',
     });
   },

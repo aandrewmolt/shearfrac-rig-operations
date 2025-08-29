@@ -18,6 +18,8 @@ export const useJobDiagramState = () => {
   const [selectedShearstreamBoxes, setSelectedShearstreamBoxes] = useState<string[]>([]);
   const [selectedStarlink, setSelectedStarlink] = useState<string>('');
   const [selectedCustomerComputers, setSelectedCustomerComputers] = useState<string[]>([]);
+  const [selectedWellGauges, setSelectedWellGauges] = useState<Record<string, string>>({}); // wellId -> equipmentId
+  const [selectedYAdapters, setSelectedYAdapters] = useState<string[]>([]);
   
   // Cable and equipment state
   const [selectedCableType, setSelectedCableType] = useState<string>('');
@@ -105,6 +107,7 @@ export const useJobDiagramState = () => {
     mainBoxName?: string;
     satelliteName?: string;
     wellsideGaugeName?: string;
+    nodes?: any[];
   }) => {
     if (jobData.selectedCableType) {
       setSelectedCableType(jobData.selectedCableType);
@@ -115,6 +118,30 @@ export const useJobDiagramState = () => {
       setSelectedStarlink(jobData.equipmentAssignment.starlinkId || '');
       setSelectedCustomerComputers(jobData.equipmentAssignment.customerComputerIds || []);
     }
+    
+    // Also sync well gauges and Y-adapters from nodes
+    if (jobData.nodes) {
+      const wellGauges: Record<string, string> = {};
+      const yAdapters: string[] = [];
+      
+      jobData.nodes.forEach(node => {
+        if (node.type === 'well' && node.data?.equipmentId) {
+          wellGauges[node.id] = node.data.equipmentId;
+        } else if (node.type === 'yAdapter' && node.data?.equipmentId) {
+          yAdapters.push(node.data.equipmentId);
+        }
+      });
+      
+      if (Object.keys(wellGauges).length > 0) {
+        console.log('Syncing well gauges from nodes:', wellGauges);
+        setSelectedWellGauges(wellGauges);
+      }
+      if (yAdapters.length > 0) {
+        console.log('Syncing Y-adapters from nodes:', yAdapters);
+        setSelectedYAdapters(yAdapters);
+      }
+    }
+    
     if (jobData.mainBoxName) setMainBoxName(jobData.mainBoxName);
     if (jobData.satelliteName) setSatelliteName(jobData.satelliteName);
     if (jobData.wellsideGaugeName) setWellsideGaugeName(jobData.wellsideGaugeName);
@@ -137,6 +164,10 @@ export const useJobDiagramState = () => {
     setSelectedStarlink,
     selectedCustomerComputers,
     setSelectedCustomerComputers,
+    selectedWellGauges,
+    setSelectedWellGauges,
+    selectedYAdapters,
+    setSelectedYAdapters,
     
     // Cable and equipment
     selectedCableType,

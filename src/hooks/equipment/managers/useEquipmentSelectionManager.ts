@@ -22,7 +22,7 @@ export const useEquipmentSelectionManager = (job: Job) => {
   // Handle equipment selection with validation
   const handleEquipmentSelect = useCallback(async (
     equipmentId: string,
-    equipmentType: 'shearstream-box' | 'starlink' | 'customer-computer' | 'shearstream',
+    equipmentType: 'shearstream-box' | 'starlink' | 'customer-computer' | 'shearstream' | 'well-gauge' | 'y-adapter' | 'pressure-gauge-1502' | 'pressure-gauge-abra' | 'pressure-gauge-pencil',
     onValidationSuccess?: (equipmentId: string) => void,
     onValidationFailure?: (error: string) => void,
     validateEquipmentAvailability?: (equipmentId: string, jobId: string) => Promise<boolean>,
@@ -32,7 +32,7 @@ export const useEquipmentSelectionManager = (job: Job) => {
     
     try {
       // Skip validation for placeholder/type IDs
-      const placeholderIds = ['shearstream-box', 'starlink', 'customer-computer'];
+      const placeholderIds = ['shearstream-box', 'starlink', 'customer-computer', 'y-adapter', 'well-gauge', 'pressure-gauge-1502', 'pressure-gauge-abra', 'pressure-gauge-pencil'];
       if (placeholderIds.includes(equipmentId.toLowerCase())) {
         console.log(`Skipping validation for placeholder ID: ${equipmentId}`);
         return false;

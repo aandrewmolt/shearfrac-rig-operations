@@ -69,6 +69,7 @@ export const useJobDiagramInitialization = ({
       data: { 
         label: mainBoxName,
         jobId: job.id,
+        boxNumber: 1, // Add boxNumber for consistency
         // Initialize COM port settings with defaults
         fracComPort: '',
         gaugeComPort: '',
@@ -156,6 +157,8 @@ export const useJobDiagramInitialization = ({
         nodeType: node.type,
         equipmentId: restoredNode.data.equipmentId,
         assigned: restoredNode.data.assigned,
+        originalEquipmentId: node.data?.equipmentId,
+        originalAssigned: node.data?.assigned,
         originalData: node.data
       });
       
@@ -264,14 +267,82 @@ export const useJobDiagramInitialization = ({
       
       // Restore equipment assignments
       if (job.equipmentAssignment) {
+        console.log('Restoring equipment assignments:', job.equipmentAssignment);
         setEquipmentAssignment(job.equipmentAssignment);
         setSelectedShearstreamBoxes(job.equipmentAssignment.shearstreamBoxIds || []);
         setSelectedStarlink(job.equipmentAssignment.starlinkId || '');
         setSelectedCustomerComputers(job.equipmentAssignment.customerComputerIds || []);
+
+        // CRITICAL: Ensure nodes reflect the equipment assignments after restoration
+        setNodes(currentNodes => currentNodes.map(node => {
+          if (node.type === 'mainBox' || node.type === 'shearstreamBox') {
+            // Determine the box index based on node ID: 'main-box' = index 0, 'main-box-N' = index N-1
+            let boxIndex = 0;
+            if (node.id === 'main-box') {
+              boxIndex = 0;
+            } else if (node.id.startsWith('main-box-')) {
+              boxIndex = parseInt(node.id.replace('main-box-', '')) - 1;
+            } else if (node.data?.boxNumber) {
+              boxIndex = node.data.boxNumber - 1;
+            }
+            
+            const equipmentId = job.equipmentAssignment.shearstreamBoxIds?.[boxIndex];
+            if (equipmentId) {
+              console.log(`Syncing ShearStream box node ${node.id} (index ${boxIndex}) with equipmentId ${equipmentId} from equipment assignment`);
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  equipmentId,
+                  equipmentName: equipmentId,
+                  assigned: true,
+                  label: equipmentId
+                }
+              };
+            }
+          } else if (node.type === 'satellite') {
+            // Sync satellite with starlink assignment
+            const equipmentId = job.equipmentAssignment.starlinkId;
+            if (equipmentId) {
+              console.log(`Syncing satellite node ${node.id} with equipmentId ${equipmentId} from equipment assignment`);
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  equipmentId,
+                  equipmentName: equipmentId,
+                  assigned: true,
+                  label: equipmentId
+                }
+              };
+            }
+          } else if (node.type === 'customerComputer') {
+            // Find equipment ID for this customer computer
+            const computerIndex = parseInt(node.id.replace('customer-computer-', '')) - 1;
+            const equipmentId = job.equipmentAssignment.customerComputerIds?.[computerIndex];
+            if (equipmentId) {
+              console.log(`Syncing customer computer node ${node.id} with equipmentId ${equipmentId} from equipment assignment`);
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  equipmentId,
+                  equipmentName: equipmentId,
+                  assigned: true,
+                  label: equipmentId
+                }
+              };
+            }
+          }
+          return node;
+        }));
       }
 
-      // Sync with loaded data
-      syncWithLoadedData(job);
+      // Sync with loaded data (include nodes for well gauges and Y-adapters)
+      syncWithLoadedData({
+        ...job,
+        nodes: job.nodes || []
+      });
       
       console.log('Job data restored successfully');
     } else {

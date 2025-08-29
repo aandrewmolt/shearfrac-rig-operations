@@ -25,23 +25,23 @@ const InventorySettings = () => {
 
   return (
     <DataInitializationGuard>
-      <div className="min-h-screen bg-gradient-corporate">
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted">
         <AppHeader />
         
         <div className="p-4">
           <div className="max-w-6xl mx-auto">
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-corporate-light uppercase tracking-wider mb-2 flex items-center gap-2">
+            <div className="mb-6 text-center">
+              <h1 className="text-3xl font-bold text-foreground uppercase tracking-wider mb-2 inline-flex items-center gap-2 justify-center">
                 <Settings className="h-8 w-8" />
                 Inventory Management
               </h1>
-              <p className="text-corporate-silver">
+              <p className="text-muted-foreground">
                 Manage storage locations, transfer equipment, resolve conflicts, and track red-tagged items
               </p>
             </div>
 
             <Tabs defaultValue="locations" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
+              <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 bg-muted">
                 <TabsTrigger value="locations" className="flex items-center gap-2">
                   <Building className="h-4 w-4" />
                   Locations
@@ -82,9 +82,9 @@ const InventorySettings = () => {
 
               <TabsContent value="overview">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                  <Card>
+                  <Card className="bg-card border-border">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
+                      <CardTitle className="flex items-center gap-2 justify-center text-foreground">
                         <Package className="h-5 w-5" />
                         Equipment Summary
                       </CardTitle>
@@ -92,28 +92,28 @@ const InventorySettings = () => {
                     <CardContent>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span>Total Equipment Types</span>
-                          <span className="font-bold">{data?.equipmentTypes?.length || 0}</span>
+                          <span className="text-muted-foreground">Total Equipment Types</span>
+                          <span className="font-bold text-foreground">{data?.equipmentTypes?.length || 0}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Available Items</span>
+                          <span className="text-muted-foreground">Available Items</span>
                           <span className="font-bold text-foreground">{availableItems}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Deployed Items</span>
+                          <span className="text-muted-foreground">Deployed Items</span>
                           <span className="font-bold text-foreground">{deployedItems}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Red Tagged Items</span>
+                          <span className="text-muted-foreground">Red Tagged Items</span>
                           <span className="font-bold text-destructive">{redTaggedItems}</span>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="bg-card border-border">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
+                      <CardTitle className="flex items-center gap-2 justify-center text-foreground">
                         <Building className="h-5 w-5" />
                         Location Summary
                       </CardTitle>
@@ -121,24 +121,24 @@ const InventorySettings = () => {
                     <CardContent>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span>Storage Locations</span>
-                          <span className="font-bold">{data?.storageLocations?.length || 0}</span>
+                          <span className="text-muted-foreground">Storage Locations</span>
+                          <span className="font-bold text-foreground">{data?.storageLocations?.length || 0}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Individual Equipment</span>
-                          <span className="font-bold">{data?.individualEquipment?.length || 0}</span>
+                          <span className="text-muted-foreground">Individual Equipment</span>
+                          <span className="font-bold text-foreground">{data?.individualEquipment?.length || 0}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Equipment Items</span>
-                          <span className="font-bold">{data?.equipmentItems?.length || 0}</span>
+                          <span className="text-muted-foreground">Equipment Items</span>
+                          <span className="font-bold text-foreground">{data?.equipmentItems?.length || 0}</span>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="bg-card border-border">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
+                      <CardTitle className="flex items-center gap-2 justify-center text-foreground">
                         <AlertTriangle className="h-5 w-5" />
                         System Status
                       </CardTitle>
@@ -146,21 +146,21 @@ const InventorySettings = () => {
                     <CardContent>
                       <div className="space-y-2">
                         {isLoading ? (
-                          <div className="p-2 bg-card border border-border rounded text-sm">
-                            <span className="text-corporate-silver">Loading inventory data...</span>
+                          <div className="p-2 bg-muted border border-border rounded text-sm">
+                            <span className="text-muted-foreground">Loading inventory data...</span>
                           </div>
                         ) : redTaggedItems > 0 ? (
-                          <div className="p-2 bg-status-danger/20 border border-status-danger rounded text-sm">
-                            <span className="text-status-danger">{redTaggedItems} items need attention (red tagged)</span>
+                          <div className="p-2 bg-destructive/20 border border-destructive rounded text-sm">
+                            <span className="text-destructive">{redTaggedItems} items need attention (red tagged)</span>
                           </div>
                         ) : (
-                          <div className="p-2 bg-status-success/20 border border-status-success rounded text-sm">
-                            <span className="text-status-success">All equipment in good condition</span>
+                          <div className="p-2 bg-green-500/20 border border-green-500 rounded text-sm">
+                            <span className="text-green-500">All equipment in good condition</span>
                           </div>
                         )}
                         
-                        <div className="p-2 bg-status-info/20 border border-status-info rounded text-sm">
-                          <span className="text-status-info">System running normally</span>
+                        <div className="p-2 bg-blue-500/20 border border-blue-500 rounded text-sm">
+                          <span className="text-blue-500">System running normally</span>
                         </div>
                       </div>
                     </CardContent>
@@ -168,19 +168,19 @@ const InventorySettings = () => {
                 </div>
 
                 <div className="mt-6">
-                  <Card>
+                  <Card className="bg-card border-border">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
+                      <CardTitle className="flex items-center gap-2 justify-center text-foreground">
                         <Package className="h-5 w-5" />
                         Inventory Setup
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        <p className="text-sm text-corporate-silver">
+                        <p className="text-sm text-muted-foreground text-center">
                           Initialize a complete inventory set with standard equipment items and cable quantities.
                         </p>
-                        <div className="flex gap-2 flex-wrap">
+                        <div className="flex gap-2 flex-wrap justify-center">
                           <InitializeInventoryButton />
                           <CleanupDuplicatesButton />
                           <FixPressureGaugeButton />

@@ -29,6 +29,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Camera, Package, AlertTriangle, Menu, CameraIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { clearInvalidEquipmentFromNodes } from '@/utils/clearStuckEquipment';
 import { useIsMobile } from '@/hooks/use-mobile';
 import JobPhotoPanel from '@/components/diagram/JobPhotoPanel';
 import CompactJobEquipmentPanel from '@/components/diagram/CompactJobEquipmentPanel';
@@ -71,6 +72,10 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     setSelectedStarlink,
     selectedCustomerComputers,
     setSelectedCustomerComputers,
+    selectedWellGauges,
+    setSelectedWellGauges,
+    selectedYAdapters,
+    setSelectedYAdapters,
     nodeIdCounter,
     setNodeIdCounter,
     isInitialized,
@@ -325,6 +330,22 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     onSave: () => saveNow(createSaveData(), 'well configuration save'),
   });
 
+  // Debug: Log equipment states
+  React.useEffect(() => {
+    console.log('Equipment states in JobDiagram:', {
+      selectedShearstreamBoxes,
+      selectedStarlink,
+      selectedCustomerComputers,
+      selectedWellGauges,
+      selectedYAdapters,
+      nodesWithEquipment: nodes.filter(n => n.data?.equipmentId).map(n => ({
+        id: n.id,
+        type: n.type,
+        equipmentId: n.data.equipmentId
+      }))
+    });
+  }, [selectedShearstreamBoxes, selectedStarlink, selectedCustomerComputers, selectedWellGauges, selectedYAdapters, nodes]);
+
   // Add Starlink and Customer Computer handlers
   const {
     handleAddStarlink,
@@ -423,6 +444,30 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
         return;
       }
       
+      // Check if node already has equipment allocated and deallocate it first
+      if (node.data?.equipmentId && node.data?.assigned) {
+        // Find the old equipment in inventory by equipmentId (not database id)
+        const oldEquipment = inventoryData.individualEquipment.find(
+          e => e.equipmentId === node.data.equipmentId
+        );
+        
+        if (oldEquipment) {
+          // Deallocate the old equipment first
+          await deallocateEquipmentFromNode(node.id);
+          
+          // Release from inventory mapper if available
+          if (releaseEquipment) {
+            await releaseEquipment(oldEquipment.equipmentId);
+          }
+          
+          // Sync old equipment status to available
+          if (syncEquipmentStatus) {
+            await syncEquipmentStatus(oldEquipment.equipmentId, 'available', null);
+          }
+        }
+      }
+      
+      // Now allocate the new equipment
       const success = await allocateEquipmentToNode(node.id, equipmentId);
       if (success) {
         // Update node data with allocated equipment - use actual equipment ID, not database ID
@@ -492,7 +537,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     }
     
     setNodeAllocationDialog({ isOpen: false, node: null });
-  }, [nodeAllocationDialog, allocateEquipmentToNode, setNodes, saveNow, createSaveData, inventoryData, nodes, addShearstreamBoxWithEquipment, addCustomerComputerWithEquipment, allocateEquipment, job]);
+  }, [nodeAllocationDialog, allocateEquipmentToNode, deallocateEquipmentFromNode, setNodes, saveNow, createSaveData, inventoryData, nodes, addShearstreamBoxWithEquipment, addCustomerComputerWithEquipment, allocateEquipment, releaseEquipment, syncEquipmentStatus, job]);
 
   const handleDeallocateEquipmentFromNode = useCallback(async (nodeId: string) => {
     const success = await deallocateEquipmentFromNode(nodeId);
@@ -622,6 +667,20 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
     }
   }, [deallocateCableFromEdge, setEdges, saveNow, createSaveData]);
 
+  // Function to clear invalid equipment assignments
+  const handleClearInvalidEquipment = useCallback(() => {
+    const clearedNodes = clearInvalidEquipmentFromNodes(nodes, inventoryData.individualEquipment);
+    const changedCount = nodes.filter((n, i) => n !== clearedNodes[i]).length;
+    
+    if (changedCount > 0) {
+      setNodes(clearedNodes);
+      saveNow(createSaveData(), 'cleared invalid equipment');
+      toast.success(`Cleared ${changedCount} invalid equipment assignment${changedCount > 1 ? 's' : ''}`);
+    } else {
+      toast.info('No invalid equipment assignments found');
+    }
+  }, [nodes, setNodes, inventoryData.individualEquipment, saveNow, createSaveData]);
+
 
   return (
     <div className="w-full h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
@@ -691,6 +750,18 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
           </SheetContent>
         </Sheet>
 
+        {/* Clear Stuck Equipment Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleClearInvalidEquipment}
+          className="bg-card/95 backdrop-blur-sm shadow-md hover:bg-muted border-border"
+          title="Clear equipment assignments that no longer exist in inventory"
+        >
+          <AlertTriangle className="h-4 w-4 md:mr-2" />
+          <span className="hidden md:inline">Clear Stuck</span>
+        </Button>
+
       </div>
       
       <div className="flex-1 flex gap-4 overflow-hidden">
@@ -712,6 +783,8 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
               selectedShearstreamBoxes={selectedShearstreamBoxes}
               selectedStarlink={selectedStarlink}
               selectedCustomerComputers={selectedCustomerComputers}
+              selectedWellGauges={selectedWellGauges}
+              selectedYAdapters={selectedYAdapters}
               updateWellName={updateWellName}
               updateWellColor={updateWellColor}
               updateWellsideGaugeName={updateWellsideGaugeName}
@@ -743,6 +816,8 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
             selectedShearstreamBoxes={selectedShearstreamBoxes}
             selectedStarlink={selectedStarlink}
             selectedCustomerComputers={selectedCustomerComputers}
+            selectedWellGauges={selectedWellGauges}
+            selectedYAdapters={selectedYAdapters}
             updateWellName={updateWellName}
             updateWellColor={updateWellColor}
             updateWellsideGaugeName={updateWellsideGaugeName}

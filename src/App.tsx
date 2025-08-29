@@ -32,7 +32,20 @@ let queryClient: QueryClient | null = null;
 
 function getQueryClient() {
   if (!queryClient) {
-    queryClient = new QueryClient();
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          // Prevent aggressive refetching and infinite loops
+          staleTime: 1000 * 30, // 30 seconds
+          cacheTime: 1000 * 60 * 5, // 5 minutes
+          refetchOnWindowFocus: false,
+          refetchOnReconnect: false,
+          refetchOnMount: false,
+          retry: 1,
+          retryDelay: 1000,
+        },
+      },
+    });
   }
   return queryClient;
 }
