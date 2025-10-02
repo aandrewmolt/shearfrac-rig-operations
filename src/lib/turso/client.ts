@@ -55,8 +55,8 @@ class ProxyTursoClient {
       throw new Error(result.error);
     }
 
-    // Convert row arrays to objects for easier access
-    return convertRowsToObjects(result.data);
+    // Backend db-proxy already converts rows to objects, so just return the data
+    return result.data;
   }
 
   async batch(statements: { sql: string; params?: unknown[] }[]) {
@@ -75,8 +75,8 @@ class ProxyTursoClient {
       throw new Error(result.error);
     }
 
-    // Convert row arrays to objects for easier access
-    return convertRowsToObjects(result.data);
+    // Backend db-proxy already converts rows to objects, so just return the data
+    return result.data;
   }
 }
 
