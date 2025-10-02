@@ -19,7 +19,7 @@ export const useEquipmentQueries = () => {
       try {
         // Ensure schema is initialized before fetching data
         await ensureSchemaInitialized();
-        
+
         const types = await tursoDb.getEquipmentTypes();
         return safeArray(types).map(type => ({
         id: type.id,
@@ -38,7 +38,7 @@ export const useEquipmentQueries = () => {
     cacheTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
     refetchInterval: false,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true, // Always refetch on mount
   });
 
   // Storage Locations Query with caching
@@ -62,7 +62,7 @@ export const useEquipmentQueries = () => {
     cacheTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
     refetchInterval: false,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true, // Always refetch on mount
   });
 
   // Individual Equipment Query with proper caching
@@ -71,8 +71,7 @@ export const useEquipmentQueries = () => {
     queryFn: async () => {
       try {
         const equipment = await tursoDb.getIndividualEquipment();
-        console.log('📦 Raw equipment from DB:', equipment);
-        const mapped = safeArray(equipment).map(eq => ({
+        return safeArray(equipment).map(eq => ({
         id: eq.id,
         equipmentId: eq.equipment_id || eq.equipmentId,
         name: eq.name || '',
@@ -89,8 +88,6 @@ export const useEquipmentQueries = () => {
         location_type: eq.location_type,
         lastUpdated: eq.updated_at ? new Date(eq.updated_at) : new Date()
       } as IndividualEquipment));
-        console.log('📦 Mapped equipment:', mapped);
-        return mapped;
       } catch (error) {
         console.error('Error fetching individual equipment:', error);
         return [];
@@ -100,8 +97,8 @@ export const useEquipmentQueries = () => {
     staleTime: 30000, // Data is fresh for 30 seconds
     cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     refetchInterval: false, // Don't auto-refetch
-    refetchOnWindowFocus: false, // Don't refetch on window focus
-    refetchOnMount: false, // Don't refetch on mount if data exists
+    refetchOnWindowFocus: true, // FIXED: Refetch on window focus to get fresh data
+    refetchOnMount: true, // FIXED: Always refetch on mount to ensure data is fresh
   });
 
   const refetch = async () => {
