@@ -21,7 +21,7 @@ const LocationEquipmentViewer: React.FC = () => {
   const [expandedLocations, setExpandedLocations] = useState<Set<string>>(new Set());
 
   const filteredLocations = allLocations.filter(location => {
-    const matchesSearch = location.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = location.name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === 'all' || 
       (filterType === 'storage' && location.locationType === 'storage') ||
       (filterType === 'job' && location.locationType === 'job');

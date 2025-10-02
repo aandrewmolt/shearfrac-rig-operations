@@ -233,7 +233,7 @@ const CommunicationEquipmentSection: React.FC<CommunicationEquipmentSectionProps
           ) : (
             <div className="text-center py-6 text-corporate-silver">
               <Package className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p>No {equipmentType.name.toLowerCase()} items yet</p>
+              <p>No {equipmentType.name?.toLowerCase()} items yet</p>
             </div>
           )}
         </CardContent>

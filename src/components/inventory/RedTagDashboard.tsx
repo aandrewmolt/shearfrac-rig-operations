@@ -75,9 +75,9 @@ const RedTagDashboard = () => {
 
   const redTaggedItems = getRedTaggedItems();
   const filteredItems = redTaggedItems.filter(item =>
-    item.name.toLowerCase().includes(filter.toLowerCase()) ||
-    item.typeName.toLowerCase().includes(filter.toLowerCase()) ||
-    item.redTagReason.toLowerCase().includes(filter.toLowerCase())
+    item.name?.toLowerCase().includes(filter.toLowerCase()) ||
+    item.typeName?.toLowerCase().includes(filter.toLowerCase()) ||
+    item.redTagReason?.toLowerCase().includes(filter.toLowerCase())
   );
 
   const handleViewDetails = (item: RedTaggedItem) => {
