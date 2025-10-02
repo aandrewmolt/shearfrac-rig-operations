@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -51,6 +51,9 @@ const IndividualEquipmentForm: React.FC<IndividualEquipmentFormProps> = ({
           <DialogTitle>
             {editingEquipment ? 'Edit' : 'Add'} {equipmentType.name}
           </DialogTitle>
+          <DialogDescription>
+            Enter the equipment details below.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">

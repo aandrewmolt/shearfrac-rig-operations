@@ -1,0 +1,16 @@
+{
+  "id": "dd972c25-4fdc-4678-8610-82b09a78b51b",
+  "type": "progress",
+  "content": "MCP Tools Testing Summary - Fixed critical issues and identified available tools: (1) complete-test v1: Ran 5 iterations, score 53/100, found 6 issues, auto-fixed 7 (2) Found and fixed duplicate loading=\"lazy\" JSX attributes in RedTagDashboard and JobPhotoGallery - build now clean (3) complete-test-v2 added to config but needs restart to load (4) Available high-impact MCPs: pagespeed (Core Web Vitals), memory-bank (project docs), language-server (TS diagnostics - needs config), image-downloader (optimize images), seo-mcp (backlinks/keywords) (5) Deployed fixes to production via GitHub push",
+  "tags": [
+    "mcp-tools",
+    "testing-summary",
+    "complete-test",
+    "jsx-fixes",
+    "production-deploy"
+  ],
+  "visibility": "private",
+  "createdAt": "2025-10-02T07:19:04.126Z",
+  "updatedAt": "2025-10-02T07:19:04.126Z",
+  "importance": "high"
+}

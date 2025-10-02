@@ -36,3 +36,4 @@ dist/
 coverage/
 .nyc_output/
 test-results/
+.mcp.json*

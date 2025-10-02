@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,16 +12,18 @@ import { LocalModeBanner } from "./components/LocalModeBanner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { SafeWrapper } from "./components/SafeWrapper";
 
-// Import pages directly to avoid dynamic import issues in production
-import Index from "./pages/Index";
-import CableJobs from "./pages/CableJobs";
-import Inventory from "./pages/Inventory";
-import InventorySettings from "./pages/InventorySettings";
-import EquipmentInventory from "./pages/EquipmentInventory";
+// Code splitting: Lazy load pages for better performance
+// Only load MainDashboard eagerly since it's the default route
 import MainDashboard from "./pages/MainDashboard";
-import NotFound from "./pages/NotFound";
-import InitDatabase from "./pages/InitDatabase";
-import { ContactsPage } from "./contacts/components/ContactsPage";
+
+const Index = lazy(() => import("./pages/Index"));
+const CableJobs = lazy(() => import("./pages/CableJobs"));
+const Inventory = lazy(() => import("./pages/Inventory"));
+const InventorySettings = lazy(() => import("./pages/InventorySettings"));
+const EquipmentInventory = lazy(() => import("./pages/EquipmentInventory"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const InitDatabase = lazy(() => import("./pages/InitDatabase"));
+const ContactsPage = lazy(() => import("./contacts/components/ContactsPage").then(mod => ({ default: mod.ContactsPage })));
 // Import these dynamically to avoid module initialization issues
 import { DATABASE_MODE } from "./utils/consolidated/databaseUtils";
 import { logEnvironmentStatus } from "./utils/validateEnvironment";
@@ -112,18 +114,24 @@ function App() {
                   <BrowserRouter>
                     <div className="min-h-screen bg-gradient-corporate">
                       <LocalModeBanner />
-                      <Routes>
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                  <Route path="/dashboard" element={<MainDashboard />} />
-                  <Route path="/jobs" element={<CableJobs />} />
-                  <Route path="/inventory" element={<Inventory />} />
-                  <Route path="/inventory/settings" element={<InventorySettings />} />
-                  <Route path="/inventory/equipment" element={<EquipmentInventory />} />
-                  <Route path="/contacts" element={<ContactsPage />} />
-                  <Route path="/init-database" element={<InitDatabase />} />
-                  <Route path="/404" element={<NotFound />} />
-                  <Route path="*" element={<Navigate to="/404" replace />} />
-                      </Routes>
+                      <Suspense fallback={
+                        <div className="flex items-center justify-center min-h-screen">
+                          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                        </div>
+                      }>
+                        <Routes>
+                          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                          <Route path="/dashboard" element={<MainDashboard />} />
+                          <Route path="/jobs" element={<CableJobs />} />
+                          <Route path="/inventory" element={<Inventory />} />
+                          <Route path="/inventory/settings" element={<InventorySettings />} />
+                          <Route path="/inventory/equipment" element={<EquipmentInventory />} />
+                          <Route path="/contacts" element={<ContactsPage />} />
+                          <Route path="/init-database" element={<InitDatabase />} />
+                          <Route path="/404" element={<NotFound />} />
+                          <Route path="*" element={<Navigate to="/404" replace />} />
+                        </Routes>
+                      </Suspense>
                       <RealtimeConnectionMonitor />
                     </div>
                   </BrowserRouter>
