@@ -186,16 +186,18 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                   <SelectValue placeholder="Choose equipment to view" />
                 </SelectTrigger>
                 <SelectContent>
-                  {inventoryData.individualEquipment.map(eq => (
-                    <SelectItem key={eq.id} value={eq.id}>
-                      <div className="flex items-center gap-2">
-                        {eq.equipmentId} - {eq.name}
-                        {eq.status === 'deployed' && (
-                          <Badge variant="secondary" className="text-xs">Tracking</Badge>
-                        )}
-                      </div>
-                    </SelectItem>
-                  ))}
+                  {inventoryData.individualEquipment
+                    .filter(eq => eq.id && eq.id.trim() !== '')
+                    .map(eq => (
+                      <SelectItem key={eq.id} value={eq.id}>
+                        <div className="flex items-center gap-2">
+                          {eq.equipmentId} - {eq.name}
+                          {eq.status === 'deployed' && (
+                            <Badge variant="secondary" className="text-xs">Tracking</Badge>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -207,11 +209,13 @@ export const EquipmentUsageTracker: React.FC<EquipmentUsageTrackerProps> = ({
                   <SelectValue placeholder="Choose job to view" />
                 </SelectTrigger>
                 <SelectContent>
-                  {jobs.map(job => (
-                    <SelectItem key={job.id} value={job.id}>
-                      {job.name} {job.client && `(${job.client})`}
-                    </SelectItem>
-                  ))}
+                  {jobs
+                    .filter(job => job.id && job.id.trim() !== '')
+                    .map(job => (
+                      <SelectItem key={job.id} value={job.id}>
+                        {job.name} {job.client && `(${job.client})`}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>

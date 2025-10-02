@@ -1,0 +1,15 @@
+{
+  "id": "44e30a01-a6dc-4754-9273-7c80b4172cfe",
+  "type": "progress",
+  "content": "Successfully deployed node standardization fixes and CORS resolution to production.\n\n**Completed Fixes:**\n1. ✅ Y-Adapter now displays equipment name \"003\" instead of UUID \"4b2d886a-5eda-49ad-9251-78e237e7fd41\"\n2. ✅ Wellside Gauge displays equipment name instead of UUID\n3. ✅ Removed deprecated \"Mark for Maintenance\" from BaseEquipmentNode 3-dot menu\n4. ✅ WellNode refactored to use BaseEquipmentNode pattern\n5. ✅ Fixed CORS issue - databaseUtils.ts now routes all calls through proxy\n6. ✅ Jobs loading successfully in production\n\n**Production Verification:**\n- Jobs page loads with \"Connected to Turso\" status\n- BPX - Mohawk 2 job diagram displays correctly\n- Y-Adapter shows \"003\" as requested\n- SS Box, Starlink, Customer Computer all have 3-dot menus\n\n**Architecture Changes:**\n- src/utils/consolidated/databaseUtils.ts: Removed direct Turso client creation, now delegates to main client with proxy support\n- src/components/nodes/YAdapterNode.tsx: Changed from displaying `data.equipmentId` to `data.equipmentName || data.equipmentId`\n- src/components/nodes/WellsideGaugeNode.tsx: Same equipmentName fix\n- src/components/nodes/BaseEquipmentNode.tsx: Removed handleMarkMaintenance function and menu option\n- src/components/nodes/WellNode.tsx: Refactored to use BaseEquipmentNode wrapper with delete button support\n\n**Deployment:**\n- Commit 8d30fd7: Node standardization fixes\n- Commit 7aacc46: CORS fix for database proxy\n- Both deployed to production via Vercel",
+  "tags": [
+    "deployment",
+    "node-fixes",
+    "cors-fix",
+    "production"
+  ],
+  "visibility": "private",
+  "createdAt": "2025-10-02T05:00:12.272Z",
+  "updatedAt": "2025-10-02T05:00:12.272Z",
+  "importance": "high"
+}

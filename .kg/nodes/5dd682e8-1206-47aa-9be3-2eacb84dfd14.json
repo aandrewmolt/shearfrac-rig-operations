@@ -1,0 +1,16 @@
+{
+  "id": "5dd682e8-1206-47aa-9be3-2eacb84dfd14",
+  "type": "insight",
+  "content": "## Job Diagram Node Architecture Issues Found\n\n### Critical Issues Identified:\n\n1. **Y-Adapter Node Shows UUID Instead of Equipment Name**\n   - When Y-Adapter \"008\" is added, it displays as \"4b2d886a-5eda-49ad-9251-78e237e7fd41\" \n   - Should display as \"Y 008\" like other equipment\n   - Y-Adapter nodes are NOT using BaseEquipmentNode architecture\n\n2. **Inconsistent Node UI Patterns**\n   - SS Box, Starlink, Customer Computer: Have 3-dot menu buttons ✓\n   - Well nodes: No 3-dot menu or delete button ✗\n   - Wellside Gauge: No 3-dot menu ✗\n   - Y-Adapter: No 3-dot menu (also shows UUID) ✗\n\n3. **Missing BaseEquipmentNode Integration**\n   - YAdapterNode.tsx NOT using BaseEquipmentNode\n   - WellsideGaugeNode.tsx NOT using BaseEquipmentNode\n   - These nodes need to be refactored to use BaseEquipmentNode\n\n4. **Well Node Requirements**\n   - Wells with no gauge: Should still be deletable (no menu needed)\n   - Wells with gauge attached: Should show 3-dot menu for equipment management\n   - Need ability to add MULTIPLE gauges to same well (2-4 gauges per well)\n\n5. **Menu Content Issues**\n   - \"Mark for Maintenance\" option should be removed from 3-dot menus\n   - Red tag functionality is the replacement (mark broken/needs repair)\n\n### Files Affected:\n- src/components/nodes/YAdapterNode.tsx\n- src/components/nodes/WellsideGaugeNode.tsx  \n- src/components/nodes/WellNode.tsx (needs conditional menu)\n- src/components/nodes/BaseEquipmentNode.tsx (reference for proper pattern)",
+  "tags": [
+    "bug",
+    "ui-inconsistency",
+    "node-architecture",
+    "diagram",
+    "proj:well-rig-visualizer"
+  ],
+  "visibility": "private",
+  "createdAt": "2025-10-02T04:42:21.468Z",
+  "updatedAt": "2025-10-02T04:42:21.468Z",
+  "importance": "medium"
+}
