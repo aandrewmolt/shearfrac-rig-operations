@@ -102,7 +102,7 @@ const YAdapterNode: React.FC<YAdapterNodeProps> = ({ id, data, selected }) => {
         <h3 className="font-bold text-sm text-yellow-100">{data.label || 'Y-Adapter'}</h3>
         {isAssigned && data.equipmentId && (
           <Badge variant="secondary" className="text-xs bg-yellow-600/20 text-yellow-100 border-yellow-600/50">
-            {data.equipmentId}
+            {data.equipmentName || data.equipmentId}
           </Badge>
         )}
         {!isAssigned && (

@@ -175,34 +175,6 @@ export const BaseEquipmentNode: React.FC<BaseEquipmentNodeProps> = ({
     }
   };
 
-  const handleMarkMaintenance = async () => {
-    if (!equipment) return;
-
-    setIsProcessing(true);
-    try {
-      await tursoDb.updateIndividualEquipment(equipment.id, {
-        status: 'maintenance',
-        notes: 'Scheduled maintenance'
-      });
-
-      await refreshData();
-
-      toast({
-        title: "Marked for Maintenance",
-        description: `${equipment.equipmentId} is now in maintenance`,
-      });
-    } catch (error) {
-      console.error('Failed to mark for maintenance:', error);
-      toast({
-        title: "Error",
-        description: "Failed to mark for maintenance",
-        variant: "destructive"
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
   const handleRemoveEquipment = () => {
     setNodes((nodes) =>
       nodes.map((node) => {
@@ -285,11 +257,6 @@ export const BaseEquipmentNode: React.FC<BaseEquipmentNodeProps> = ({
                     >
                       <AlertTriangle className="mr-2 h-4 w-4" />
                       Red Tag & Replace
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem onClick={handleMarkMaintenance}>
-                      <Wrench className="mr-2 h-4 w-4" />
-                      Mark for Maintenance
                     </DropdownMenuItem>
 
                     <DropdownMenuSeparator />

@@ -65,7 +65,7 @@ const WellsideGaugeNode: React.FC<WellsideGaugeNodeProps> = ({ id, data, selecte
         <div>
           <h3 className="font-bold text-sm">{data.label || 'Wellside Gauge'}</h3>
           {isAssigned && data.equipmentId && (
-            <p className="text-xs text-green-100 font-medium">{data.equipmentId}</p>
+            <p className="text-xs text-green-100 font-medium">{data.equipmentName || data.equipmentId}</p>
           )}
           <p className="text-xs opacity-80">1502 Pressure Gauge</p>
         </div>
