@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
@@ -134,6 +134,9 @@ const NodeEquipmentAllocationDialog: React.FC<NodeEquipmentAllocationDialogProps
             {node && getNodeIcon(node.type || '')}
             Select {equipmentType?.name || 'Equipment'} for {node?.data?.label || 'Node'}
           </DialogTitle>
+          <DialogDescription>
+            Choose available equipment to allocate to this node. Equipment will be marked as deployed for this job.
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">

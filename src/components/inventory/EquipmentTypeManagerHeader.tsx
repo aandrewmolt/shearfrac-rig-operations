@@ -3,7 +3,7 @@ import React from 'react';
 import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Settings } from 'lucide-react';
 import EquipmentTypeForm from './EquipmentTypeForm';
 import { EquipmentType, CreateEquipmentTypeInput } from '@/types/types';
@@ -51,6 +51,9 @@ const EquipmentTypeManagerHeader: React.FC<EquipmentTypeManagerHeaderProps> = ({
               <DialogTitle>
                 {editingType ? 'Edit Equipment Type' : 'Add Equipment Type'}
               </DialogTitle>
+              <DialogDescription>
+                {editingType ? 'Update the equipment type details below.' : 'Create a new equipment type by filling in the details below.'}
+              </DialogDescription>
             </DialogHeader>
             <EquipmentTypeForm
               editingType={editingType}

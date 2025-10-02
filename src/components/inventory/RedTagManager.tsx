@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertTriangle, Camera, MapPin, Calendar, Tag, Upload, X } from 'lucide-react';
 // Removed Supabase imports - file upload functionality disabled
 import { optimizeImage, getOptimizedFileName } from '@/utils/imageOptimizer';
@@ -233,6 +233,9 @@ const RedTagManager: React.FC = () => {
                       <DialogContent className="max-w-2xl">
                         <DialogHeader>
                           <DialogTitle>Edit Red Tag</DialogTitle>
+                          <DialogDescription>
+                            Update the red tag information, add photos, or provide additional notes about this equipment issue.
+                          </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4">
                           <div>

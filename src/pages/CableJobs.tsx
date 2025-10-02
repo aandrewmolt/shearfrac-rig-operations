@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Filter, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,7 @@ import AppHeader from '@/components/AppHeader';
 import { useJobs } from '@/hooks/useJobs';
 import JobsList from '@/components/jobs/JobsList';
 import JobCreationDialog from '@/components/jobs/JobCreationDialog';
-import JobDiagram from '@/components/JobDiagram';
+const JobDiagram = lazy(() => import('@/components/JobDiagram'));
 import { useSearchParams } from 'react-router-dom';
 import { useJobStorageIntegration } from '@/hooks/useJobStorageIntegration';
 import { JobStatusControl } from '@/components/jobs/JobStatusControl';
@@ -229,19 +229,25 @@ const CableJobs = () => {
                 <Button onClick={handleBackToList} variant="outline" className="h-9 sm:h-10">
                   ← Back to Jobs
                 </Button>
-                <JobStatusControl 
+                <JobStatusControl
                   job={selectedJob}
                   onUpdateStatus={(updates) => saveJob({ ...selectedJob, ...updates })}
                 />
               </div>
-              <Button 
+              <Button
                 onClick={() => saveJob({ ...selectedJob })}
                 className="bg-primary hover:bg-primary/90 w-full sm:w-auto h-10"
               >
                 Save Job
               </Button>
             </div>
-            <JobDiagram job={selectedJob} />
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
+            }>
+              <JobDiagram job={selectedJob} />
+            </Suspense>
           </div>
         </div>
       </div>

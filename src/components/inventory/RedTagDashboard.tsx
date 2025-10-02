@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertTriangle, Camera, MapPin, Calendar, Eye, Package } from 'lucide-react';
 import { useUnifiedInventory } from '@/hooks/useUnifiedInventory';
 import { useJobs } from '@/hooks/useJobs';
@@ -275,6 +275,9 @@ const RedTagDashboard = () => {
                 <AlertTriangle className="h-5 w-5 text-destructive" />
                 Red Tagged Equipment Details
               </DialogTitle>
+              <DialogDescription>
+                View detailed information about this red-tagged equipment, including photos and reason for the red tag.
+              </DialogDescription>
             </DialogHeader>
             {selectedItem && (
               <div className="space-y-4">
