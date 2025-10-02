@@ -23,8 +23,8 @@ const EquipmentTypeManager = () => {
   });
 
   const filteredTypes = data.equipmentTypes.filter(type =>
-    type.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    type.category.toLowerCase().includes(searchTerm.toLowerCase())
+    type.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    type.category?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getCategoryColor = (category: string) => {
