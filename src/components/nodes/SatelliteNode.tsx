@@ -3,7 +3,7 @@ import React from 'react';
 import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { Satellite } from 'lucide-react';
 import NodeDeleteButton from './NodeDeleteButton';
-import { SimpleRedTagMenu } from './SimpleRedTagMenu';
+import { BaseEquipmentNode } from './BaseEquipmentNode';
 
 // Extended node data interface for component-specific properties
 interface SatelliteNodeData {
@@ -35,35 +35,10 @@ const SatelliteNode: React.FC<SatelliteNodeProps> = ({ id, data, selected }) => 
     deleteElements({ nodes: [{ id }] });
   };
 
-  const handleRemoveEquipment = () => {
-    setNodes((nodes) => 
-      nodes.map((node) => {
-        if (node.id === id) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              equipmentId: null,
-              equipmentName: null,
-              assigned: false
-            }
-          };
-        }
-        return node;
-      })
-    );
-  };
-
   return (
-    <div className="bg-green-600 text-white rounded-lg p-4 border-2 border-green-400 min-w-[120px] text-center relative">
-      {selected && <NodeDeleteButton onDelete={handleDelete} />}
-      {isAssigned && data.equipmentId && (
-        <SimpleRedTagMenu 
-          equipmentId={data.equipmentId} 
-          nodeId={id}
-          onRemoveEquipment={handleRemoveEquipment}
-        />
-      )}
+    <BaseEquipmentNode id={id} data={data} nodeType="Starlink">
+      <div className="bg-green-600 text-white rounded-lg p-4 border-2 border-green-400 min-w-[120px] text-center relative">
+        {selected && <NodeDeleteButton onDelete={handleDelete} />}
       <Handle
         type="source"
         position={Position.Right}
@@ -87,6 +62,7 @@ const SatelliteNode: React.FC<SatelliteNodeProps> = ({ id, data, selected }) => 
         </div>
       </div>
     </div>
+    </BaseEquipmentNode>
   );
 };
 

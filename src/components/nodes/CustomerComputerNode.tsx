@@ -3,7 +3,7 @@ import React from 'react';
 import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { Monitor, Tablet } from 'lucide-react';
 import NodeDeleteButton from './NodeDeleteButton';
-import { SimpleRedTagMenu } from './SimpleRedTagMenu';
+import { BaseEquipmentNode } from './BaseEquipmentNode';
 
 const CustomerComputerNode = ({ id, data, selected }: { id: string; data: { label?: string; equipmentId?: string; color?: string; wellNumber?: number; jobId?: string; assigned?: boolean; customName?: string; fracComPort?: string; gaugeComPort?: string; fracBaudRate?: string; gaugeBaudRate?: string; [key: string]: unknown }; selected?: boolean }) => {
   const { deleteElements, setNodes } = useReactFlow();
@@ -16,35 +16,10 @@ const CustomerComputerNode = ({ id, data, selected }: { id: string; data: { labe
     deleteElements({ nodes: [{ id }] });
   };
 
-  const handleRemoveEquipment = () => {
-    setNodes((nodes) => 
-      nodes.map((node) => {
-        if (node.id === id) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              equipmentId: null,
-              equipmentName: null,
-              assigned: false
-            }
-          };
-        }
-        return node;
-      })
-    );
-  };
-
   return (
-    <div className="bg-muted-foreground text-white rounded-lg p-3 border-2 border-border min-w-[120px] text-center relative">
-      {selected && <NodeDeleteButton onDelete={handleDelete} />}
-      {isAssigned && data.equipmentId && (
-        <SimpleRedTagMenu 
-          equipmentId={data.equipmentId} 
-          nodeId={id}
-          onRemoveEquipment={handleRemoveEquipment}
-        />
-      )}
+    <BaseEquipmentNode id={id} data={data} nodeType="Customer Computer">
+      <div className="bg-muted-foreground text-white rounded-lg p-3 border-2 border-border min-w-[120px] text-center relative">
+        {selected && <NodeDeleteButton onDelete={handleDelete} />}
       <Handle
         type="source"
         position={Position.Right}
@@ -72,6 +47,7 @@ const CustomerComputerNode = ({ id, data, selected }: { id: string; data: { labe
         </div>
       </div>
     </div>
+    </BaseEquipmentNode>
   );
 };
 

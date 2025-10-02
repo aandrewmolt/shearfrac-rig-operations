@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import NodeDeleteButton from './NodeDeleteButton';
-import { SimpleRedTagMenu } from './SimpleRedTagMenu';
+import { BaseEquipmentNode } from './BaseEquipmentNode';
 
 // Extended node data interface for Y-Adapter specific properties
 interface YAdapterNodeData {
@@ -77,27 +77,9 @@ const YAdapterNode: React.FC<YAdapterNodeProps> = ({ id, data, selected }) => {
     setBottomPortNumber(tempTop);
   };
 
-  const handleRemoveEquipment = () => {
-    setNodes((nodes) => 
-      nodes.map((node) => {
-        if (node.id === id) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              equipmentId: null,
-              equipmentName: null,
-              assigned: false
-            }
-          };
-        }
-        return node;
-      })
-    );
-  };
-
   return (
-    <Card className="bg-gradient-to-br from-yellow-500/20 to-amber-500/20 text-foreground p-3 border-2 border-yellow-600/50 min-w-[120px] text-center relative shadow-md">
+    <BaseEquipmentNode id={id} data={data} nodeType="Y-Adapter">
+      <Card className="bg-gradient-to-br from-yellow-500/20 to-amber-500/20 text-foreground p-3 border-2 border-yellow-600/50 min-w-[120px] text-center relative shadow-md">
       <Handle
         type="target"
         position={Position.Left}
@@ -144,17 +126,7 @@ const YAdapterNode: React.FC<YAdapterNodeProps> = ({ id, data, selected }) => {
 
       {/* Delete button */}
       {selected && <NodeDeleteButton onDelete={handleDelete} />}
-      
-      {/* Red tag menu for assigned equipment - render last with highest z-index */}
-      {isAssigned && data.equipmentId && (
-        <SimpleRedTagMenu 
-          equipmentId={data.equipmentId} 
-          nodeId={id}
-          nodeType="Y-Adapter"
-          onRemoveEquipment={handleRemoveEquipment}
-        />
-      )}
-      
+
       {/* Output 1 - Top port */}
       <Handle
         type="source"
@@ -209,6 +181,7 @@ const YAdapterNode: React.FC<YAdapterNodeProps> = ({ id, data, selected }) => {
         {bottomPortNumber}
       </div>
     </Card>
+    </BaseEquipmentNode>
   );
 };
 

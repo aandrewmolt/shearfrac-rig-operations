@@ -3,7 +3,7 @@ import React from 'react';
 import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { Gauge } from 'lucide-react';
 import NodeDeleteButton from './NodeDeleteButton';
-import { SimpleRedTagMenu } from './SimpleRedTagMenu';
+import { BaseEquipmentNode } from './BaseEquipmentNode';
 
 // Extended node data interface for Wellside Gauge specific properties
 interface WellsideGaugeNodeData {
@@ -36,45 +36,17 @@ const WellsideGaugeNode: React.FC<WellsideGaugeNodeProps> = ({ id, data, selecte
   const handleDelete = () => {
     deleteElements({ nodes: [{ id }] });
   };
-  
-  const handleRemoveEquipment = () => {
-    setNodes((nodes) => 
-      nodes.map((node) => {
-        if (node.id === id) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              equipmentId: null,
-              equipmentName: null,
-              assigned: false
-            }
-          };
-        }
-        return node;
-      })
-    );
-  };
-  
+
   return (
-    <div 
-      className="text-white rounded-lg p-3 border-2 min-w-[100px] text-center relative"
-      style={{ 
-        backgroundColor,
-        borderColor,
-      }}
-    >
-      {selected && <NodeDeleteButton onDelete={handleDelete} />}
-      
-      {/* Red tag menu for assigned equipment */}
-      {isAssigned && data.equipmentId && (
-        <SimpleRedTagMenu 
-          equipmentId={data.equipmentId} 
-          nodeId={id}
-          nodeType="Wellside Gauge"
-          onRemoveEquipment={handleRemoveEquipment}
-        />
-      )}
+    <BaseEquipmentNode id={id} data={data} nodeType="Wellside Gauge">
+      <div
+        className="text-white rounded-lg p-3 border-2 min-w-[100px] text-center relative"
+        style={{
+          backgroundColor,
+          borderColor,
+        }}
+      >
+        {selected && <NodeDeleteButton onDelete={handleDelete} />}
       
       <Handle
         type="target"
@@ -99,6 +71,7 @@ const WellsideGaugeNode: React.FC<WellsideGaugeNodeProps> = ({ id, data, selecte
         </div>
       </div>
     </div>
+    </BaseEquipmentNode>
   );
 };
 

@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card } from '@/components/ui/card';
 import { useJobs } from '@/hooks/useJobs';
 import NodeDeleteButton from './NodeDeleteButton';
-import { SimpleRedTagMenu } from './SimpleRedTagMenu';
+import { BaseEquipmentNode } from './BaseEquipmentNode';
 
 // Extended node data interface for Main Box specific properties
 interface MainBoxNodeData {
@@ -171,35 +171,10 @@ const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
     deleteElements({ nodes: [{ id }] });
   };
 
-  const handleRemoveEquipment = () => {
-    setNodes((nodes) => 
-      nodes.map((node) => {
-        if (node.id === id) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              equipmentId: null,
-              equipmentName: null,
-              assigned: false
-            }
-          };
-        }
-        return node;
-      })
-    );
-  };
-
   return (
-    <Card className="bg-muted-foreground text-white p-4 border-2 border-border min-w-[280px] shadow-lg relative">
-      {selected && <NodeDeleteButton onDelete={handleDelete} />}
-      {isAssigned && data.equipmentId && (
-        <SimpleRedTagMenu 
-          equipmentId={data.equipmentId} 
-          nodeId={id}
-          onRemoveEquipment={handleRemoveEquipment}
-        />
-      )}
+    <BaseEquipmentNode id={id} data={data} nodeType="ShearStream Box">
+      <Card className="bg-muted-foreground text-white p-4 border-2 border-border min-w-[280px] shadow-lg relative">
+        {selected && <NodeDeleteButton onDelete={handleDelete} />}
       <div className="flex items-center gap-2 mb-4">
         <Square className="h-5 w-5 text-foreground" />
         <div>
@@ -299,6 +274,7 @@ const MainBoxNode: React.FC<MainBoxNodeProps> = ({ id, data, selected }) => {
         ))}
       </div>
     </Card>
+    </BaseEquipmentNode>
   );
 };
 
