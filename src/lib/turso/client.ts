@@ -11,11 +11,15 @@ class ProxyTursoClient {
     this.apiUrl = '/api/db-proxy';
   }
 
-  async execute(sql: string, params?: unknown[]) {
+  async execute(sqlOrObj: string | { sql: string; args?: unknown[] }, params?: unknown[]) {
+    // Handle both string and object formats
+    const sql = typeof sqlOrObj === 'string' ? sqlOrObj : sqlOrObj.sql;
+    const args = typeof sqlOrObj === 'string' ? params : sqlOrObj.args;
+
     const response = await fetch(this.apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ operation: 'execute', sql, params })
+      body: JSON.stringify({ operation: 'execute', sql, params: args })
     });
 
     if (!response.ok) {
@@ -54,7 +58,11 @@ class ProxyTursoClient {
 class MockTursoClient {
   private storage: Map<string, unknown[]> = new Map();
 
-  async execute(sql: string, params?: unknown[]) {
+  async execute(sqlOrObj: string | { sql: string; args?: unknown[] }, params?: unknown[]) {
+    // Handle both string and object formats
+    const sql = typeof sqlOrObj === 'string' ? sqlOrObj : sqlOrObj.sql;
+    const args = typeof sqlOrObj === 'string' ? params : sqlOrObj.args;
+
     // Simple mock implementation for basic queries
     const upperSql = sql.toUpperCase();
 
@@ -80,7 +88,7 @@ class MockTursoClient {
         this.storage.set(tableName, []);
       }
       const tableData = this.storage.get(tableName)!;
-      tableData.push({ id: Date.now().toString(), ...params });
+      tableData.push({ id: Date.now().toString(), ...args });
       return { rows: [], columns: [] };
     }
 
