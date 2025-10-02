@@ -1,33 +1,16 @@
-import { createClient } from '@libsql/client/web';
 import { getTursoClient as getMainTursoClient } from '@/lib/turso/client';
 
 // =============================================================================
 // DATABASE CLIENT MANAGEMENT
 // =============================================================================
 
-// Lazy initialization to avoid environment variable issues
-let tursoClient: ReturnType<typeof createClient> | null = null;
-
 export function getTursoClient() {
-  if (!tursoClient) {
-    const dbUrl = import.meta.env.VITE_TURSO_DATABASE_URL;
-    
-    // If no URL provided or file URL, use the main client which has mock support
-    if (!dbUrl || dbUrl === '' || dbUrl.startsWith('file:')) {
-      return getMainTursoClient();
-    }
-
-    // Create Turso client for production use
-    tursoClient = createClient({
-      url: dbUrl,
-      authToken: import.meta.env.VITE_TURSO_AUTH_TOKEN,
-    });
-  }
-  return tursoClient;
+  // Always use the main client which handles production proxy, mock client, etc.
+  return getMainTursoClient();
 }
 
 // Export using Proxy for lazy initialization to avoid module initialization issues
-export const turso = new Proxy({} as ReturnType<typeof createClient>, {
+export const turso = new Proxy({} as ReturnType<typeof getTursoClient>, {
   get(target, prop: string | symbol) {
     const client = getTursoClient();
     const value = (client as Record<string | symbol, unknown>)[prop];
