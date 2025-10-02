@@ -109,6 +109,11 @@ export class EquipmentService {
   // ==== INDIVIDUAL EQUIPMENT ====
   async getIndividualEquipment() {
     const result = await turso.execute('SELECT * FROM individual_equipment ORDER BY equipment_id');
+    console.log('🔍 Individual Equipment Query Result:', {
+      rowCount: result.rows.length,
+      sampleRow: result.rows[0],
+      allRows: result.rows
+    });
     return result.rows;
   }
 

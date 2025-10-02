@@ -71,7 +71,8 @@ export const useEquipmentQueries = () => {
     queryFn: async () => {
       try {
         const equipment = await tursoDb.getIndividualEquipment();
-        return safeArray(equipment).map(eq => ({
+        console.log('📦 Raw equipment from DB:', equipment);
+        const mapped = safeArray(equipment).map(eq => ({
         id: eq.id,
         equipmentId: eq.equipment_id || eq.equipmentId,
         name: eq.name || '',
@@ -88,6 +89,8 @@ export const useEquipmentQueries = () => {
         location_type: eq.location_type,
         lastUpdated: eq.updated_at ? new Date(eq.updated_at) : new Date()
       } as IndividualEquipment));
+        console.log('📦 Mapped equipment:', mapped);
+        return mapped;
       } catch (error) {
         console.error('Error fetching individual equipment:', error);
         return [];

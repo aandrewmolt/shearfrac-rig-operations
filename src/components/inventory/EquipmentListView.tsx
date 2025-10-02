@@ -94,6 +94,11 @@ const EquipmentListView = () => {
   // Removed bulk equipment filtering - only showing individual equipment
 
   // Filter individual equipment
+  console.log('🔍 EquipmentListView data:', {
+    totalIndividualEquipment: data.individualEquipment?.length || 0,
+    sampleItem: data.individualEquipment?.[0]
+  });
+
   const filteredIndividualEquipment = (data.individualEquipment || []).filter(item => {
     if (!item) return false;
 
