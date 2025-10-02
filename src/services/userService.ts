@@ -55,7 +55,10 @@ export class UserService {
 
   // ==== CONTACTS MANAGEMENT ====
   async getContacts() {
-    const result = await turso.execute('SELECT * FROM contacts ORDER BY name');
+    const result = await turso.execute({
+      sql: 'SELECT * FROM contacts ORDER BY name',
+      args: []
+    });
     return result.rows.map(row => ({
       ...row,
       data: row.data ? JSON.parse(row.data as string) : {}
@@ -216,7 +219,10 @@ export class UserService {
 
   // ==== CUSTOM CONTACT TYPES ====
   async getCustomContactTypes() {
-    const result = await turso.execute('SELECT * FROM custom_contact_types ORDER BY name');
+    const result = await turso.execute({
+      sql: 'SELECT * FROM custom_contact_types ORDER BY name',
+      args: []
+    });
     return result.rows;
   }
 
