@@ -145,8 +145,8 @@ const JobCreationDialog: React.FC<JobCreationDialogProps> = ({
                         e.preventDefault();
                         e.stopPropagation();
                         // If there's an exact match, select it
-                        const exactMatch = existingClients.find(client => 
-                          client.toLowerCase() === clientSearchValue.trim().toLowerCase()
+                        const exactMatch = existingClients.find(client =>
+                          client && client.toLowerCase() === clientSearchValue.trim().toLowerCase()
                         );
                         if (exactMatch) {
                           setNewJobClient(exactMatch);
