@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { defaultClientColumns, defaultFracColumns, defaultCustomColumns } from '../utils/columnConfig';
 
 const GITHUB_OWNER = import.meta.env.VITE_GITHUB_OWNER || 'aandrewmolt';
-const GITHUB_REPO = import.meta.env.VITE_GITHUB_REPO || 'shearfrac-data';
+const GITHUB_REPO = import.meta.env.VITE_GITHUB_REPO || 'shearfrac-rig-operations';
 const GITHUB_PATH = import.meta.env.VITE_GITHUB_PATH || 'data/contacts.json';
 const GITHUB_BRANCH = import.meta.env.VITE_GITHUB_BRANCH || 'main';
 const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
