@@ -1,0 +1,16 @@
+{
+  "id": "57c3c005-3c15-424b-adfd-a55797dc2cd6",
+  "type": "progress",
+  "content": "Comprehensive site testing - Fixed 4 critical crashes: Types tab (toLowerCase on undefined), Usage tab (empty SelectItem values), Contacts page (dual-format turso.execute), and preventive toLowerCase fixes across RedTagDashboard, LocationEquipmentViewer, CommunicationEquipmentSection. All Inventory tabs verified working. Contacts page verified working. Job creation and diagram tested successfully. Currently testing Y-adapter addition in Inventory - opened Add Equipment dialog to reproduce user-reported errors.",
+  "tags": [
+    "testing",
+    "bug-fixes",
+    "inventory",
+    "contacts",
+    "y-adapter"
+  ],
+  "visibility": "private",
+  "createdAt": "2025-10-02T05:57:20.795Z",
+  "updatedAt": "2025-10-02T05:57:20.795Z",
+  "importance": "high"
+}

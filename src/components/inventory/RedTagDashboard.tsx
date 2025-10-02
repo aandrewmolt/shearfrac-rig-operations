@@ -310,7 +310,7 @@ const RedTagDashboard = () => {
                     <div className="grid grid-cols-2 gap-2 mt-2">
                       {selectedItem.photos.map(photo => (
                         <div key={photo.id} className="border rounded-lg overflow-hidden">
-                          <img src={photo.url} alt="Red tag evidence" className="w-full h-32 object-cover" />
+                          <img loading="lazy" src={photo.url} alt="Red tag evidence" className="w-full h-32 object-cover" />
                           {photo.description && (
                             <p className="p-2 text-xs text-muted-foreground">{photo.description}</p>
                           )}

@@ -297,7 +297,7 @@ const EnhancedRedTagManager: React.FC<EnhancedRedTagManagerProps> = ({
               <div className="grid grid-cols-2 gap-2 mt-3">
                 {photos.map((photoUrl, index) => (
                   <div key={index} className="relative border rounded-lg overflow-hidden">
-                    <img src={photoUrl} alt={`Red tag evidence ${index + 1}`} className="w-full h-32 object-cover" />
+                    <img loading="lazy" loading="lazy" loading="lazy" loading="lazy" src={photoUrl} alt={`Red tag evidence ${index + 1}`} className="w-full h-32 object-cover" />
                     <Button
                       onClick={() => removePhoto(photoUrl)}
                       variant="destructive"

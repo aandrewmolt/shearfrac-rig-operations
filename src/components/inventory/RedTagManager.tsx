@@ -200,7 +200,7 @@ const RedTagManager: React.FC = () => {
                     <div className="bg-card p-3 rounded border border-red-200">
                       <h4 className="font-semibold text-destructive mb-2">Photo:</h4>
                       <img 
-                        src={item.redTagPhoto} 
+                        loading="lazy" loading="lazy" loading="lazy" loading="lazy" src={item.redTagPhoto} 
                         alt="Red tag photo"
                         className="max-w-sm h-32 object-cover rounded border"
                       />
@@ -264,7 +264,7 @@ const RedTagManager: React.FC = () => {
                                   {redTagData.photos.map((photo, index) => (
                                     <div key={index} className="relative">
                                       <img 
-                                        src={photo} 
+                                        loading="lazy" loading="lazy" loading="lazy" loading="lazy" src={photo} 
                                         alt={`Red tag photo ${index + 1}`}
                                         className="w-full h-20 object-cover rounded border"
                                       />

@@ -9,7 +9,12 @@
     "build:dev": "vite build --mode development",
     "build:local": "VITE_DATABASE_MODE=local vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:watch": "npm test -- --watch",
+    "analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js",
+    "lint:fix": "eslint src --fix",
+    "type-check": "tsc --noEmit",
+    "build:optimize": "npm run build && npx terser build/static/js/*.js -o build/static/js/main.min.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

@@ -1,0 +1,11 @@
+{
+  "id": "c5c0d24b-9230-493c-93b1-7125385d73c6",
+  "fromNodeId": "567488c9-6a0a-4939-b1ed-f952c6ed82cf",
+  "toNodeId": "5dd682e8-1206-47aa-9be3-2eacb84dfd14",
+  "relation": "relates_to",
+  "createdAt": "2025-10-02T07:07:47.416Z",
+  "strength": 0.37639275831480423,
+  "evidence": [
+    "tags/content overlap"
+  ]
+}
