@@ -12,6 +12,30 @@ function getTursoClient() {
   return tursoClient;
 }
 
+/**
+ * Convert libSQL row arrays to objects using column names
+ * libSQL returns rows as arrays: ["val1", "val2", ...]
+ * We need objects: {col1: "val1", col2: "val2", ...}
+ */
+function convertRowsToObjects(result) {
+  if (!result || !result.rows || !result.columns) {
+    return result;
+  }
+
+  const objectRows = result.rows.map(row => {
+    const obj = {};
+    result.columns.forEach((column, index) => {
+      obj[column] = row[index];
+    });
+    return obj;
+  });
+
+  return {
+    ...result,
+    rows: objectRows
+  };
+}
+
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -39,10 +63,12 @@ export default async function handler(req, res) {
     switch (operation) {
       case 'execute':
         result = await client.execute(sql, params);
+        result = convertRowsToObjects(result);
         break;
 
       case 'batch':
         result = await client.batch(statements);
+        result = result.map(r => convertRowsToObjects(r));
         break;
 
       default:
