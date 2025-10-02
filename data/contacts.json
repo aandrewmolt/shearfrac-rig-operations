@@ -1,6 +1,8 @@
 {
   "contacts": [],
-  "customTypes": ["Coldbore"],
+  "customTypes": [
+    "Coldbore"
+  ],
   "columnSettings": {
     "client": [],
     "frac": [],
