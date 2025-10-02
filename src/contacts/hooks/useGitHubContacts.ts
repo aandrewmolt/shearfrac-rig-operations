@@ -7,6 +7,7 @@ const GITHUB_OWNER = import.meta.env.VITE_GITHUB_OWNER || 'aandrewmolt';
 const GITHUB_REPO = import.meta.env.VITE_GITHUB_REPO || 'shearfrac-data';
 const GITHUB_PATH = import.meta.env.VITE_GITHUB_PATH || 'data/contacts.json';
 const GITHUB_BRANCH = import.meta.env.VITE_GITHUB_BRANCH || 'main';
+const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
 
 export function useGitHubContacts() {
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -27,11 +28,17 @@ export function useGitHubContacts() {
       setLoading(true);
       setError(null);
 
-      // Fetch file from GitHub using MCP
+      // Fetch file from GitHub with authentication
+      const headers: Record<string, string> = {
+        'Accept': 'application/vnd.github.v3+json',
+      };
+
+      if (GITHUB_TOKEN) {
+        headers['Authorization'] = `Bearer ${GITHUB_TOKEN}`;
+      }
+
       const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}?ref=${GITHUB_BRANCH}`, {
-        headers: {
-          'Accept': 'application/vnd.github.v3+json',
-        }
+        headers
       });
 
       if (!response.ok) {
@@ -77,13 +84,19 @@ export function useGitHubContacts() {
 
       const content = btoa(JSON.stringify(data, null, 2));
 
-      // Update file on GitHub using MCP
+      // Update file on GitHub with authentication
+      const headers: Record<string, string> = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+      };
+
+      if (GITHUB_TOKEN) {
+        headers['Authorization'] = `Bearer ${GITHUB_TOKEN}`;
+      }
+
       const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`, {
         method: 'PUT',
-        headers: {
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           message: `Update contacts - ${new Date().toISOString()}`,
           content,
