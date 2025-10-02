@@ -7,8 +7,9 @@ export async function addClientToJobs() {
       PRAGMA table_info(jobs)
     `);
     
+    // ProxyTursoClient now converts row arrays to objects, so we can access by column name
     const hasClientColumn = tableInfo.rows.some(
-      row => row.name === 'client'
+      (row: any) => row.name === 'client'
     );
     
     if (!hasClientColumn) {

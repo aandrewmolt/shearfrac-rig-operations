@@ -3,6 +3,30 @@ import { createClient } from '@libsql/client/web';
 // Lazy initialization to avoid environment variable issues
 let tursoClient: ReturnType<typeof createClient> | null = null;
 
+/**
+ * Helper function to convert row arrays to objects using column names
+ * libSQL returns rows as arrays: ["val1", "val2", ...]
+ * We need to convert them to objects: {col1: "val1", col2: "val2", ...}
+ */
+function convertRowsToObjects(result: { rows: unknown[][]; columns: string[]; [key: string]: unknown }) {
+  if (!result.rows || !result.columns) {
+    return result;
+  }
+
+  const objectRows = result.rows.map(row => {
+    const obj: Record<string, unknown> = {};
+    result.columns.forEach((column, index) => {
+      obj[column] = row[index];
+    });
+    return obj;
+  });
+
+  return {
+    ...result,
+    rows: objectRows
+  };
+}
+
 // Proxy client for production (uses API endpoint to avoid CORS)
 class ProxyTursoClient {
   private apiUrl: string;
@@ -31,7 +55,8 @@ class ProxyTursoClient {
       throw new Error(result.error);
     }
 
-    return result.data;
+    // Convert row arrays to objects for easier access
+    return convertRowsToObjects(result.data);
   }
 
   async batch(statements: { sql: string; params?: unknown[] }[]) {
@@ -50,7 +75,8 @@ class ProxyTursoClient {
       throw new Error(result.error);
     }
 
-    return result.data;
+    // Convert row arrays to objects for easier access
+    return convertRowsToObjects(result.data);
   }
 }
 
