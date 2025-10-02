@@ -1,3 +1,4 @@
+// Force cache invalidation - build 2025-10-02
 import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Filter, X } from 'lucide-react';
@@ -21,6 +22,7 @@ import { useInventory } from '@/contexts/InventoryContext';
 import { JobDeletionDialog } from '@/components/jobs/JobDeletionDialog';
 
 const CableJobs = () => {
+  // Fixed toLowerCase crashes - 2025-10-02
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
