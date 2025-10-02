@@ -60,7 +60,7 @@ const FloatingDiagramControls: React.FC<FloatingDiagramControlsProps> = ({
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-foreground min-w-fit">Cable:</span>
               <Select value={selectedCableType} onValueChange={setSelectedCableType}>
-                <SelectTrigger className="h-9 flex-1 text-sm bg-background border-border hover:bg-muted transition-colors">
+                <SelectTrigger className="h-9 flex-1 text-sm bg-background border-border hover:bg-muted transition-colors" aria-label="Select cable type">
                   <SelectValue placeholder="Select cable type" />
                 </SelectTrigger>
                 <SelectContent className="bg-card border-border">
@@ -126,7 +126,7 @@ const FloatingDiagramControls: React.FC<FloatingDiagramControlsProps> = ({
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-foreground">Cable:</span>
             <Select value={selectedCableType} onValueChange={setSelectedCableType}>
-              <SelectTrigger className="h-8 w-36 text-xs bg-background border-border hover:bg-muted transition-colors">
+              <SelectTrigger className="h-8 w-36 text-xs bg-background border-border hover:bg-muted transition-colors" aria-label="Select cable type">
                 <SelectValue placeholder="Select cable" />
               </SelectTrigger>
               <SelectContent className="bg-card border-border">

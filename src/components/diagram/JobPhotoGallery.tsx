@@ -61,6 +61,14 @@ const JobPhotoGallery: React.FC<JobPhotoGalleryProps> = ({
                     alt={photo.caption || 'Job photo'}
                     className="w-full h-full object-contain cursor-pointer hover:scale-105 transition-transform"
                     onClick={() => setSelectedPhoto(photo)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedPhoto(photo);
+                      }
+                    }}
                   />
                 </div>
                 <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-card/80 rounded-full p-1">
@@ -73,6 +81,7 @@ const JobPhotoGallery: React.FC<JobPhotoGalleryProps> = ({
                       onDeletePhoto(photo.id);
                     }}
                     disabled={isDeleting}
+                    aria-label="Delete photo"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -92,6 +101,7 @@ const JobPhotoGallery: React.FC<JobPhotoGalleryProps> = ({
                       size="sm"
                       onClick={() => saveCaption(photo.id)}
                       className="h-5 px-2 text-xs"
+                      aria-label="Save caption"
                     >
                       <Save className="h-2 w-2" />
                     </Button>
@@ -100,6 +110,7 @@ const JobPhotoGallery: React.FC<JobPhotoGalleryProps> = ({
                       variant="outline"
                       onClick={cancelEditingCaption}
                       className="h-5 px-2 text-xs"
+                      aria-label="Cancel editing caption"
                     >
                       <X className="h-2 w-2" />
                     </Button>
@@ -115,6 +126,7 @@ const JobPhotoGallery: React.FC<JobPhotoGalleryProps> = ({
                     variant="ghost"
                     onClick={() => startEditingCaption(photo)}
                     className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="Edit photo caption"
                   >
                     <Edit3 className="h-2 w-2" />
                   </Button>

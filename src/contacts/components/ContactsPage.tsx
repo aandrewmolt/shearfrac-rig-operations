@@ -524,10 +524,11 @@ export function ContactsPage() {
                   </DropdownMenuContent>
                 </DropdownMenu>
                 {isMobile && (
-                  <Button 
+                  <Button
                     size="icon"
                     variant="outline"
                     onClick={() => setAdvancedFiltersOpen(true)}
+                    aria-label="Open advanced filters"
                   >
                     <Filter className="h-4 w-4" />
                   </Button>

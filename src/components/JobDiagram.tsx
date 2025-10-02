@@ -869,6 +869,7 @@ const JobDiagram: React.FC<JobDiagramProps> = ({ job }) => {
           onClick={() => setIsPhotosPanelOpen(true)}
           className="fixed bottom-24 right-4 z-30 h-14 w-14 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg"
           size="icon"
+          aria-label="Open photo panel"
         >
           <Camera className="h-6 w-6 text-white" />
         </Button>

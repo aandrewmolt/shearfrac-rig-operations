@@ -164,10 +164,11 @@ const JobsList: React.FC<JobsListProps> = ({
                     </Badge>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="icon"
                           className="h-8 w-8 sm:h-9 sm:w-9 opacity-0 group-hover:opacity-100 transition-opacity"
+                          aria-label="Job actions menu"
                         >
                           <MoreVertical className="h-4 w-4" />
                         </Button>
