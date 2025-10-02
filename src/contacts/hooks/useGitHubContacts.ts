@@ -34,7 +34,7 @@ export function useGitHubContacts() {
       };
 
       if (GITHUB_TOKEN) {
-        headers['Authorization'] = `Bearer ${GITHUB_TOKEN}`;
+        headers['Authorization'] = `token ${GITHUB_TOKEN}`;
       }
 
       const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}?ref=${GITHUB_BRANCH}`, {
@@ -91,7 +91,7 @@ export function useGitHubContacts() {
       };
 
       if (GITHUB_TOKEN) {
-        headers['Authorization'] = `Bearer ${GITHUB_TOKEN}`;
+        headers['Authorization'] = `token ${GITHUB_TOKEN}`;
       }
 
       const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`, {
