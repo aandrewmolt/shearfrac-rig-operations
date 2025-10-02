@@ -36,7 +36,7 @@ import { ContactFormEnhanced } from './ContactFormEnhanced';
 import { ContactFilterChips } from './ContactFilterChips';
 import { EnhancedSearch } from './EnhancedSearch';
 import { DuplicateDetection } from './DuplicateDetection';
-import { useTursoContacts } from '../hooks/useTursoContacts';
+import { useGitHubContacts as useTursoContacts } from '../hooks/useGitHubContacts';
 import { Contact, ContactType, ContactColumn } from '../types';
 import { getDefaultColumns } from '../utils/columnConfig';
 import { toast } from 'sonner';
