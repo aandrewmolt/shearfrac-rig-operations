@@ -95,15 +95,15 @@ const EquipmentListView = () => {
 
   // Filter individual equipment
   const filteredIndividualEquipment = (data.individualEquipment || []).filter(item => {
-    if (!item || !item.typeId || !item.locationId) return false;
-    
+    if (!item) return false;
+
     // Quick filter for red-tagged only
     if (showRedTaggedOnly && item.status !== 'red-tagged') return false;
-    
-    const typeName = getEquipmentTypeName(item.typeId).toLowerCase();
-    const typeCategory = getEquipmentTypeCategory(item.typeId);
-    const locationName = getLocationName(item.locationId).toLowerCase();
-    const matchesSearch = typeName.includes(searchTerm.toLowerCase()) || 
+
+    const typeName = (item.typeId ? getEquipmentTypeName(item.typeId) : '').toLowerCase();
+    const typeCategory = item.typeId ? getEquipmentTypeCategory(item.typeId) : '';
+    const locationName = (item.locationId ? getLocationName(item.locationId) : '').toLowerCase();
+    const matchesSearch = typeName.includes(searchTerm.toLowerCase()) ||
                          locationName.includes(searchTerm.toLowerCase()) ||
                          (item.equipmentId && item.equipmentId.toLowerCase().includes(searchTerm.toLowerCase())) ||
                          (item.name && item.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
