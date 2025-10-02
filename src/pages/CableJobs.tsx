@@ -164,8 +164,8 @@ const CableJobs = () => {
     // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(job => 
-        job.name.toLowerCase().includes(query) ||
+      filtered = filtered.filter(job =>
+        (job.name && job.name.toLowerCase().includes(query)) ||
         (job.client && job.client.toLowerCase().includes(query))
       );
     }
@@ -187,7 +187,7 @@ const CableJobs = () => {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'name':
-          return a.name.localeCompare(b.name);
+          return (a.name || '').localeCompare(b.name || '');
         case 'client':
           return (a.client || '').localeCompare(b.client || '');
         case 'date': {
