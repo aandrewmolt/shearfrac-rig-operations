@@ -3,29 +3,76 @@ import { createClient } from '@libsql/client/web';
 // Lazy initialization to avoid environment variable issues
 let tursoClient: ReturnType<typeof createClient> | null = null;
 
+// Proxy client for production (uses API endpoint to avoid CORS)
+class ProxyTursoClient {
+  private apiUrl: string;
+
+  constructor() {
+    this.apiUrl = '/api/db-proxy';
+  }
+
+  async execute(sql: string, params?: unknown[]) {
+    const response = await fetch(this.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ operation: 'execute', sql, params })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Database proxy error: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+
+    return result.data;
+  }
+
+  async batch(statements: { sql: string; params?: unknown[] }[]) {
+    const response = await fetch(this.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ operation: 'batch', statements })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Database proxy error: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+
+    return result.data;
+  }
+}
+
 // Mock client for local development without a Turso database
 class MockTursoClient {
   private storage: Map<string, unknown[]> = new Map();
-  
+
   async execute(sql: string, params?: unknown[]) {
     // Simple mock implementation for basic queries
     const upperSql = sql.toUpperCase();
-    
+
     if (upperSql.includes('SELECT 1')) {
       return { rows: [{ '1': 1 }], columns: ['1'] };
     }
-    
+
     if (upperSql.includes('CREATE TABLE')) {
       return { rows: [], columns: [] };
     }
-    
+
     if (upperSql.includes('SELECT') && upperSql.includes('FROM')) {
       const tableMatch = sql.match(/FROM\s+(\w+)/i);
       const tableName = tableMatch ? tableMatch[1] : '';
       const rows = this.storage.get(tableName) || [];
       return { rows, columns: rows.length > 0 ? Object.keys(rows[0]) : [] };
     }
-    
+
     if (upperSql.includes('INSERT INTO')) {
       const tableMatch = sql.match(/INSERT INTO\s+(\w+)/i);
       const tableName = tableMatch ? tableMatch[1] : '';
@@ -36,10 +83,10 @@ class MockTursoClient {
       tableData.push({ id: Date.now().toString(), ...params });
       return { rows: [], columns: [] };
     }
-    
+
     return { rows: [], columns: [] };
   }
-  
+
   async batch(statements: { sql: string; params?: unknown[] }[]) {
     const results = [];
     for (const stmt of statements) {
@@ -52,14 +99,19 @@ class MockTursoClient {
 export function getTursoClient() {
   if (!tursoClient) {
     const dbUrl = import.meta.env.VITE_TURSO_DATABASE_URL;
-    
+    const isProduction = import.meta.env.PROD;
+
     // If no URL provided, use mock client for local development
     if (!dbUrl || dbUrl === '' || dbUrl.startsWith('file:')) {
       console.warn('⚠️ No Turso database URL provided. Using in-memory mock database for development.');
       console.log('ℹ️ To use a real database, sign up at https://turso.tech and add credentials to .env');
       tursoClient = new MockTursoClient() as unknown as typeof tursoClient;
+    } else if (isProduction) {
+      // In production, use proxy to avoid CORS
+      console.log('🔄 Using database proxy for Turso connection (avoids CORS)');
+      tursoClient = new ProxyTursoClient() as unknown as typeof tursoClient;
     } else {
-      // Create real Turso client
+      // In development, connect directly
       tursoClient = createClient({
         url: dbUrl,
         authToken: import.meta.env.VITE_TURSO_AUTH_TOKEN,
